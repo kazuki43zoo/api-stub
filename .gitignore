@@ -1,8 +1,7 @@
-.idea
-*.iml
-
-/target
-
-/.settings
-.project
-.classpath
+**/.idea
+**/*.iml
+**/target
+**/.settings
+**/.project
+**/.classpath
+**/evidence

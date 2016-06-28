@@ -4,9 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ApiStubApplication {
+public class ApiStubBlankApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ApiStubApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ApiStubBlankApplication.class, args);
+    }
+
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>List for templates.mock response</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+</head>
+<body>
+
+<div class="container">
+    <h2>List for templates.mock response</h2>
+
+    <form th:action="@{/manager/mocks}"
+          th:object="${mockApiResponseSearchForm}" method="get" class="form-horizontal">
+        <div class="form-group">
+            <label for="path" class="col-sm-2 control-label">Request Path</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="path" placeholder="Path" th:field="*{path}"/>
+                <span th:errors="*{path}"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description" class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="description" placeholder="Description" th:field="*{description}"/>
+                <span th:errors="*{description}"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" name="search" class="btn btn-default">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div>
+        <a th:href="@{/manager/mocks/create}" class="btn btn-default">Add a new templates.mock response</a>
+    </div>
+
+    <table class="table table-striped">
+        <tr>
+            <th>-</th>
+            <th>Request Path</th>
+            <th>HTTP Method</th>
+            <th>HTTP Status Code</th>
+            <th>Description</th>
+        </tr>
+        <tr th:each="mockResponse : ${mockResponses}">
+            <td><a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockResponse.id})}">Edit</a></td>
+            <td th:text="${mockResponse.path}"></td>
+            <td th:text="${mockResponse.method}"></td>
+            <td th:text="${mockResponse.statusCode}"></td>
+            <td th:text="${mockResponse.description}"></td>
+        </tr>
+    </table>
+
+
+
+</div>
+</body>
+</html>
