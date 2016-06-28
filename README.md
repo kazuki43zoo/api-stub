@@ -49,7 +49,7 @@ $ ./mvnw clean install
 
 At second, add artifact into your pom file as follow:
 
-```
+```xml
 <dependency>
     <groupId>com.kazuki43zoo</groupId>
     <artifactId>api-stub-core</artifactId>
