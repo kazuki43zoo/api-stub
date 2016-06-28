@@ -4,7 +4,7 @@ Stub for API
 ## Build
 
 ```bash
-$ ./mvnw clean package
+$ ./mvnw clean install
 ```
 
 ## Run application
