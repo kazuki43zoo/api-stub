@@ -14,7 +14,7 @@ public class MockApiService {
     MockApiRepository repository;
 
     public MockApi findOneBy(String path, String method) {
-        return repository.findOneByUk(path, method.toLowerCase());
+        return repository.findOneByUk(path, method.toUpperCase());
     }
 
 }

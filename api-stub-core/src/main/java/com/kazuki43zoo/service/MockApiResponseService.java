@@ -16,7 +16,7 @@ public class MockApiResponseService {
     MockApiResponseRepository repository;
 
     public MockApiResponse findOne(String path, String method) {
-        MockApiResponse mockResponse = repository.findOneByUk(path, method.toLowerCase());
+        MockApiResponse mockResponse = repository.findOneByUk(path, method.toUpperCase());
         if (mockResponse == null) {
             mockResponse = new MockApiResponse();
             mockResponse.setPath(path);
