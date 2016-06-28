@@ -15,7 +15,7 @@ $ java -jar api-stub-app/target/api-stub.jar
 
 ## How to access the mock response management screen
 
-[http://localhost:8080/manager/mocks](http://localhost:8080/manager/mocks)
+[http://localhost:8080/manager/mocks](http://localhost:8080/)
 
 ## How to create a new mock response
 
