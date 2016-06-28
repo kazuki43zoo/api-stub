@@ -40,14 +40,14 @@ $ java -jar api-stub-app/target/api-stub.jar
 
 ## Install api-stub-core into your application
 
-At first, install the `api-stub-core` into local repository. (**Important**)
+Install the `api-stub-core` into local repository. (**Important**)
 
 ```bash
 $ cd {api-stub-dir}
 $ ./mvnw clean install
 ```
 
-At second, add artifact into your pom file as follow:
+Add the `api-stub-core` into your pom file as follow:
 
 ```xml
 <dependency>
