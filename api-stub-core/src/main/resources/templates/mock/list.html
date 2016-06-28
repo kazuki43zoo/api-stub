@@ -2,13 +2,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>List for templates.mock response</title>
+    <title>List for mock response</title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
 </head>
 <body>
 
 <div class="container">
-    <h2>List for templates.mock response</h2>
+    <h2>List for mock response</h2>
 
     <form th:action="@{/manager/mocks}"
           th:object="${mockApiResponseSearchForm}" method="get" class="form-horizontal">
@@ -34,7 +34,7 @@
     </form>
 
     <div>
-        <a th:href="@{/manager/mocks/create}" class="btn btn-default">Add a new templates.mock response</a>
+        <a th:href="@{/manager/mocks/create}" class="btn btn-default">Add a new mock response</a>
     </div>
 
     <table class="table table-striped">
