@@ -15,6 +15,9 @@ $ java -jar api-stub-app/target/api-stub.jar
 
 ## How to use
 
+> **Preconditions for following descriptions**
+> * Server port is 8080.
+
 ### How to access the mock response management screen
 
 [http://localhost:8080/](http://localhost:8080/)
@@ -60,7 +63,7 @@ Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2databa
 
 ## Evidence
 
-Evicence(request header, parameter, body and upload files) are output `evidence` directory on your application root.
+Evicence(request headers, request parameters, request body and upload files) are outouting the `evidence` directory on your application root.
 
 ```text
 ${APP_ROOT}
@@ -69,9 +72,18 @@ ${APP_ROOT}
         └─members (* request path)
             └─GET (* http methpd)
                 └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* datetime_x-correlation-id)
-                    + request.json (* http headers, request parameters)
-                    + body.json (* http body)
-                    + uploadFile_01_xxxx.png
+                    + request.json (* include http headers, request parameters)
+                    + body.txt (* request body)
+                    + uploadFile_01_xxxx.png (* upload files)
+```
+
+You can disable outputing evidence as follows:
+
+```properties
+# Disable request header, request parameter, request body
+api.evidence.disabled-request=true
+# Disable upload files
+api.evidence.disabled-upload=true
 ```
 
 ## Logs
@@ -84,7 +96,6 @@ ${APP_ROOT}
 2016-06-30 15:09:48.664  WARN 2372 --- [nio-8080-exec-6] GET /api/members                         : Mock Response is not found.
 2016-06-30 15:09:48.664  INFO 2372 --- [nio-8080-exec-6] GET /api/members                         : End.
 ```
-
 
 ## Appendix
 
