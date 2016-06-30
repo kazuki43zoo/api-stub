@@ -124,4 +124,11 @@ Add the `api-stub-core` into your pom file as follow:
 </dependency>
 ```
 
+## Known Issues
+
+https://github.com/kazuki43zoo/api-stub/issues
+
+## Feature request and bug report
+
+https://github.com/kazuki43zoo/api-stub/issues/new
 
