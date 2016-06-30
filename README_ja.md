@@ -43,13 +43,21 @@ java -jar api-stub.jar --server.port=9999
 ![Search for mock response](material/list-screen-searched.png)
 
 
-#### 擬似レスポンスの追加
+### 擬似レスポンスの追加
 
 ![Add for mock response](material/create-screen.png)
 
-#### 擬似レスポンスの編集
+### 擬似レスポンスの編集
 
 ![Edit for mock response](material/edit-screen.png)
+
+### 変更履歴の表示
+
+![View for editing histories](material/list-history-screen.png)
+
+### 履歴の復元と削除
+
+![Restore and Delete for editing history](material/history-screen.png)
 
 
 ### 疑似APIへのアクセス方法

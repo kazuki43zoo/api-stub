@@ -46,10 +46,17 @@ java -jar api-stub.jar --server.port=9999
 
 ![Add for mock response](material/create-screen.png)
 
-### Edit a new mock response
+### Edit a mock response
 
 ![Edit for mock response](material/edit-screen.png)
 
+### View editing histories
+
+![View for editing histories](material/list-history-screen.png)
+
+### Restore and Delete editing history
+
+![Restore and Delete for editing history](material/history-screen.png)
 
 ## How to access mock API
 
@@ -63,9 +70,9 @@ Date: Thu, 30 Jun 2016 04:03:06 GMT
 
 ```
 
-## Evidence
+### Evidence
 
-Evicence(request headers, request parameters, request body and upload files) are outouting the `evidence` directory on your application root.
+Evidence(request headers, request parameters, request body and upload files) are outouting the `evidence` directory on your application root.
 
 ```text
 ${APP_ROOT}/evidence
@@ -88,7 +95,7 @@ api.evidence.disabled-request=true
 api.evidence.disabled-upload=true
 ```
 
-## Console logs
+### Console logs
 
 ```text
 ...
