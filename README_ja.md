@@ -154,7 +154,7 @@ JDBCドライバは[ここ](http://repo2.maven.org/maven2/com/h2database/h2/1.4.
 | 項目 | 項目値 |
 | ---- | ----- |
 | ドライバクラス | `org.h2.Driver` |
-| JDBCのURL | `jdbc:h2:tcp://localhost:9092/~/db/api-stub` |
+| JDBCのURL | `jdbc:h2:tcp://localhost/~/db/api-stub` |
 | ユーザー名 | `sa` |
 | パスワード | |
 

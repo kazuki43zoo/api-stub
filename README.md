@@ -148,7 +148,7 @@ Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2databa
 | Item | Value |
 | ---- | ----- |
 | Driver Class | `org.h2.Driver` |
-| JDBC URL | `jdbc:h2:tcp://localhost:9092/~/db/api-stub` |
+| JDBC URL | `jdbc:h2:tcp://localhost/~/db/api-stub` |
 | User | `sa` |
 | Password | |
 
