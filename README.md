@@ -49,3 +49,30 @@ Add the `api-stub-core` into your pom file as follow:
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
+
+## Database
+
+You can access the database dilectlly.
+
+### Using H2 admin console
+
+[http://localhost:8080/h2-console/](http://localhost:8080/h2-console/)
+
+| Item | Value |
+| ---- | ----- |
+| Driver Class | `org.h2.Driver` |
+| JDBC URL | `jdbc:h2:~/db/api-stub` |
+| User Name | `sa` |
+| Password | |
+
+### Using JDBC Driver
+
+Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2database/h2/1.4.191/h2-1.4.191.jar).
+
+| Item | Value |
+| ---- | ----- |
+| Driver Class | `org.h2.Driver` |
+| JDBC URL | `jdbc:h2:tcp://localhost:9092/~/db/api-stub` |
+| User | `sa` |
+| Password | |
+
