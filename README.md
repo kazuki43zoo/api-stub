@@ -23,7 +23,7 @@ Type "Ctrl + C"
 
 ## How to change server port
 
-If you want to change server port, please run application as follow:
+If you want to change server port, please run application as follow (adding `--server.port=xxxx`):
 
 e.g.)
 
