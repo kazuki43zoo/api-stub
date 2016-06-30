@@ -14,6 +14,7 @@ $ java -jar api-stub-app/target/api-stub.jar
 ```
 
 > **Note**
+> 
 > Default server port is `8080`.
 
 ## Stop application
@@ -33,6 +34,7 @@ java -jar api-stub.jar --server.port=9999
 ## How to use
 
 > **Preconditions for following descriptions**
+>
 > * Server port is 8080 (default server port).
 
 ### How to access the management screen for mock response data
