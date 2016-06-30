@@ -33,10 +33,6 @@ java -jar api-stub.jar --server.port=9999
 
 ## How to use
 
-> **Preconditions for following descriptions**
->
-> * Server port is 8080 (default server port).
-
 ### How to access the management screen for mock response data
 
 [http://localhost:8080/](http://localhost:8080/)
