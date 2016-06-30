@@ -38,6 +38,9 @@ java -jar api-stub.jar --server.port=9999
 
 [http://localhost:8080/](http://localhost:8080/)
 
+![Sample Applications Structure](material/list-screen.png)
+
+
 ### 疑似APIへのアクセス方法
 
 ```bash
