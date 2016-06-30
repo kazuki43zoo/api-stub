@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 public class MockApiResponse implements Serializable {
@@ -19,4 +20,13 @@ public class MockApiResponse implements Serializable {
     private String fileName;
     private Long waitingMsec;
     private String description;
+    private LocalDateTime createdAt;
+
+    public MockApi toMockApi() {
+        MockApi mockApi = new MockApi();
+        mockApi.setPath(path);
+        mockApi.setMethod(method);
+        return mockApi;
+    }
+
 }

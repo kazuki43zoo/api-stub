@@ -13,8 +13,8 @@ public class MockApiService {
     @Autowired
     MockApiRepository repository;
 
-    public MockApi findOneBy(String path, String method) {
-        return repository.findOneByUk(path, method.toUpperCase());
+    public MockApi findBy(String path, String method) {
+        return repository.findByUk(path, method.toUpperCase());
     }
 
 }

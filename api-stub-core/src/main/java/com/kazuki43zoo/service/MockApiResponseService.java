@@ -15,7 +15,7 @@ public class MockApiResponseService {
     @Autowired
     MockApiResponseRepository repository;
 
-    public MockApiResponse findOne(String path, String method) {
+    public MockApiResponse find(String path, String method) {
         MockApiResponse mockResponse = repository.findOneByUk(path, method.toUpperCase());
         if (mockResponse == null) {
             mockResponse = new MockApiResponse();
@@ -25,12 +25,20 @@ public class MockApiResponseService {
         return mockResponse;
     }
 
-    public MockApiResponse findOne(int id) {
-        return repository.findOne(id);
+    public MockApiResponse find(int id) {
+        return repository.find(id);
     }
 
     public List<MockApiResponse> findAll(String path, String description) {
         return repository.findAll(path, description);
+    }
+
+    public List<MockApiResponse> findAllHistoryById(int id) {
+        return repository.findAllHistoryById(id);
+    }
+
+    public MockApiResponse findHistory(int id, int subId) {
+        return repository.findHistory(id, subId);
     }
 
     public void create(MockApiResponse newMockResponse) {
@@ -43,7 +51,7 @@ public class MockApiResponseService {
         newMockResponse.setId(id);
         newMockResponse.setMethod(newMockResponse.getMethod().toUpperCase());
         if (keepAttachmentFile) {
-            MockApiResponse mockResponse = findOne(id);
+            MockApiResponse mockResponse = find(id);
             newMockResponse.setAttachmentFile(mockResponse.getAttachmentFile());
             newMockResponse.setFileName(mockResponse.getFileName());
         }

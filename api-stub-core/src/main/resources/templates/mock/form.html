@@ -4,8 +4,6 @@
 <head>
     <title>Mock response</title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
-    <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"/>
-
 </head>
 <body>
 
@@ -47,14 +45,14 @@
                 <span th:errors="*{file}"></span>
             </div>
             <div class="col-sm-offset-2 col-sm-10" th:if="${mockApiResponse != null and mockApiResponse.fileName != null}">
-                <a th:href="@{/manager/templates.mock/{id}/file(id=${mockApiResponse.id})}" th:text="${mockApiResponse.fileName}"/>
+                <a th:href="@{/manager/mocks/{id}/file(id=${mockApiResponse.id})}" th:text="${mockApiResponse.fileName}"/>
                 <input type="checkbox" id="deleteFile" th:field="*{deleteFile}"/><label for="deleteFile"> Remove ?</label>
             </div>
         </div>
         <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Waiting Millisecond</label>
+            <label for="waitingMsec" class="col-sm-2 control-label">Waiting Millisecond</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="processingWaitMsec" placeholder="Waiting Millisecond" th:field="*{waitingMsec}"/>
+                <input type="text" class="form-control" id="waitingMsec" placeholder="Waiting Millisecond" th:field="*{waitingMsec}"/>
                 <span th:errors="*{waitingMsec}"></span>
             </div>
         </div>
@@ -77,7 +75,8 @@
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <a th:href="@{/manager/mocks}" class="btn btn-default">Back to list</a>
+                <a class="btn btn-default" th:href="@{/manager/mocks}">Back to list</a>
+                <a class="btn btn-default" th:href="@{/manager/mocks/{id}/histories(id=${mockApiResponse.id})}" th:if="${mockApiResponse != null}">Go to histories</a>
             </div>
         </div>
     </div>

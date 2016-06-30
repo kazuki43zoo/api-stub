@@ -69,8 +69,8 @@ public class ApiStubRestController {
 
             evidence.request(request, requestEntity);
 
-            MockApiResponse mockResponse = mockApiResponseService.findOne(path, method);
-            MockApi mockApi = mockApiService.findOneBy(path, method);
+            MockApiResponse mockResponse = mockApiResponseService.find(path, method);
+            MockApi mockApi = mockApiService.findBy(path, method);
 
             // Status Code
             Integer statusCode = HttpStatus.OK.value();

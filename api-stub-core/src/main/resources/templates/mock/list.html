@@ -46,12 +46,12 @@
             <th>HTTP Status Code</th>
             <th>Description</th>
         </tr>
-        <tr th:each="mockResponse : ${mockResponses}">
-            <td><a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockResponse.id})}">Edit</a></td>
-            <td th:text="${mockResponse.path}"></td>
-            <td th:text="${mockResponse.method}"></td>
-            <td th:text="${mockResponse.statusCode}"></td>
-            <td th:text="${mockResponse.description}"></td>
+        <tr th:each="mockApiResponse : ${mockApiResponses}">
+            <td><a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">Edit</a></td>
+            <td th:text="${mockApiResponse.path}"></td>
+            <td th:text="${mockApiResponse.method}"></td>
+            <td th:text="${mockApiResponse.statusCode}"></td>
+            <td th:text="${mockApiResponse.description}"></td>
         </tr>
     </table>
 

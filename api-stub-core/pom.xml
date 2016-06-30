@@ -18,6 +18,9 @@
 
     <properties>
         <mybatis-spring-boot.version>1.1.1</mybatis-spring-boot.version>
+        <mybatis-typehandlers-jsr310.version>1.0.1</mybatis-typehandlers-jsr310.version>
+        <lombok.version>1.16.8</lombok.version>
+        <bootstrap.version>3.3.6</bootstrap.version>
     </properties>
 
     <dependencies>
@@ -38,16 +41,22 @@
         </dependency>
 
         <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-typehandlers-jsr310</artifactId>
+            <version>${mybatis-typehandlers-jsr310.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.8</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
-            <version>3.3.6</version>
+            <version>${bootstrap.version}</version>
         </dependency>
 
         <dependency>

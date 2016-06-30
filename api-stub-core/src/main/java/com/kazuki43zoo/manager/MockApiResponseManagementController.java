@@ -1,6 +1,7 @@
 package com.kazuki43zoo.manager;
 
 import com.kazuki43zoo.component.DownloadSupport;
+import com.kazuki43zoo.domain.MockApi;
 import com.kazuki43zoo.domain.MockApiResponse;
 import com.kazuki43zoo.service.MockApiResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +48,8 @@ public class MockApiResponseManagementController {
         if (result.hasErrors()) {
             return "mock/list";
         }
-        List<MockApiResponse> mockResponses = service.findAll(form.getPath(), form.getDescription());
-        model.addAttribute("mockResponses", mockResponses);
+        List<MockApiResponse> mockApiResponses = service.findAll(form.getPath(), form.getDescription());
+        model.addAttribute("mockApiResponses", mockApiResponses);
         return "mock/list";
     }
 
@@ -83,7 +84,7 @@ public class MockApiResponseManagementController {
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public String editForm(@PathVariable int id, Model model) throws IOException {
-        MockApiResponse mockResponse = service.findOne(id);
+        MockApiResponse mockResponse = service.find(id);
         if (mockResponse == null) {
             return "redirect:/manager/mocks";
         }
@@ -105,7 +106,7 @@ public class MockApiResponseManagementController {
     @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "update")
     public String edit(@PathVariable int id, @Validated MockApiResponseForm form, BindingResult result, Model model) throws IOException {
         if (result.hasErrors()) {
-            model.addAttribute(service.findOne(id));
+            model.addAttribute(service.find(id));
             return "mock/form";
         }
         MockApiResponse mockResponse = new MockApiResponse();
@@ -134,10 +135,54 @@ public class MockApiResponseManagementController {
         return "redirect:/manager/mocks";
     }
 
-
     @RequestMapping(path = "{id}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id) throws UnsupportedEncodingException {
-        MockApiResponse mockResponse = service.findOne(id);
+        MockApiResponse mockResponse = service.find(id);
+        HttpHeaders headers = new HttpHeaders();
+        downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .headers(headers)
+                .body(new InputStreamResource(mockResponse.getAttachmentFile()));
+    }
+
+
+    @RequestMapping(path = "{id}/histories", method = RequestMethod.GET)
+    public String histories(@PathVariable int id, Model model) {
+        MockApiResponse mockApiResponse = service.find(id);
+        if (mockApiResponse == null) {
+            return "redirect:/manager/mocks";
+        }
+        List<MockApiResponse> mockApiResponses = service.findAllHistoryById(id);
+        model.addAttribute(mockApiResponse);
+        model.addAttribute("mockApiResponses", mockApiResponses);
+        return "mock/historyList";
+    }
+
+    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.GET)
+    public String history(@PathVariable int id, @PathVariable int subId, Model model, RedirectAttributes redirectAttributes) throws IOException {
+        MockApiResponse mockApiResponse = service.findHistory(id, subId);
+        if (mockApiResponse == null) {
+            redirectAttributes.addAttribute("id", id);
+            return "redirect:/manager/mocks/{id}";
+        }
+        MockApiResponseForm form = new MockApiResponseForm();
+        form.setStatusCode(mockApiResponse.getStatusCode());
+        form.setHeader(mockApiResponse.getHeader());
+        if (mockApiResponse.getBody() != null && mockApiResponse.getFileName() == null) {
+            form.setBody(StreamUtils.copyToString(mockApiResponse.getBody(), StandardCharsets.UTF_8));
+        }
+        form.setWaitingMsec(mockApiResponse.getWaitingMsec());
+        form.setDescription(mockApiResponse.getDescription());
+        model.addAttribute(mockApiResponse);
+        model.addAttribute(form);
+        return "mock/history";
+    }
+
+    @RequestMapping(path = "{id}/histories/{subId}/file", method = RequestMethod.GET)
+    public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {
+        MockApiResponse mockResponse = service.findHistory(id, subId);
         HttpHeaders headers = new HttpHeaders();
         downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
         return ResponseEntity
