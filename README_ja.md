@@ -34,7 +34,7 @@ java -jar api-stub.jar --server.port=9999
 
 ## 使い方
 
-### 疑似レスポンスのデータの管理画面へのアクセス方法
+### 疑似レスポンスの管理画面へのアクセス方法
 
 [http://localhost:8080/](http://localhost:8080/)
 
