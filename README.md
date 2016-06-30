@@ -39,7 +39,15 @@ java -jar api-stub.jar --server.port=9999
 
 [http://localhost:8080/](http://localhost:8080/)
 
-![Sample Applications Structure](material/list-screen.png)
+![List for mock response](material/list-screen.png)
+
+#### Add a new mock response
+
+![Add for mock response](material/create-screen.png)
+
+#### Edit a new mock response
+
+![Edit for mock response](material/edit-screen.png)
 
 
 ### How to access mock API

@@ -38,7 +38,15 @@ java -jar api-stub.jar --server.port=9999
 
 [http://localhost:8080/](http://localhost:8080/)
 
-![Sample Applications Structure](material/list-screen.png)
+![List for mock response](material/list-screen.png)
+
+#### 擬似レスポンスの追加
+
+![Add for mock response](material/create-screen.png)
+
+#### 擬似レスポンスの編集
+
+![Edit for mock response](material/edit-screen.png)
 
 
 ### 疑似APIへのアクセス方法
