@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +58,10 @@ public class ApiStubRestController {
         final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
         final String method = request.getMethod();
 
-        String contentExtension = contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(request.getContentType()))
+
+        String contentExtension = Optional.ofNullable(request.getContentType())
+                .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
+                .orElseGet(ArrayList::new)
                 .stream().findFirst().orElse("txt");
         final ApiEvidence evidence = new ApiEvidence(apiStubProperties, method, request.getServletPath(), correlationId, contentExtension);
 
