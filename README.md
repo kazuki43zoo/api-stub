@@ -13,6 +13,10 @@ $ ./mvnw clean install
 $ java -jar api-stub-app/target/api-stub.jar
 ```
 
+## Stop application
+
+Type "Ctrl + C"
+
 ## How to use
 
 > **Preconditions for following descriptions**
