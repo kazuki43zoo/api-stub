@@ -75,7 +75,7 @@ ${APP_ROOT}/evidence
     └─v1
         └─members (* request path)
             └─GET (* http method)
-                └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* datetime_x-correlation-id)
+                └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* ${datetime}_${x-correlation-id})
                     + request.json (* include http headers, request parameters)
                     + body.txt (* request body)
                     + uploadFile_01_xxxx.png (* upload files)
