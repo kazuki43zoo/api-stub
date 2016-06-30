@@ -68,7 +68,7 @@ ${APP_ROOT}
     └─v1
         └─members (* request path)
             └─GET (* http methpd)
-                └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* datetime_x-x-correlation-id)
+                └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* datetime_x-correlation-id)
                     + request.json (* http headers, request parameters)
                     + body.json (* http body)
                     + uploadFile_01_xxxx.png
