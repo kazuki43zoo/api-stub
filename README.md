@@ -13,20 +13,33 @@ $ ./mvnw clean install
 $ java -jar api-stub-app/target/api-stub.jar
 ```
 
+> **Note**
+> Default server port is `8080`.
+
 ## Stop application
 
 Type "Ctrl + C"
 
+## How to change server port
+
+If you want to change server port, please run application as follow:
+
+e.g.)
+
+```bash
+java -jar api-stub.jar --server.port=9999
+```
+
 ## How to use
 
 > **Preconditions for following descriptions**
-> * Server port is 8080.
+> * Server port is 8080 (default server port).
 
 ### How to access the management screen for mock response data
 
 [http://localhost:8080/](http://localhost:8080/)
 
-### How to access mock api
+### How to access mock API
 
 ```bash
 $ curl -D - http://localhost:8080/api/v1/members
@@ -37,33 +50,6 @@ Content-Length: 0
 Date: Thu, 30 Jun 2016 04:03:06 GMT
 
 ```
-
-## Database
-
-You can access the database dilectlly.
-
-### Using H2 admin console
-
-[http://localhost:8080/h2-console/](http://localhost:8080/h2-console/)
-
-| Item | Value |
-| ---- | ----- |
-| Driver Class | `org.h2.Driver` |
-| JDBC URL | `jdbc:h2:~/db/api-stub` |
-| User Name | `sa` |
-| Password | |
-
-### Using JDBC Driver
-
-Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2database/h2/1.4.191/h2-1.4.191.jar).
-
-| Item | Value |
-| ---- | ----- |
-| Driver Class | `org.h2.Driver` |
-| JDBC URL | `jdbc:h2:tcp://localhost:9092/~/db/api-stub` |
-| User | `sa` |
-| Password | |
-
 
 ## Evidence
 
@@ -102,6 +88,33 @@ api.evidence.disabled-upload=true
 2016-06-30 15:09:48.664  INFO 2372 --- [nio-8080-exec-6] GET /api/members                         : End.
 ...
 ```
+
+## Access the database
+
+You can access the database dilectlly.
+
+### Using H2 admin console
+
+[http://localhost:8080/h2-console/](http://localhost:8080/h2-console/)
+
+| Item | Value |
+| ---- | ----- |
+| Driver Class | `org.h2.Driver` |
+| JDBC URL | `jdbc:h2:~/db/api-stub` |
+| User Name | `sa` |
+| Password | |
+
+### Using JDBC Driver
+
+Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2database/h2/1.4.191/h2-1.4.191.jar).
+
+| Item | Value |
+| ---- | ----- |
+| Driver Class | `org.h2.Driver` |
+| JDBC URL | `jdbc:h2:tcp://localhost:9092/~/db/api-stub` |
+| User | `sa` |
+| Password | |
+
 
 ## Appendix
 
