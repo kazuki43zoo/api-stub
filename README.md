@@ -47,6 +47,8 @@ java -jar api-stub.jar --server.port=9999
 
 #### Edit a new mock response
 
+![Search for mock response](material/list-screen-searched.png)
+
 ![Edit for mock response](material/edit-screen.png)
 
 

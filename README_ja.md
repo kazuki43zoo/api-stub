@@ -46,6 +46,8 @@ java -jar api-stub.jar --server.port=9999
 
 #### 擬似レスポンスの編集
 
+![Search for mock response](material/list-screen-searched.png)
+
 ![Edit for mock response](material/edit-screen.png)
 
 
