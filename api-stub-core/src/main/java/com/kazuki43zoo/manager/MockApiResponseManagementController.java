@@ -1,7 +1,6 @@
 package com.kazuki43zoo.manager;
 
 import com.kazuki43zoo.component.DownloadSupport;
-import com.kazuki43zoo.domain.MockApi;
 import com.kazuki43zoo.domain.MockApiResponse;
 import com.kazuki43zoo.service.MockApiResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,6 +134,7 @@ public class MockApiResponseManagementController {
         return "redirect:/manager/mocks";
     }
 
+
     @RequestMapping(path = "{id}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id) throws UnsupportedEncodingException {
         MockApiResponse mockResponse = service.find(id);
@@ -179,6 +179,20 @@ public class MockApiResponseManagementController {
         model.addAttribute(form);
         return "mock/history";
     }
+
+
+    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "restore")
+    public String restoreHistory(@PathVariable int id, @PathVariable int subId) throws IOException {
+        service.restoreHistory(id, subId);
+        return "redirect:/manager/mocks/{id}";
+    }
+
+    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "delete")
+    public String deleteHistory(@PathVariable int id, @PathVariable int subId) throws IOException {
+        service.deleteHistory(id, subId);
+        return "redirect:/manager/mocks/{id}/histories";
+    }
+
 
     @RequestMapping(path = "{id}/histories/{subId}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {

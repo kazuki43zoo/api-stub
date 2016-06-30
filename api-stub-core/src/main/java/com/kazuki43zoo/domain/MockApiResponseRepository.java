@@ -29,7 +29,7 @@ public interface MockApiResponseRepository {
     MockApiResponse find(int id);
 
     @Select("SELECT h.id, h.sub_id, o.path, o.method, h.status_code, h.header, h.body, h.attachment_file, h.file_name, h.waiting_msec, h.description, h.created_at " +
-            "FROM mock_api_response_history h JOIN mock_api_response o ON o.id = h.id " +
+            "FROM mock_api_response_history h INNER JOIN mock_api_response o ON o.id = h.id " +
             "WHERE h.id = #{id} AND h.sub_id = #{subId}")
     MockApiResponse findHistory(@Param("id") int id, @Param("subId") int subId);
 
@@ -50,6 +50,14 @@ public interface MockApiResponseRepository {
     @Delete("DELETE FROM mock_api_response " +
             "WHERE id = #{id}")
     void delete(int id);
+
+    @Delete("DELETE FROM mock_api_response_history " +
+            "WHERE id = #{id} AND sub_id = #{subId}")
+    void deleteHistory(@Param("id") int id, @Param("subId") int subId);
+
+    @Delete("DELETE FROM mock_api_response_history " +
+            "WHERE id = #{id}")
+    void deleteAllHistory(int id);
 
     class SqlProvider {
         public String findAll(@Param("path") String path, @Param("description") String description) {

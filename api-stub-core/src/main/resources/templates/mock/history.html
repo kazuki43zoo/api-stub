@@ -47,13 +47,19 @@
         </div>
     </form>
 
-    <div class="form-horizontal">
+    <form class="form-horizontal" method="post">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" name="restore" class="btn btn-default" onclick="return confirm('Do restore ?')">Restore</button>
+                <button type="submit" name="delete" class="btn btn-default" onclick="return confirm('Do delete ?')">Delete</button>
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <a class="btn btn-default" th:href="@{/manager/mocks/{id}/histories(id=${mockApiResponse.id})}">Back to histories</a>
             </div>
         </div>
-    </div>
+    </form>
 
 
 </div>

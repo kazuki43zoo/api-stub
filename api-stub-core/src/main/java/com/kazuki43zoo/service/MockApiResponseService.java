@@ -59,8 +59,26 @@ public class MockApiResponseService {
         repository.createHistory(id);
     }
 
+
+    public void restoreHistory(int id, int subId) {
+        MockApiResponse history = repository.findHistory(id, subId);
+        MockApiResponse target = repository.find(id);
+        target.setStatusCode(history.getStatusCode());
+        target.setHeader(history.getHeader());
+        target.setBody(history.getBody());
+        target.setAttachmentFile(history.getAttachmentFile());
+        target.setFileName(history.getFileName());
+        target.setDescription(history.getDescription());
+        repository.update(target);
+    }
+
     public void delete(int id) {
         repository.delete(id);
+        repository.deleteAllHistory(id);
+    }
+
+    public void deleteHistory(int id, int subId) {
+        repository.deleteHistory(id, subId);
     }
 
 }
