@@ -32,21 +32,22 @@ $ java -jar api-stub-app/target/api-stub.jar
 java -jar api-stub.jar --server.port=9999
 ```
 
-## 使い方
+## 管理画面の使い方
 
-### 疑似レスポンスの管理画面へのアクセス方法
+### 擬似レスポンスの検索
 
 [http://localhost:8080/](http://localhost:8080/)
 
 ![List for mock response](material/list-screen.png)
+
+![Search for mock response](material/list-screen-searched.png)
+
 
 #### 擬似レスポンスの追加
 
 ![Add for mock response](material/create-screen.png)
 
 #### 擬似レスポンスの編集
-
-![Search for mock response](material/list-screen-searched.png)
 
 ![Edit for mock response](material/edit-screen.png)
 

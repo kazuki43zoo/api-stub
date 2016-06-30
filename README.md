@@ -33,26 +33,25 @@ e.g.)
 java -jar api-stub.jar --server.port=9999
 ```
 
-## How to use
+## How to use the management screen
 
-### How to access the management screen for mock response data
+### Search mock responses
 
 [http://localhost:8080/](http://localhost:8080/)
 
 ![List for mock response](material/list-screen.png)
+![Search for mock response](material/list-screen-searched.png)
 
-#### Add a new mock response
+### Add a new mock response
 
 ![Add for mock response](material/create-screen.png)
 
-#### Edit a new mock response
-
-![Search for mock response](material/list-screen-searched.png)
+### Edit a new mock response
 
 ![Edit for mock response](material/edit-screen.png)
 
 
-### How to access mock API
+## How to access mock API
 
 ```bash
 $ curl -D - http://localhost:8080/api/v1/members
