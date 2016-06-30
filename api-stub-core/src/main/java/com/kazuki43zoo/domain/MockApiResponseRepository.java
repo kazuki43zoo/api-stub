@@ -17,27 +17,27 @@ public interface MockApiResponseRepository {
             "WHERE h.id = #{id}")
     List<MockApiResponse> findAllHistoryById(int id);
 
-    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, description " +
+    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description " +
             "FROM mock_api_response " +
             "WHERE path = #{path} AND method = #{method}")
     MockApiResponse findOneByUk(@Param("path") String path, @Param("method") String method);
 
-    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, description " +
+    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description " +
             "FROM mock_api_response " +
             "WHERE id = #{id}")
     MockApiResponse findOne(int id);
 
-    @Insert("INSERT INTO mock_api_response (path, method, status_code, header, body, attachment_file, file_name, description) " +
-            "VALUES(#{path}, #{method}, #{statusCode}, #{header}, #{body}, #{attachmentFile}, #{fileName}, #{description})")
+    @Insert("INSERT INTO mock_api_response (path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description) " +
+            "VALUES(#{path}, #{method}, #{statusCode}, #{header}, #{body}, #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})")
     @Options(useGeneratedKeys = true)
     void create(MockApiResponse mockResponse);
 
-    @Insert("INSERT INTO mock_api_response_history (id, sub_id, status_code, header, body, attachment_file, file_name, description, created_at) " +
-            "SELECT id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id}), status_code, header, body, attachment_file, file_name, description, CURRENT_TIMESTAMP FROM mock_api_response WHERE id = #{id}")
+    @Insert("INSERT INTO mock_api_response_history (id, sub_id, status_code, header, body, attachment_file, file_name, waiting_msec, description, created_at) " +
+            "SELECT id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id}), status_code, header, body, attachment_file, file_name, waiting_msec, description, CURRENT_TIMESTAMP FROM mock_api_response WHERE id = #{id}")
     void createHistory(int id);
     
     @Update("UPDATE mock_api_response " +
-            "SET path = #{path}, method = #{method}, status_code = #{statusCode}, header = #{header}, body = #{body}, attachment_file = #{attachmentFile}, file_name = #{fileName}, description = #{description} " +
+            "SET path = #{path}, method = #{method}, status_code = #{statusCode}, header = #{header}, body = #{body}, attachment_file = #{attachmentFile}, file_name = #{fileName}, waiting_msec = #{waitingMsec}, description = #{description} " +
             "WHERE id = #{id}")
     void update(MockApiResponse mockResponse);
 

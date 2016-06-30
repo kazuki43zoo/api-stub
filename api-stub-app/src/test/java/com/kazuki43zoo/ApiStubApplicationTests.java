@@ -7,9 +7,9 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = ApiStubBlankApplication.class)
+@SpringApplicationConfiguration(classes = ApiStubApplication.class)
 @WebIntegrationTest(randomPort = true)
-public class ApiStubBlankApplicationTests {
+public class ApiStubApplicationTests {
 
     @Test
     public void contextLoads() {

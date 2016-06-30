@@ -1,4 +1,7 @@
---DROP TABLE IF EXISTS mock_api_response;
+-- DROP TABLE IF EXISTS mock_api_response;
+-- DROP TABLE IF EXISTS mock_api_response_history;
+-- DROP TABLE IF EXISTS mock_api;
+
 CREATE TABLE IF NOT EXISTS mock_api_response (
   id IDENTITY
   ,path VARCHAR (256)
@@ -8,12 +11,12 @@ CREATE TABLE IF NOT EXISTS mock_api_response (
   ,body BLOB
   ,attachment_file BLOB
   ,file_name VARCHAR (256)
+  ,waiting_msec BIGINT
   ,description TEXT
   ,CONSTRAINT pk_mock_api_response PRIMARY KEY(id)
   ,CONSTRAINT uk1_mock_api_response UNIQUE KEY(path, method)
 );
 
--- DROP TABLE IF EXISTS mock_api_response_history;
 CREATE TABLE IF NOT EXISTS mock_api_response_history (
    id INTEGER
   ,sub_id INTEGER
@@ -22,12 +25,12 @@ CREATE TABLE IF NOT EXISTS mock_api_response_history (
   ,body BLOB
   ,attachment_file BLOB
   ,file_name VARCHAR (256)
+  ,waiting_msec BIGINT
   ,description TEXT
   ,created_at TiMESTAMP
   ,CONSTRAINT pk_mock_api_response_history PRIMARY KEY(id, sub_id)
 );
 
---DROP TABLE IF EXISTS mock_api;
 CREATE TABLE IF NOT EXISTS mock_api (
   id IDENTITY
   ,path VARCHAR (256)

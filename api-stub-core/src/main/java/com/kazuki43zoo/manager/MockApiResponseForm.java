@@ -26,6 +26,7 @@ public class MockApiResponseForm implements Serializable {
     private String body;
     private MultipartFile file;
     private boolean deleteFile;
+    private Long waitingMsec;
     private String description;
 
 }

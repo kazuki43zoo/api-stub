@@ -74,6 +74,7 @@ public class MockApiResponseManagementController {
         } else {
             mockResponse.setBody(new ByteArrayInputStream(form.getBody().getBytes(StandardCharsets.UTF_8)));
         }
+        mockResponse.setWaitingMsec(form.getWaitingMsec());
         mockResponse.setDescription(form.getDescription());
         service.create(mockResponse);
         redirectAttributes.addAttribute("id", mockResponse.getId());
@@ -83,6 +84,9 @@ public class MockApiResponseManagementController {
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public String editForm(@PathVariable int id, Model model) throws IOException {
         MockApiResponse mockResponse = service.findOne(id);
+        if (mockResponse == null) {
+            return "redirect:/manager/mocks";
+        }
         MockApiResponseForm form = new MockApiResponseForm();
         form.setPath(mockResponse.getPath());
         form.setMethod(mockResponse.getMethod());
@@ -91,6 +95,7 @@ public class MockApiResponseManagementController {
         if (mockResponse.getBody() != null && mockResponse.getFileName() == null) {
             form.setBody(StreamUtils.copyToString(mockResponse.getBody(), StandardCharsets.UTF_8));
         }
+        form.setWaitingMsec(mockResponse.getWaitingMsec());
         form.setDescription(mockResponse.getDescription());
         model.addAttribute(mockResponse);
         model.addAttribute(form);
@@ -117,6 +122,7 @@ public class MockApiResponseManagementController {
         } else if (!form.isDeleteFile()) {
             keepAttachmentFile = true;
         }
+        mockResponse.setWaitingMsec(form.getWaitingMsec());
         mockResponse.setDescription(form.getDescription());
         service.update(id, mockResponse, keepAttachmentFile);
         return "redirect:/manager/mocks/{id}";

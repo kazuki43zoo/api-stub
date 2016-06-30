@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @RestController
@@ -47,7 +48,7 @@ public class ApiStubRestController {
     @RequestMapping(path = API_PREFIX_PATH + "/**")
     public ResponseEntity<Object> handleApiRequest(HttpServletRequest request,
                                                    RequestEntity<InputStreamResource> requestEntity)
-            throws IOException, ServletException {
+            throws IOException, ServletException, InterruptedException {
 
         final String correlationId = Optional.ofNullable(request.getHeader(apiStubProperties.getCorrelationIdKey()))
                 .orElse(UUID.randomUUID().toString());
@@ -107,6 +108,12 @@ public class ApiStubRestController {
                     ResponseEntity.status(statusCode).headers(headers).body(body);
 
             evidence.response(responseEntity);
+
+            // Wait processing
+            if (mockResponse.getWaitingMsec() != null && mockResponse.getWaitingMsec() > 0) {
+                logger.info("Waiting {} msec.", mockResponse.getWaitingMsec());
+                TimeUnit.MILLISECONDS.sleep(mockResponse.getWaitingMsec());
+            }
 
             if (mockResponse.getId() == 0) {
                 logger.warn("Mock Response is not found.");
