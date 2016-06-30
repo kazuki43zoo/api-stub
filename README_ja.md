@@ -60,7 +60,9 @@ java -jar api-stub.jar --server.port=9999
 ![Restore and Delete for editing history](material/history-screen.png)
 
 
-### 疑似APIへのアクセス方法
+## 疑似APIへのアクセス方法
+
+### デフォルトレスポンス (200 OK)
 
 ```bash
 $ curl -D - http://localhost:8080/api/v1/members
@@ -72,7 +74,23 @@ Date: Thu, 30 Jun 2016 04:03:06 GMT
 
 ```
 
-## エビデンス
+### 擬似レスポンス
+
+```bash
+$ curl -D - http://localhost:8080/api/v1/members
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+x-correlation-id: 64cdba4d-6376-485c-bf50-715930927009
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 30 Jun 2016 18:29:40 GMT
+
+{
+    "name" : "kazuki43zoo"
+}
+```
+
+### エビデンス
 
 エビデンス（リクエストヘッダー、リクエストパラメータ、リクエストボディー、アップロードファイル）は、アプリケーションのルートディレクトリ上の「`evidence`」ディレクトリの中に出力します。
 
@@ -99,7 +117,7 @@ api.evidence.disabled-request=true
 api.evidence.disabled-upload=true
 ```
 
-## コンソールログ
+### コンソールログ
 
 例)
 

@@ -60,6 +60,8 @@ java -jar api-stub.jar --server.port=9999
 
 ## How to access mock API
 
+### Default response (200 OK)
+
 ```bash
 $ curl -D - http://localhost:8080/api/v1/members
 HTTP/1.1 200 OK
@@ -68,6 +70,22 @@ x-correlation-id: f8b9eab7-b18a-4713-8910-88ad719ccb86
 Content-Length: 0
 Date: Thu, 30 Jun 2016 04:03:06 GMT
 
+```
+
+### Mock response
+
+```bash
+$ curl -D - http://localhost:8080/api/v1/members
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+x-correlation-id: 64cdba4d-6376-485c-bf50-715930927009
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 30 Jun 2016 18:29:40 GMT
+
+{
+    "name" : "kazuki43zoo"
+}
 ```
 
 ### Evidence
