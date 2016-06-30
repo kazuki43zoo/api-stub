@@ -22,7 +22,7 @@ $ java -jar api-stub-app/target/api-stub.jar
 ### How to access mock api
 
 ```bash
-$ curl -D - http://localhost:8080/api/members
+$ curl -D - http://localhost:8080/api/v1/members
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
 x-correlation-id: f8b9eab7-b18a-4713-8910-88ad719ccb86
