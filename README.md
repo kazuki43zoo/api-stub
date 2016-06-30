@@ -70,7 +70,7 @@ Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2databa
 Evicence(request headers, request parameters, request body and upload files) are outouting the `evidence` directory on your application root.
 
 ```text
-${APP_ROOT}
+${APP_ROOT}/evidence
 └─api
     └─v1
         └─members (* request path)
