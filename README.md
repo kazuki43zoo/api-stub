@@ -77,7 +77,7 @@ ${APP_ROOT}
                     + uploadFile_01_xxxx.png (* upload files)
 ```
 
-You can disable outputing evidence as follows:
+You can disable outputing evidence as follow:
 
 ```properties
 # Disable request header, request parameter, request body
