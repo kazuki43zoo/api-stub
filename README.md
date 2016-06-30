@@ -79,7 +79,7 @@ api.evidence.disabled-upload=true
 ```text
 ...
 2016-06-30 15:09:48.555  INFO 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Start.
-2016-06-30 15:09:48.555  INFO 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Evidence Dir : D:\Users\xxx\git\api-stub\evidence\api\members\GET\20160630150948555_878abb0d-4828-479f-83cf-3003ae257414
+2016-06-30 15:09:48.555  INFO 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Evidence Dir : D:\Users\xxx\git\api-stub\evidence\api\v1\members\GET\20160630150948555_878abb0d-4828-479f-83cf-3003ae257414
 2016-06-30 15:09:48.633  INFO 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Request      : {"parameters":{},"headers":{"host":["localhost:8080"],"user-agent":["curl/7.46.0"],"accept":["*/*"]}}
 2016-06-30 15:09:48.664  INFO 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Response     : {"httpStatus":"OK","headers":{"x-correlation-id":["878abb0d-4828-479f-83cf-3003ae257414"]}}
 2016-06-30 15:09:48.664  WARN 2372 --- [nio-8080-exec-6] GET /api/v1/members                      : Mock Response is not found.
