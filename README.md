@@ -19,24 +19,17 @@ $ java -jar api-stub-app/target/api-stub.jar
 
 [http://localhost:8080/](http://localhost:8080/)
 
-### How to create a new mock response
+### How to access mock api
 
-* Click a "Add a new mock response" button on list screen
-* Input a "Requet Path" and "HTTP Method " for API
-* Input "HTTP Status Code", "HTTP Headers", "HTTP Body" and "Description" if need
-* Click "Create" button
+```bash
+$ curl -D - http://localhost:8080/api/members
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+x-correlation-id: f8b9eab7-b18a-4713-8910-88ad719ccb86
+Content-Length: 0
+Date: Thu, 30 Jun 2016 04:03:06 GMT
 
-### How to update a mock response
-
-* Click a "Edit" button on list screen
-* Update a any item
-* Click a "Update" button
-
-### How to delete a mock response
-
-* Click a "Edit" button on list screen
-* Click a "Delete" button
-* Click a "OK" on confirm dialog
+```
 
 ## Install api-stub-core into your application
 
