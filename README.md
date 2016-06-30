@@ -1,6 +1,8 @@
 # api-stub
 Stub for API
 
+* [日本語](./README_ja.md)
+
 ## Build
 
 ```bash
