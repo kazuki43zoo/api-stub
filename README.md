@@ -7,7 +7,7 @@ Stub for API
 
 * Java SE 8 (JDK 1.8)
 
-> **Note:**
+> **Note**
 >
 > If you use a IDE(STS, IDEA, etc...), please install the lombok. About how to install the lombok, please see as follows:
 >
