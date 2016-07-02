@@ -3,6 +3,17 @@ Stub for API
 
 * [日本語](./README_ja.md)
 
+## Requirements
+
+* Java SE 8 (JDK 1.8)
+
+> **Note:**
+>
+> If you use a IDE(STS, IDEA, etc...), please install the lombok. About how to install the lombok, please see as follows:
+>
+> * http://jnb.ociweb.com/jnb/jnbJan2010.html#installation
+> * https://projectlombok.org/download.html
+
 ## Build
 
 ```bash
