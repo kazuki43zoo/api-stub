@@ -5,3 +5,6 @@
 **/.project
 **/.classpath
 **/evidence
+**/.factorypath
+**/.apt_generated
+**/.DS_Store

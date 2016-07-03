@@ -2,72 +2,116 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Mock response</title>
+    <title th:text="#{title.form}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
 <body>
 
-<div class="container">
-    <h2>Mock response</h2>
+<nav th:replace="mock/nav :: #topNav"></nav>
 
+<div class="container">
+    <h2 th:text="#{title.form}"></h2>
     <form th:object="${mockApiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="path" class="col-sm-2 control-label">API</label>
+            <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="path" placeholder="Request Path" th:field="*{path}" th:readonly="${mockApiResponse != null}"/>
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"
+                       th:readonly="${mockApiResponse != null}"/>
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="method" placeholder="HTTP Method" th:field="*{method}" th:readonly="${mockApiResponse != null}"/>
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"
+                       th:readonly="${mockApiResponse != null}"/>
                 <span th:errors="*{method}"></span>
             </div>
-            <label for="statusCode" class="col-sm-2 control-label">HTTP Status Code</label>
+            <label for="statusCode" class="col-sm-2 control-label" th:text="#{httpStatusCode}"></label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="statusCode" placeholder="HTTP Status Code" th:field="*{statusCode}"/>
+                <input type="text" class="form-control" id="statusCode" th:placeholder="#{httpStatusCode}"
+                       th:field="*{statusCode}"/>
                 <span th:errors="*{statusCode}"></span>
             </div>
         </div>
         <div class="form-group">
-            <label for="header" class="col-sm-2 control-label">HTTP Headers</label>
+            <label for="header" class="col-sm-2 control-label" th:text="#{httpHeader}"></label>
             <div class="col-sm-10">
-                <textarea class="form-control" id="header" placeholder="HTTP Headers" rows="3" th:field="*{header}"/>
+                <textarea class="form-control" id="header" th:placeholder="#{httpHeader}" rows="3"
+                          th:field="*{header}"/>
                 <span th:errors="*{header}"></span>
             </div>
         </div>
         <div class="form-group">
-            <label for="body" class="col-sm-2 control-label">HTTP Body</label>
+            <label for="bodyEditor" class="col-sm-2 control-label">
+                <span th:text="#{httpBody}"></span>
+                <select th:field="*{bodyEditorMode}">
+                    <option value="json">json</option>
+                    <option value="xml">xml</option>
+                    <option value="text">text</option>
+                </select>
+            </label>
             <div class="col-sm-10">
-                <textarea class="form-control" id="body" placeholder="HTTP Body" rows="20" th:field="*{body}"/>
+                <div class="form-control" id="bodyEditor" th:text="*{body}" style="height: 300px;"></div>
+                <input type="hidden" name="body" th:field="*{body}"/>
                 <span th:errors="*{body}"></span>
             </div>
             <div class="col-sm-offset-2 col-sm-10">
-                <input type="file" class="form-control" id="file" placeholder="Upload File" rows="20" th:field="*{file}"/>
+                <input type="file" class="form-control" id="file" th:placeholder="#{uploadFile}" th:field="*{file}"/>
                 <span th:errors="*{file}"></span>
             </div>
-            <div class="col-sm-offset-2 col-sm-10" th:if="${mockApiResponse != null and mockApiResponse.fileName != null}">
-                <a th:href="@{/manager/mocks/{id}/file(id=${mockApiResponse.id})}" th:text="${mockApiResponse.fileName}"/>
-                <input type="checkbox" id="deleteFile" th:field="*{deleteFile}"/><label for="deleteFile"> Remove ?</label>
+            <div class="col-sm-offset-2 col-sm-10"
+                 th:if="${mockApiResponse != null and mockApiResponse.fileName != null}">
+                <a th:href="@{/manager/mocks/{id}/file(id=${mockApiResponse.id})}"
+                   th:text="${mockApiResponse.fileName}"/>
+                <input type="checkbox" id="deleteFile" th:field="*{deleteFile}"/>
+                <label for="deleteFile" th:text="#{msg.delete}"></label>
             </div>
         </div>
         <div class="form-group">
-            <label for="waitingMsec" class="col-sm-2 control-label">Waiting Millisecond</label>
+            <label for="waitingMsec" class="col-sm-2 control-label" th:text="#{waitingMillisecond}"></label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="waitingMsec" placeholder="Waiting Millisecond" th:field="*{waitingMsec}"/>
+                <input type="text" class="form-control" id="waitingMsec" th:placeholder="#{waitingMillisecond}"
+                       th:field="*{waitingMsec}"/>
                 <span th:errors="*{waitingMsec}"></span>
             </div>
         </div>
         <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Description</label>
+            <label for="description" class="col-sm-2 control-label" th:text="#{description}"></label>
             <div class="col-sm-10">
-                <textarea class="form-control" id="description" placeholder="Description" rows="3" th:field="*{description}"/>
+                <textarea class="form-control" id="description" placeholder="Description" rows="3"
+                          th:field="*{description}"/>
                 <span th:errors="*{description}"></span>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" name="create" class="btn btn-default" th:if="${mockApiResponse == null}">Create</button>
-                <button type="submit" name="update" class="btn btn-default" th:if="${mockApiResponse != null}">Update</button>
-                <button type="submit" name="delete" class="btn btn-default" th:if="${mockApiResponse != null}" onclick="return confirm('Do delete ?')">Delete</button>
+                <button type="submit" name="create" class="btn btn-default" th:id="saveButton"
+                        th:if="${mockApiResponse == null}">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                    <span th:text="#{action.save}"></span>
+                </button>
+                <button type="submit" id="updateButton" name="update" class="btn btn-default" th:id="saveButton"
+                        th:if="${mockApiResponse != null}">
+                    <span class="glyphicon glyphicon-floppy-save"></span>
+                    <span th:text="#{action.save}"></span>
+                </button>
+                <button type="button" name="delete" class="btn btn-default" data-toggle="modal"
+                        data-target="#deleteModal" th:if="${mockApiResponse != null}">
+                    <span class="glyphicon glyphicon-trash"></span>
+                    <span th:text="#{action.delete}"></span>
+                </button>
+            </div>
+        </div>
+        <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p th:text="#{msg.confirmDelete}">Do delete ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" name="delete" class="btn btn-default">OK</button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
@@ -75,13 +119,24 @@
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <a class="btn btn-default" th:href="@{/manager/mocks}">Back to list</a>
-                <a class="btn btn-default" th:href="@{/manager/mocks/{id}/histories(id=${mockApiResponse.id})}" th:if="${mockApiResponse != null}">Go to histories</a>
+                <a class="btn btn-default" th:href="@{/manager/mocks}">
+                    <span class="glyphicon glyphicon-hand-left"></span>
+                    <span th:text="#{action.back}"></span>
+                </a>
+                <a class="btn btn-default" th:href="@{/manager/mocks/{id}/histories(id=${mockApiResponse.id})}"
+                   th:if="${mockApiResponse != null}">
+                    <span class="glyphicon glyphicon-list-alt"></span>
+                    <span th:text="#{action.viewChangeHistories}"></span>
+                </a>
             </div>
         </div>
     </div>
-
-
 </div>
+
+
+<script th:src="@{/webjars/ace-builds/src-min/ace.js}"></script>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/app/mock/form.js}"></script>
 </body>
 </html>

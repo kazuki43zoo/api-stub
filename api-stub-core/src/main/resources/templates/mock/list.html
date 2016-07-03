@@ -2,52 +2,67 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>List for mock response</title>
+    <title th:text="#{title.list}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
 <body>
 
+<nav th:replace="mock/nav :: #topNav"></nav>
+
 <div class="container">
 
-    <h2>List for mock response</h2>
+    <h2 th:text="#{title.list}"></h2>
 
     <form th:action="@{/manager/mocks}"
           th:object="${mockApiResponseSearchForm}" method="get" class="form-horizontal">
         <div class="form-group">
-            <label for="path" class="col-sm-2 control-label">Request Path</label>
+            <label for="path" class="col-sm-2 control-label" th:text="#{requestPath}"></label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="path" placeholder="Path" th:field="*{path}"/>
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"/>
                 <span th:errors="*{path}"></span>
             </div>
         </div>
         <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Description</label>
+            <label for="description" class="col-sm-2 control-label" th:text="#{description}"></label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" id="description" placeholder="Description" th:field="*{description}"/>
+                <input type="text" class="form-control" id="description" th:placeholder="#{description}"
+                       th:field="*{description}"/>
                 <span th:errors="*{description}"></span>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" name="search" class="btn btn-default">Search</button>
+                <button type="submit" name="search" class="btn btn-default">
+                    <span class="glyphicon glyphicon-search"></span>
+                    <span th:text="#{action.search}"></span>
+                </button>
             </div>
         </div>
     </form>
 
     <div>
-        <a th:href="@{/manager/mocks/create}" class="btn btn-default">Add a new mock response</a>
+        <a th:href="@{/manager/mocks/create}" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus"></span>
+            <span th:text="#{action.add}"></span>
+        </a>
     </div>
 
     <table class="table table-striped">
         <tr>
             <th>-</th>
-            <th>Request Path</th>
-            <th>HTTP Method</th>
-            <th>HTTP Status Code</th>
-            <th>Description</th>
+            <th th:text="#{requestPath}"></th>
+            <th th:text="#{httpMethod}"></th>
+            <th th:text="#{httpStatusCode}"></th>
+            <th th:text="#{description}"></th>
         </tr>
         <tr th:each="mockApiResponse : ${mockApiResponses}">
-            <td><a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">Edit</a></td>
+            <td>
+                <a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">
+                    <span class="glyphicon glyphicon-edit"></span>
+                    <span th:text="#{action.edit}"></span>
+                </a>
+            </td>
             <td th:text="${mockApiResponse.path}"></td>
             <td th:text="${mockApiResponse.method}"></td>
             <td th:text="${mockApiResponse.statusCode}"></td>
@@ -55,8 +70,8 @@
         </tr>
     </table>
 
-
-
 </div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 </html>

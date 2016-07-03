@@ -3,9 +3,11 @@ package com.kazuki43zoo.manager;
 import com.kazuki43zoo.component.DownloadSupport;
 import com.kazuki43zoo.domain.MockApiResponse;
 import com.kazuki43zoo.service.MockApiResponseService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 @RequestMapping("/manager/mocks")
 @Controller
@@ -63,41 +66,36 @@ public class MockApiResponseManagementController {
         if (result.hasErrors()) {
             return "mock/form";
         }
-        MockApiResponse mockResponse = new MockApiResponse();
-        mockResponse.setPath(form.getPath());
-        mockResponse.setMethod(form.getMethod());
-        mockResponse.setStatusCode(form.getStatusCode());
-        mockResponse.setHeader(form.getHeader());
+
+        MockApiResponse mockApiResponse = new MockApiResponse();
+        BeanUtils.copyProperties(form, mockApiResponse, "body");
         if (form.getFile() != null && StringUtils.hasLength(form.getFile().getOriginalFilename())) {
-            mockResponse.setAttachmentFile(form.getFile().getInputStream());
-            mockResponse.setFileName(Paths.get(form.getFile().getOriginalFilename()).getFileName().toString());
+            mockApiResponse.setAttachmentFile(form.getFile().getInputStream());
+            mockApiResponse.setFileName(Paths.get(form.getFile().getOriginalFilename()).getFileName().toString());
         } else {
-            mockResponse.setBody(new ByteArrayInputStream(form.getBody().getBytes(StandardCharsets.UTF_8)));
+            mockApiResponse.setBody(new ByteArrayInputStream(form.getBody().getBytes(StandardCharsets.UTF_8)));
         }
-        mockResponse.setWaitingMsec(form.getWaitingMsec());
-        mockResponse.setDescription(form.getDescription());
-        service.create(mockResponse);
-        redirectAttributes.addAttribute("id", mockResponse.getId());
+        try {
+            service.create(mockApiResponse);
+        } catch (DuplicateKeyException e) {
+            return "mock/form";
+        }
+        redirectAttributes.addAttribute("id", mockApiResponse.getId());
         return "redirect:/manager/mocks/{id}";
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
     public String editForm(@PathVariable int id, Model model) throws IOException {
-        MockApiResponse mockResponse = service.find(id);
-        if (mockResponse == null) {
+        MockApiResponse mockApiResponse = service.find(id);
+        if (mockApiResponse == null) {
             return "redirect:/manager/mocks";
         }
         MockApiResponseForm form = new MockApiResponseForm();
-        form.setPath(mockResponse.getPath());
-        form.setMethod(mockResponse.getMethod());
-        form.setStatusCode(mockResponse.getStatusCode());
-        form.setHeader(mockResponse.getHeader());
-        if (mockResponse.getBody() != null && mockResponse.getFileName() == null) {
-            form.setBody(StreamUtils.copyToString(mockResponse.getBody(), StandardCharsets.UTF_8));
+        BeanUtils.copyProperties(mockApiResponse, form, "body");
+        if (mockApiResponse.getBody() != null && mockApiResponse.getFileName() == null) {
+            form.setBody(StreamUtils.copyToString(mockApiResponse.getBody(), StandardCharsets.UTF_8));
         }
-        form.setWaitingMsec(mockResponse.getWaitingMsec());
-        form.setDescription(mockResponse.getDescription());
-        model.addAttribute(mockResponse);
+        model.addAttribute(mockApiResponse);
         model.addAttribute(form);
         return "mock/form";
     }
@@ -109,10 +107,7 @@ public class MockApiResponseManagementController {
             return "mock/form";
         }
         MockApiResponse mockResponse = new MockApiResponse();
-        mockResponse.setPath(form.getPath());
-        mockResponse.setMethod(form.getMethod());
-        mockResponse.setStatusCode(form.getStatusCode());
-        mockResponse.setHeader(form.getHeader());
+        BeanUtils.copyProperties(form, mockResponse, "body");
         boolean keepAttachmentFile = false;
         if (form.getFile() != null && StringUtils.hasLength(form.getFile().getOriginalFilename())) {
             mockResponse.setAttachmentFile(form.getFile().getInputStream());
@@ -122,8 +117,6 @@ public class MockApiResponseManagementController {
         } else if (!form.isDeleteFile()) {
             keepAttachmentFile = true;
         }
-        mockResponse.setWaitingMsec(form.getWaitingMsec());
-        mockResponse.setDescription(form.getDescription());
         service.update(id, mockResponse, keepAttachmentFile);
         return "redirect:/manager/mocks/{id}";
     }
@@ -137,14 +130,7 @@ public class MockApiResponseManagementController {
 
     @RequestMapping(path = "{id}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id) throws UnsupportedEncodingException {
-        MockApiResponse mockResponse = service.find(id);
-        HttpHeaders headers = new HttpHeaders();
-        downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .headers(headers)
-                .body(new InputStreamResource(mockResponse.getAttachmentFile()));
+        return download(service.find(id));
     }
 
 
@@ -168,13 +154,10 @@ public class MockApiResponseManagementController {
             return "redirect:/manager/mocks/{id}";
         }
         MockApiResponseForm form = new MockApiResponseForm();
-        form.setStatusCode(mockApiResponse.getStatusCode());
-        form.setHeader(mockApiResponse.getHeader());
+        BeanUtils.copyProperties(mockApiResponse, form, "body");
         if (mockApiResponse.getBody() != null && mockApiResponse.getFileName() == null) {
             form.setBody(StreamUtils.copyToString(mockApiResponse.getBody(), StandardCharsets.UTF_8));
         }
-        form.setWaitingMsec(mockApiResponse.getWaitingMsec());
-        form.setDescription(mockApiResponse.getDescription());
         model.addAttribute(mockApiResponse);
         model.addAttribute(form);
         return "mock/history";
@@ -196,14 +179,17 @@ public class MockApiResponseManagementController {
 
     @RequestMapping(path = "{id}/histories/{subId}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {
-        MockApiResponse mockResponse = service.findHistory(id, subId);
+        return download(service.findHistory(id, subId));
+    }
+
+    private ResponseEntity<Resource> download(MockApiResponse mockApiResponse) throws UnsupportedEncodingException {
         HttpHeaders headers = new HttpHeaders();
-        downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
+        downloadSupport.addContentDisposition(headers, mockApiResponse.getFileName());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .headers(headers)
-                .body(new InputStreamResource(mockResponse.getAttachmentFile()));
+                .body(new InputStreamResource(mockApiResponse.getAttachmentFile()));
     }
 
 }

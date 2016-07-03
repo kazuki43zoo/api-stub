@@ -16,6 +16,7 @@ public class MockApiResponse implements Serializable {
     private Integer statusCode;
     private String header;
     private InputStream body;
+    private String bodyEditorMode;
     private InputStream attachmentFile;
     private String fileName;
     private Long waitingMsec;

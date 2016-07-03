@@ -21,6 +21,7 @@
         <mybatis-typehandlers-jsr310.version>1.0.1</mybatis-typehandlers-jsr310.version>
         <lombok.version>1.16.8</lombok.version>
         <bootstrap.version>3.3.6</bootstrap.version>
+        <ace-builds.version>1.2.3</ace-builds.version>
     </properties>
 
     <dependencies>
@@ -57,17 +58,26 @@
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>${bootstrap.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.webjars.bower</groupId>
+            <artifactId>ace-builds</artifactId>
+            <version>${ace-builds.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>webjars-locator</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

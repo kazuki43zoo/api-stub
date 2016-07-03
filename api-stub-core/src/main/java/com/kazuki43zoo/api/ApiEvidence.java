@@ -110,6 +110,7 @@ class ApiEvidence {
 
     @Data
     private static class UploadFile implements Serializable {
+        private static final long serialVersionUID = 1L;
         private final String saveFileName;
         private final long size;
         private final HttpHeaders headers;

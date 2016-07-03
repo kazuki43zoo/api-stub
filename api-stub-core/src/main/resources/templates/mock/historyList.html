@@ -2,24 +2,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Histories for mock response</title>
+    <title th:text="#{title.historyList(${mockApiResponse.method},${mockApiResponse.path})}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
 <body>
 
+<nav th:replace="mock/nav :: #topNav"></nav>
+
 <div class="container">
 
-    <h2>Histories for <span th:text="|${mockApiResponse.method} ${mockApiResponse.path}|"></span></h2>
+    <h2 th:text="#{title.historyList(${mockApiResponse.method},${mockApiResponse.path})}"></h2>
 
     <table class="table table-striped">
         <tr>
             <th>-</th>
-            <th>HTTP Status Code</th>
-            <th>Description</th>
-            <th>CreatedAt</th>
+            <th th:text="#{httpStatusCode}"></th>
+            <th th:text="#{description}"></th>
+            <th th:text="#{createdAt}"></th>
         </tr>
         <tr th:each="mockApiResponseHistory : ${mockApiResponses}">
-            <td><a class="btn btn-default" th:href="@{/manager/mocks/{id}/histories/{subId}(id=${mockApiResponseHistory.id},subId=${mockApiResponseHistory.subId})}">View</a></td>
+            <td><a class="btn btn-default"
+                   th:href="@{/manager/mocks/{id}/histories/{subId}(id=${mockApiResponseHistory.id},subId=${mockApiResponseHistory.subId})}">
+                <span class="glyphicon glyphicon-share-alt"></span>
+                <span th:text="#{action.view}"></span>
+            </a>
+            </td>
             <td th:text="${mockApiResponseHistory.statusCode}"></td>
             <td th:text="${mockApiResponseHistory.description}"></td>
             <td th:text="${mockApiResponseHistory.createdAt}"></td>
@@ -29,11 +37,16 @@
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-10">
-                <a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">Back to mock response</a>
+                <a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">
+                    <span class="glyphicon glyphicon-hand-left"></span>
+                    <span th:text="#{action.back}"></span>
+                </a>
             </div>
         </div>
     </div>
 
 </div>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 </html>

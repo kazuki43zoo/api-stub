@@ -11,14 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
-import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -41,10 +40,13 @@ public class ApiStubRestController {
     DownloadSupport downloadSupport;
 
     @Autowired
-    ContentNegotiationManager contentNegotiationManager;
+    ApiStubProperties apiStubProperties;
 
     @Autowired
-    ApiStubProperties apiStubProperties;
+    ApiEvidenceFactory apiEvidenceFactory;
+
+    @Autowired(required = false)
+    Clock clock = Clock.systemDefaultZone();
 
     @RequestMapping(path = API_PREFIX_PATH + "/**")
     public ResponseEntity<Object> handleApiRequest(HttpServletRequest request,
@@ -53,34 +55,31 @@ public class ApiStubRestController {
 
         final String correlationId = Optional.ofNullable(request.getHeader(apiStubProperties.getCorrelationIdKey()))
                 .orElse(UUID.randomUUID().toString());
+
         MDC.put(apiStubProperties.getCorrelationIdKey(), correlationId);
 
-        final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
-        final String method = request.getMethod();
-
-
-        String contentExtension = Optional.ofNullable(request.getContentType())
-                .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
-                .orElseGet(ArrayList::new)
-                .stream().findFirst().orElse("txt");
-        final ApiEvidence evidence = new ApiEvidence(apiStubProperties, method, request.getServletPath(), correlationId, contentExtension);
+        final ApiEvidence evidence = apiEvidenceFactory.create(request, correlationId);
 
         final Logger logger = evidence.getLogger();
 
         try {
 
             evidence.start();
-
             evidence.request(request, requestEntity);
+
+            final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
+            final String method = request.getMethod();
 
             MockApiResponse mockResponse = mockApiResponseService.find(path, method);
             MockApi mockApi = mockApiService.findBy(path, method);
 
-            // Status Code
-            Integer statusCode = HttpStatus.OK.value();
-            if (mockResponse.getStatusCode() != null) {
-                statusCode = mockResponse.getStatusCode();
+            if (mockResponse.getId() == 0) {
+                logger.warn("Mock Response is not found.");
             }
+
+            // Status Code
+            Integer statusCode = Optional.ofNullable(mockResponse.getStatusCode())
+                    .orElse(HttpStatus.OK.value());
 
             // Http Headers
             HttpHeaders headers = new HttpHeaders();
@@ -94,24 +93,23 @@ public class ApiStubRestController {
                     && !headers.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
                 downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
             }
+            headers.add(apiStubProperties.getCorrelationIdKey(), correlationId);
+
             if (mockApi != null) {
                 if (!headers.containsKey(HttpHeaders.CONTENT_TYPE)
                         && StringUtils.hasLength(mockApi.getContentType())) {
                     headers.setContentType(MediaType.parseMediaType(mockApi.getContentType()));
                 }
             }
-            headers.add(apiStubProperties.getCorrelationIdKey(), correlationId);
 
             // Http Body
-            Object body = null;
-            if (mockResponse.getBody() != null) {
-                body = new InputStreamResource(mockResponse.getBody());
-            }
+            Object body = Optional.ofNullable(mockResponse.getBody())
+                    .map(InputStreamResource::new).orElse(
+                            Optional.ofNullable(mockResponse.getAttachmentFile())
+                                    .map(InputStreamResource::new).orElse(null));
 
             ResponseEntity<Object> responseEntity =
                     ResponseEntity.status(statusCode).headers(headers).body(body);
-
-            evidence.response(responseEntity);
 
             // Wait processing
             if (mockResponse.getWaitingMsec() != null && mockResponse.getWaitingMsec() > 0) {
@@ -119,10 +117,7 @@ public class ApiStubRestController {
                 TimeUnit.MILLISECONDS.sleep(mockResponse.getWaitingMsec());
             }
 
-            if (mockResponse.getId() == 0) {
-                logger.warn("Mock Response is not found.");
-            }
-
+            evidence.response(responseEntity);
             evidence.end();
 
             return responseEntity;

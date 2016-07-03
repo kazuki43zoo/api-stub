@@ -21,9 +21,10 @@ public class MockApiResponseForm implements Serializable {
     private String method;
     @Min(100)
     @Max(599)
-    private Integer statusCode;
-    private String header;
+    private Integer statusCode = 200;
+    private String header = "Content-Type: application/json";
     private String body;
+    private String bodyEditorMode;
     private MultipartFile file;
     private boolean deleteFile;
     private Long waitingMsec;

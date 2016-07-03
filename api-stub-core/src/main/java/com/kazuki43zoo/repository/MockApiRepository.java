@@ -1,5 +1,6 @@
-package com.kazuki43zoo.domain;
+package com.kazuki43zoo.repository;
 
+import com.kazuki43zoo.domain.MockApi;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

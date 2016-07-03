@@ -1,7 +1,7 @@
 package com.kazuki43zoo.service;
 
 import com.kazuki43zoo.domain.MockApiResponse;
-import com.kazuki43zoo.domain.MockApiResponseRepository;
+import com.kazuki43zoo.repository.MockApiResponseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

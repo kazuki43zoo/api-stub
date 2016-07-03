@@ -1,5 +1,6 @@
-package com.kazuki43zoo.domain;
+package com.kazuki43zoo.repository;
 
+import com.kazuki43zoo.domain.MockApiResponse;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;
@@ -18,32 +19,32 @@ public interface MockApiResponseRepository {
             "ORDER BY h.sub_id DESC")
     List<MockApiResponse> findAllHistoryById(int id);
 
-    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description " +
+    @Select("SELECT id, path, method, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description " +
             "FROM mock_api_response " +
             "WHERE path = #{path} AND method = #{method}")
     MockApiResponse findOneByUk(@Param("path") String path, @Param("method") String method);
 
-    @Select("SELECT id, path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description " +
+    @Select("SELECT id, path, method, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description " +
             "FROM mock_api_response " +
             "WHERE id = #{id}")
     MockApiResponse find(int id);
 
-    @Select("SELECT h.id, h.sub_id, o.path, o.method, h.status_code, h.header, h.body, h.attachment_file, h.file_name, h.waiting_msec, h.description, h.created_at " +
+    @Select("SELECT h.id, h.sub_id, o.path, o.method, h.status_code, h.header, h.body, h.body_editor_mode, h.attachment_file, h.file_name, h.waiting_msec, h.description, h.created_at " +
             "FROM mock_api_response_history h INNER JOIN mock_api_response o ON o.id = h.id " +
             "WHERE h.id = #{id} AND h.sub_id = #{subId}")
     MockApiResponse findHistory(@Param("id") int id, @Param("subId") int subId);
 
-    @Insert("INSERT INTO mock_api_response (path, method, status_code, header, body, attachment_file, file_name, waiting_msec, description) " +
-            "VALUES(#{path}, #{method}, #{statusCode}, #{header}, #{body}, #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})")
+    @Insert("INSERT INTO mock_api_response (path, method, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description) " +
+            "VALUES(#{path}, #{method}, #{statusCode}, #{header}, #{body}, #{bodyEditorMode}, #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})")
     @Options(useGeneratedKeys = true)
     void create(MockApiResponse mockResponse);
 
-    @Insert("INSERT INTO mock_api_response_history (id, sub_id, status_code, header, body, attachment_file, file_name, waiting_msec, description, created_at) " +
-            "SELECT id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id}), status_code, header, body, attachment_file, file_name, waiting_msec, description, CURRENT_TIMESTAMP FROM mock_api_response WHERE id = #{id}")
+    @Insert("INSERT INTO mock_api_response_history (id, sub_id, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description, created_at) " +
+            "SELECT id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id}), status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description, CURRENT_TIMESTAMP FROM mock_api_response WHERE id = #{id}")
     void createHistory(int id);
 
     @Update("UPDATE mock_api_response " +
-            "SET path = #{path}, method = #{method}, status_code = #{statusCode}, header = #{header}, body = #{body}, attachment_file = #{attachmentFile}, file_name = #{fileName}, waiting_msec = #{waitingMsec}, description = #{description} " +
+            "SET path = #{path}, method = #{method}, status_code = #{statusCode}, header = #{header}, body = #{body}, body_editor_mode = #{bodyEditorMode}, attachment_file = #{attachmentFile}, file_name = #{fileName}, waiting_msec = #{waitingMsec}, description = #{description} " +
             "WHERE id = #{id}")
     void update(MockApiResponse mockResponse);
 
