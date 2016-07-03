@@ -77,7 +77,7 @@ java -jar api-stub.jar --server.port=9999
 ### デフォルトレスポンス (200 OK)
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members/2
+$ curl -D - http://localhost:8080/api/v1/members/1
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
 x-correlation-id: 247125e6-44b3-4938-a196-9d38f528a103
@@ -89,7 +89,7 @@ Date: Sun, 03 Jul 2016 18:20:23 GMT
 ### 擬似レスポンス
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members/2
+$ curl -D - http://localhost:8080/api/v1/members/1
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
 x-correlation-id: 5941f298-e00b-4adc-ad59-51610f50ac12
