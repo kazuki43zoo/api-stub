@@ -50,26 +50,26 @@ java -jar api-stub.jar --server.port=9999
 
 [http://localhost:8080/](http://localhost:8080/)
 
-![List for mock response](material/list-screen.png)
+![List for mock response](material/list-screen_ja.png)
 
-![Search for mock response](material/list-screen-searched.png)
+![Search for mock response](material/list-screen-searched_ja.png)
 
 
 ### 擬似レスポンスの追加
 
-![Add for mock response](material/create-screen.png)
+![Add for mock response](material/create-screen_ja.png)
 
 ### 擬似レスポンスの編集
 
-![Edit for mock response](material/edit-screen.png)
+![Edit for mock response](material/edit-screen_ja.png)
 
 ### 変更履歴の表示
 
-![View for editing histories](material/list-history-screen.png)
+![View for editing histories](material/list-history-screen_ja.png)
 
 ### 履歴の復元と削除
 
-![Restore and Delete for editing history](material/history-screen.png)
+![Restore and Delete for editing history](material/history-screen_ja.png)
 
 
 ## 疑似APIへのアクセス方法
@@ -77,7 +77,7 @@ java -jar api-stub.jar --server.port=9999
 ### デフォルトレスポンス (200 OK)
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members/1
+$ curl -D - http://localhost:8080/api/v1/members/2
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
 x-correlation-id: 247125e6-44b3-4938-a196-9d38f528a103
@@ -89,7 +89,7 @@ Date: Sun, 03 Jul 2016 18:20:23 GMT
 ### 擬似レスポンス
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members/1
+$ curl -D - http://localhost:8080/api/v1/members/2
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
 x-correlation-id: 5941f298-e00b-4adc-ad59-51610f50ac12
@@ -112,12 +112,13 @@ Date: Sun, 03 Jul 2016 18:21:25 GMT
 ${APP_ROOT}/evidence
 └─api
     └─v1
-        └─members (* request path)
-            └─GET (* http method)
-                └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* ${datetime}_${x-correlation-id})
-                    + request.json (* include http headers, request parameters)
-                    + body.txt (* request body)
-                    + uploadFile_01_xxxx.png (* upload files)
+        └─members
+            └─1 (* request path)
+                └─GET (* http method)
+                    └─20160630151351369_dbf5d14d-179c-418d-8c25-ad3e55fefe37 (* ${datetime}_${x-correlation-id})
+                        + request.json (* include http headers, request parameters)
+                        + body.txt (* request body)
+                        + uploadFile_01_xxxx.png (* upload files)
 ```
 
 以下のようにすることで、エビデンスの出力を無効化することができます。
