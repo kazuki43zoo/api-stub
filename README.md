@@ -74,28 +74,28 @@ java -jar api-stub.jar --server.port=9999
 ### Default response (200 OK)
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members
+$ curl -D - http://localhost:8080/api/v1/members/1
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
-x-correlation-id: f8b9eab7-b18a-4713-8910-88ad719ccb86
+x-correlation-id: 247125e6-44b3-4938-a196-9d38f528a103
 Content-Length: 0
-Date: Thu, 30 Jun 2016 04:03:06 GMT
+Date: Sun, 03 Jul 2016 18:20:23 GMT
 
 ```
 
 ### Mock response
 
 ```bash
-$ curl -D - http://localhost:8080/api/v1/members
+$ curl -D - http://localhost:8080/api/v1/members/1
 HTTP/1.1 200 OK
 Server: Apache-Coyote/1.1
-x-correlation-id: 64cdba4d-6376-485c-bf50-715930927009
+x-correlation-id: 5941f298-e00b-4adc-ad59-51610f50ac12
 Content-Type: application/json;charset=UTF-8
 Transfer-Encoding: chunked
-Date: Thu, 30 Jun 2016 18:29:40 GMT
+Date: Sun, 03 Jul 2016 18:21:25 GMT
 
 {
-    "name" : "kazuki43zoo"
+    "name": "kazuki43zoo"
 }
 ```
 
