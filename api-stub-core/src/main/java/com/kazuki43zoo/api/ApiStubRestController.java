@@ -3,8 +3,6 @@ package com.kazuki43zoo.api;
 import com.kazuki43zoo.component.DownloadSupport;
 import com.kazuki43zoo.domain.model.MockApiResponse;
 import com.kazuki43zoo.domain.service.MockApiResponseService;
-import org.slf4j.Logger;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
@@ -51,11 +49,7 @@ public class ApiStubRestController {
         final String correlationId = Optional.ofNullable(request.getHeader(apiStubProperties.getCorrelationIdKey()))
                 .orElse(UUID.randomUUID().toString());
 
-        MDC.put(apiStubProperties.getCorrelationIdKey(), correlationId);
-
         final ApiEvidence evidence = apiEvidenceFactory.create(request, correlationId);
-
-        final Logger logger = evidence.getLogger();
 
         try {
 
@@ -65,53 +59,54 @@ public class ApiStubRestController {
             final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
             final String method = request.getMethod();
 
-            MockApiResponse mockResponse = mockApiResponseService.find(path, method);
+            MockApiResponse mockApiResponse = mockApiResponseService.find(path, method);
 
-            if (mockResponse.getId() == 0) {
-                logger.warn("Mock Response is not found.");
+            if (mockApiResponse.getId() == 0) {
+                evidence.warnLog("Mock Response is not found.");
             }
 
             // Status Code
-            Integer statusCode = Optional.ofNullable(mockResponse.getStatusCode())
+            Integer statusCode = Optional.ofNullable(mockApiResponse.getStatusCode())
                     .orElse(HttpStatus.OK.value());
 
             // Http Headers
             HttpHeaders headers = new HttpHeaders();
-            if (StringUtils.hasLength(mockResponse.getHeader())) {
-                Stream.of(mockResponse.getHeader().split(HEADER_SEPARATOR)).forEach(e -> {
+            if (StringUtils.hasLength(mockApiResponse.getHeader())) {
+                Stream.of(mockApiResponse.getHeader().split(HEADER_SEPARATOR)).forEach(e -> {
                     String[] headerElements = e.split(HEADER_KEY_VALUE_SEPARATOR);
                     headers.add(headerElements[0].trim(), headerElements[1].trim());
                 });
             }
-            if (StringUtils.hasLength(mockResponse.getFileName())
+            if (StringUtils.hasLength(mockApiResponse.getFileName())
                     && !headers.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
-                downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
+                downloadSupport.addContentDisposition(headers, mockApiResponse.getFileName());
             }
             headers.add(apiStubProperties.getCorrelationIdKey(), correlationId);
 
             // Http Body
-            Object body = Optional.ofNullable(mockResponse.getBody())
+            Object body = Optional.ofNullable(mockApiResponse.getBody())
                     .map(InputStreamResource::new).orElse(
-                            Optional.ofNullable(mockResponse.getAttachmentFile())
+                            Optional.ofNullable(mockApiResponse.getAttachmentFile())
                                     .map(InputStreamResource::new).orElse(null));
 
+            // Wait processing
+            if (mockApiResponse.getWaitingMsec() != null && mockApiResponse.getWaitingMsec() > 0) {
+                evidence.infoLog("Waiting {} msec.", mockApiResponse.getWaitingMsec());
+                TimeUnit.MILLISECONDS.sleep(mockApiResponse.getWaitingMsec());
+            }
+
+            // Create Response Entity
             ResponseEntity<Object> responseEntity =
                     ResponseEntity.status(statusCode).headers(headers).body(body);
 
-            // Wait processing
-            if (mockResponse.getWaitingMsec() != null && mockResponse.getWaitingMsec() > 0) {
-                logger.info("Waiting {} msec.", mockResponse.getWaitingMsec());
-                TimeUnit.MILLISECONDS.sleep(mockResponse.getWaitingMsec());
-            }
-
             evidence.response(responseEntity);
-            evidence.end();
 
             return responseEntity;
 
         } finally {
-            MDC.clear();
+            evidence.end();
         }
+
     }
 
 }

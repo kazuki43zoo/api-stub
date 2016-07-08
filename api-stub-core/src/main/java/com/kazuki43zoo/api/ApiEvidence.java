@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ class ApiEvidence {
     private final ApiStubProperties properties;
 
     ApiEvidence(ApiStubProperties properties, String method, String path, String correlationId, String contentExtension) {
+        MDC.put(properties.getCorrelationIdKey(), correlationId);
         this.dir = Paths.get(properties.getEvidence().getDir(),
                 path, method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
         this.logger = LoggerFactory.getLogger(method + " " + path);
@@ -106,6 +108,15 @@ class ApiEvidence {
 
     void end() {
         logger.info("End.");
+        MDC.clear();
+    }
+
+    void warnLog(String format, Object... args) {
+        logger.warn(format, args);
+    }
+
+    void infoLog(String format, Object... args) {
+        logger.warn(format, args);
     }
 
     @Data
