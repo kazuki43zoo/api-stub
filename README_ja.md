@@ -162,7 +162,7 @@ api.evidence.disabled-upload=true
 
 ### JDBCドライバの利用
 
-JDBCドライバは[ここ](http://repo2.maven.org/maven2/com/h2database/h2/1.4.191/h2-1.4.191.jar)からダウンロードしてください。
+JDBCドライバは[ここ](http://repo2.maven.org/maven2/com/h2database/h2/1.4.192/h2-1.4.192.jar)からダウンロードしてください。
 
 | 項目 | 項目値 |
 | ---- | ----- |
