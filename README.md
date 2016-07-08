@@ -155,7 +155,7 @@ You can access the database dilectlly.
 
 ### Using JDBC Driver
 
-Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2database/h2/1.4.191/h2-1.4.191.jar).
+Please download jdbc driver on [here](http://repo2.maven.org/maven2/com/h2database/h2/1.4.192/h2-1.4.192.jar).
 
 | Item | Value |
 | ---- | ----- |
