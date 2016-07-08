@@ -13,7 +13,7 @@ import java.util.Optional;
 public class ApiEvidenceFactory {
 
     @Autowired
-    ApiStubProperties apiStubProperties;
+    ApiStubProperties properties;
 
     @Autowired
     ContentNegotiationManager contentNegotiationManager;
@@ -25,7 +25,7 @@ public class ApiEvidenceFactory {
                 .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
                 .orElseGet(ArrayList::new).stream().findFirst().orElse("txt");
 
-        return new ApiEvidence(apiStubProperties, request.getMethod(), request.getServletPath(), correlationId, contentExtension);
+        return new ApiEvidence(properties, request.getMethod(), request.getServletPath(), correlationId, contentExtension);
     }
 
 }
