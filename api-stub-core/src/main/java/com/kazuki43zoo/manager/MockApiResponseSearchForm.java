@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class MockApiResponseSearchForm implements Serializable {
+class MockApiResponseSearchForm implements Serializable {
     private static final long serialVersionUID = 1L;
     private String path;
     private String description;

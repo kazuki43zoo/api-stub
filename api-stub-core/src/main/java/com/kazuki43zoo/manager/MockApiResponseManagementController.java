@@ -31,7 +31,7 @@ import java.util.List;
 @RequestMapping("/manager/mocks")
 @Controller
 @SessionAttributes(types = MockApiResponseSearchForm.class)
-public class MockApiResponseManagementController {
+class MockApiResponseManagementController {
 
     @Autowired
     MockApiResponseService service;

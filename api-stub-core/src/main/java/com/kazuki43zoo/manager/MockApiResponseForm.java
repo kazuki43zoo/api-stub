@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
-public class MockApiResponseForm implements Serializable {
+class MockApiResponseForm implements Serializable {
     private static final long serialVersionUID = 1L;
     @NotEmpty
     @Size(max = 256)

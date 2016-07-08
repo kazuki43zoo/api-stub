@@ -111,11 +111,11 @@ class ApiEvidence {
         MDC.clear();
     }
 
-    void warnLog(String format, Object... args) {
+    void warn(String format, Object... args) {
         logger.warn(format, args);
     }
 
-    void infoLog(String format, Object... args) {
+    void info(String format, Object... args) {
         logger.warn(format, args);
     }
 

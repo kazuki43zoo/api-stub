@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @RestController
-public class ApiStubRestController {
+class ApiStubRestController {
 
     private static final String API_PREFIX_PATH = "/api";
     private static final String HEADER_SEPARATOR = "\r\n";
@@ -62,7 +62,7 @@ public class ApiStubRestController {
             MockApiResponse mockApiResponse = mockApiResponseService.find(path, method);
 
             if (mockApiResponse.getId() == 0) {
-                evidence.warnLog("Mock Response is not found.");
+                evidence.warn("Mock Response is not found.");
             }
 
             // Status Code
@@ -91,7 +91,7 @@ public class ApiStubRestController {
 
             // Wait processing
             if (mockApiResponse.getWaitingMsec() != null && mockApiResponse.getWaitingMsec() > 0) {
-                evidence.infoLog("Waiting {} msec.", mockApiResponse.getWaitingMsec());
+                evidence.info("Waiting {} msec.", mockApiResponse.getWaitingMsec());
                 TimeUnit.MILLISECONDS.sleep(mockApiResponse.getWaitingMsec());
             }
 

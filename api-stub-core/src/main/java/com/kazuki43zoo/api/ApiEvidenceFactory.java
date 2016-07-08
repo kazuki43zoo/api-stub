@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @Component
-public class ApiEvidenceFactory {
+class ApiEvidenceFactory {
 
     @Autowired
     ApiStubProperties properties;
