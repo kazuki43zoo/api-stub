@@ -1,8 +1,8 @@
 package com.kazuki43zoo.manager;
 
 import com.kazuki43zoo.component.DownloadSupport;
-import com.kazuki43zoo.domain.MockApiResponse;
-import com.kazuki43zoo.service.MockApiResponseService;
+import com.kazuki43zoo.domain.model.MockApiResponse;
+import com.kazuki43zoo.domain.service.MockApiResponseService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -27,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Locale;
 
 @RequestMapping("/manager/mocks")
 @Controller

@@ -1,10 +1,8 @@
 package com.kazuki43zoo.api;
 
 import com.kazuki43zoo.component.DownloadSupport;
-import com.kazuki43zoo.domain.MockApi;
-import com.kazuki43zoo.domain.MockApiResponse;
-import com.kazuki43zoo.service.MockApiResponseService;
-import com.kazuki43zoo.service.MockApiService;
+import com.kazuki43zoo.domain.model.MockApiResponse;
+import com.kazuki43zoo.domain.service.MockApiResponseService;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +27,6 @@ public class ApiStubRestController {
     private static final String API_PREFIX_PATH = "/api";
     private static final String HEADER_SEPARATOR = "\r\n";
     private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
-
-    @Autowired
-    MockApiService mockApiService;
 
     @Autowired
     MockApiResponseService mockApiResponseService;
@@ -71,7 +66,6 @@ public class ApiStubRestController {
             final String method = request.getMethod();
 
             MockApiResponse mockResponse = mockApiResponseService.find(path, method);
-            MockApi mockApi = mockApiService.findBy(path, method);
 
             if (mockResponse.getId() == 0) {
                 logger.warn("Mock Response is not found.");
@@ -94,13 +88,6 @@ public class ApiStubRestController {
                 downloadSupport.addContentDisposition(headers, mockResponse.getFileName());
             }
             headers.add(apiStubProperties.getCorrelationIdKey(), correlationId);
-
-            if (mockApi != null) {
-                if (!headers.containsKey(HttpHeaders.CONTENT_TYPE)
-                        && StringUtils.hasLength(mockApi.getContentType())) {
-                    headers.setContentType(MediaType.parseMediaType(mockApi.getContentType()));
-                }
-            }
 
             // Http Body
             Object body = Optional.ofNullable(mockResponse.getBody())

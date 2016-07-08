@@ -1,6 +1,6 @@
-package com.kazuki43zoo.repository;
+package com.kazuki43zoo.domain.repository;
 
-import com.kazuki43zoo.domain.MockApiResponse;
+import com.kazuki43zoo.domain.model.MockApiResponse;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.jdbc.SQL;
 import org.springframework.util.StringUtils;

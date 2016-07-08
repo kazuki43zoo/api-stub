@@ -1,4 +1,4 @@
-package com.kazuki43zoo.domain;
+package com.kazuki43zoo.domain.model;
 
 import lombok.Data;
 
@@ -22,12 +22,5 @@ public class MockApiResponse implements Serializable {
     private Long waitingMsec;
     private String description;
     private LocalDateTime createdAt;
-
-    public MockApi toMockApi() {
-        MockApi mockApi = new MockApi();
-        mockApi.setPath(path);
-        mockApi.setMethod(method);
-        return mockApi;
-    }
 
 }
