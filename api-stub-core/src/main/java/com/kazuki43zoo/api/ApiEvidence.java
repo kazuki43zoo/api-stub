@@ -47,25 +47,25 @@ class ApiEvidence {
         this.dir = Paths.get(properties.getEvidence().getDir(),
                 path, method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
         this.logger = LoggerFactory.getLogger(method + " " + path);
-        if (!properties.getEvidence().isDisabledRequest() || !properties.getEvidence().isDisabledUpload()) {
-            if (!dir.toFile().exists()) {
-                if (!this.dir.toFile().mkdirs()) {
-                    logger.error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
-                }
-            }
-        }
         this.contentExtension = contentExtension;
         this.properties = properties;
     }
 
     void start() {
-        logger.info("Start.");
-        logger.info("Evidence Dir : {}", dir.toAbsolutePath().toString());
+        info("Start.");
+        if (!properties.getEvidence().isDisabledRequest() || !properties.getEvidence().isDisabledUpload()) {
+            if (!dir.toFile().exists()) {
+                if (!this.dir.toFile().mkdirs()) {
+                    error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
+                }
+            }
+            info("Evidence Dir : {}", dir.toAbsolutePath().toString());
+        }
     }
 
     void request(HttpServletRequest request, RequestEntity<InputStreamResource> requestEntity) throws IOException, ServletException {
         final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
-        logger.info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
+        info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
             try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(dir.toFile(), "request.json")))) {
                 objectMapperForFile.writeValue(out, evidenceRequest);
@@ -74,7 +74,7 @@ class ApiEvidence {
 
         if (requestEntity.getBody() != null) {
             String body = StreamUtils.copyToString(requestEntity.getBody().getInputStream(), Charset.forName(request.getCharacterEncoding()));
-            logger.info("Request body : {}", body);
+            info("Request body : {}", body);
             if (!properties.getEvidence().isDisabledRequest()) {
                 try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
                     StreamUtils.copy(body, StandardCharsets.UTF_8, out);
@@ -89,7 +89,7 @@ class ApiEvidence {
                 String saveFileName = String.format("uploadFile_%02d_%s", index, fileName);
                 File saveFile = new File(dir.toFile(), saveFileName);
                 UploadFile uploadFile = new UploadFile(part, saveFileName);
-                logger.info("Upload file  : {}", objectMapperForLog.writeValueAsString(uploadFile));
+                info("Upload file  : {}", objectMapperForLog.writeValueAsString(uploadFile));
                 if (!properties.getEvidence().isDisabledUpload()) {
                     try (InputStream in = part.getInputStream(); OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
                         FileCopyUtils.copy(in, out);
@@ -102,13 +102,17 @@ class ApiEvidence {
 
     void response(ResponseEntity<Object> responseEntity) throws JsonProcessingException {
         EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
-        logger.info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
+        info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
     }
 
 
     void end() {
-        logger.info("End.");
+        info("End.");
         MDC.clear();
+    }
+
+    void error(String format, Object... args) {
+        logger.error(format, args);
     }
 
     void warn(String format, Object... args) {
@@ -116,7 +120,7 @@ class ApiEvidence {
     }
 
     void info(String format, Object... args) {
-        logger.warn(format, args);
+        logger.info(format, args);
     }
 
     @Data
