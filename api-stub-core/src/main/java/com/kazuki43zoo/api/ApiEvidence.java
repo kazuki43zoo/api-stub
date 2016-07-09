@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -139,14 +138,12 @@ class ApiEvidence {
         }
     }
 
-    @RequiredArgsConstructor
     @Data
     private static class EvidenceRequest {
         private final Map<String, String[]> parameters;
         private final HttpHeaders headers;
     }
 
-    @RequiredArgsConstructor
     @Data
     private static class EvidenceResponse {
         private final HttpStatus httpStatus;
