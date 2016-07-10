@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{title.responseList}"></title>
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
+</head>
+<body>
+
+<nav th:replace="nav :: #topNav"></nav>
+
+<div class="container">
+
+    <h2 th:text="#{title.responseList}"></h2>
+
+    <form th:action="@{/manager/responses}"
+          th:object="${apiResponseSearchForm}" method="get" class="form-horizontal">
+        <div class="form-group">
+            <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"/>
+                <span th:errors="*{path}"></span>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"/>
+                <span th:errors="*{method}"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="description" class="col-sm-2 control-label" th:text="#{description}"></label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="description" th:placeholder="#{description}"
+                       th:field="*{description}"/>
+                <span th:errors="*{description}"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" name="search" class="btn btn-default">
+                    <span class="glyphicon glyphicon-search"></span>
+                    <span th:text="#{action.search}"></span>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div>
+        <a th:href="@{/manager/responses/create}" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus"></span>
+            <span th:text="#{action.add}"></span>
+        </a>
+    </div>
+
+    <table class="table table-striped">
+        <tr>
+            <th></th>
+            <th th:text="#{requestPath}"></th>
+            <th th:text="#{httpMethod}"></th>
+            <th th:text="#{dataKey}"></th>
+            <th th:text="#{httpStatusCode}"></th>
+            <th th:text="#{description}"></th>
+        </tr>
+        <tr th:each="apiResponse : ${apiResponses}">
+            <td>
+                <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=${apiResponse.id})}">
+                    <span class="glyphicon glyphicon-edit"></span>
+                    <span th:text="#{action.edit}"></span>
+                </a>
+            </td>
+            <td th:text="${apiResponse.path}"></td>
+            <td th:text="${apiResponse.method}"></td>
+            <td th:text="${apiResponse.dataKey}"></td>
+            <td th:text="${apiResponse.statusCode}"></td>
+            <td th:text="${apiResponse.description}"></td>
+        </tr>
+    </table>
+
+</div>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+</body>
+</html>

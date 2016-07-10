@@ -7,12 +7,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class MockApiResponse implements Serializable {
+public class ApiResponse implements Serializable {
     private static final long serialVersionUID = 1L;
     private int id;
     private int subId;
     private String path;
     private String method;
+    private String dataKey;
     private Integer statusCode;
     private String header;
     private InputStream body;
@@ -22,5 +23,4 @@ public class MockApiResponse implements Serializable {
     private Long waitingMsec;
     private String description;
     private LocalDateTime createdAt;
-
 }

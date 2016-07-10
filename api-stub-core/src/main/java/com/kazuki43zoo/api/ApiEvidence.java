@@ -3,7 +3,6 @@ package com.kazuki43zoo.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -21,7 +20,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,21 +29,21 @@ import java.util.ArrayList;
 import java.util.Map;
 
 class ApiEvidence {
+
     private static final DateTimeFormatter DIR_NAME_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
     private static ObjectMapper objectMapperForLog = Jackson2ObjectMapperBuilder.json().indentOutput(false).build();
     private static ObjectMapper objectMapperForFile = Jackson2ObjectMapperBuilder.json().indentOutput(true).build();
 
     private final Path dir;
-    @Getter
     private final Logger logger;
     private final String contentExtension;
     private final ApiStubProperties properties;
 
-    ApiEvidence(ApiStubProperties properties, String method, String path, String correlationId, String contentExtension) {
+    ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
         MDC.put(properties.getCorrelationIdKey(), correlationId);
         this.dir = Paths.get(properties.getEvidence().getDir(),
-                path, method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
-        this.logger = LoggerFactory.getLogger(method + " " + path);
+                path, (dataKey != null ? dataKey : ""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
+        this.logger = LoggerFactory.getLogger(method + " " + path + (dataKey != null ? (" dataKey=" + dataKey) : ""));
         this.contentExtension = contentExtension;
         this.properties = properties;
     }
@@ -62,7 +60,7 @@ class ApiEvidence {
         }
     }
 
-    void request(HttpServletRequest request, RequestEntity<InputStreamResource> requestEntity) throws IOException, ServletException {
+    void request(HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException, ServletException {
         final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
         info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
@@ -72,7 +70,7 @@ class ApiEvidence {
         }
 
         if (requestEntity.getBody() != null) {
-            String body = StreamUtils.copyToString(requestEntity.getBody().getInputStream(), Charset.forName(request.getCharacterEncoding()));
+            final String body = requestEntity.getBody();
             info("Request body : {}", body);
             if (!properties.getEvidence().isDisabledRequest()) {
                 try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
@@ -99,7 +97,7 @@ class ApiEvidence {
         }
     }
 
-    void response(ResponseEntity<Object> responseEntity) throws JsonProcessingException {
+    void response(ResponseEntity<InputStreamResource> responseEntity) throws JsonProcessingException {
         EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
         info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
     }

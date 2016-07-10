@@ -21,7 +21,7 @@ public class ApiStubConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/manager/mocks");
+        registry.addRedirectViewController("/", "/manager/responses");
     }
 
     @Override

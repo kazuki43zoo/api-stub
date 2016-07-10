@@ -2,51 +2,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{title.historyList(${mockApiResponse.method},${mockApiResponse.path})}"></title>
+    <title th:text="#{title.responseHistoryList(${apiResponse.method},${apiResponse.path})}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
 <body>
 
-<nav th:replace="mock/nav :: #topNav"></nav>
+<nav th:replace="nav :: #topNav"></nav>
 
 <div class="container">
 
-    <h2 th:text="#{title.historyList(${mockApiResponse.method},${mockApiResponse.path})}"></h2>
+    <h2 th:text="#{title.responseHistoryList(${apiResponse.method},${apiResponse.path})}"></h2>
 
     <table class="table table-striped">
         <tr>
-            <th>-</th>
+            <th></th>
+            <th th:text="#{dataKey}" th:if="${api != null}"></th>
             <th th:text="#{httpStatusCode}"></th>
             <th th:text="#{description}"></th>
             <th th:text="#{createdAt}"></th>
         </tr>
-        <tr th:each="mockApiResponseHistory : ${mockApiResponses}">
+        <tr th:each="apiResponseHistory : ${apiResponses}">
             <td><a class="btn btn-default"
-                   th:href="@{/manager/mocks/{id}/histories/{subId}(id=${mockApiResponseHistory.id},subId=${mockApiResponseHistory.subId})}">
+                   th:href="@{/manager/responses/{id}/histories/{subId}(id=${apiResponseHistory.id},subId=${apiResponseHistory.subId})}">
                 <span class="glyphicon glyphicon-share-alt"></span>
                 <span th:text="#{action.view}"></span>
             </a>
             </td>
-            <td th:text="${mockApiResponseHistory.statusCode}"></td>
-            <td th:text="${mockApiResponseHistory.description}"></td>
-            <td th:text="${mockApiResponseHistory.createdAt}"></td>
+            <td th:text="${apiResponseHistory.dataKey}" th:if="${api != null}"></td>
+            <td th:text="${apiResponseHistory.statusCode}"></td>
+            <td th:text="${apiResponseHistory.description}"></td>
+            <td th:text="${apiResponseHistory.createdAt}"></td>
         </tr>
     </table>
 
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-10">
-                <a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">
+                <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=${apiResponse.id})}">
                     <span class="glyphicon glyphicon-hand-left"></span>
-                    <span th:text="#{action.back}"></span>
+                    <span th:text="#{title.responseForm}"></span>
                 </a>
             </div>
         </div>
     </div>
 
 </div>
+
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
 </body>
 </html>

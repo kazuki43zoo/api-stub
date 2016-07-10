@@ -1,11 +1,18 @@
 package com.kazuki43zoo.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazuki43zoo.api.key.KeyExtractor;
 import com.kazuki43zoo.component.DownloadSupport;
-import com.kazuki43zoo.domain.model.MockApiResponse;
-import com.kazuki43zoo.domain.service.MockApiResponseService;
+import com.kazuki43zoo.domain.model.Api;
+import com.kazuki43zoo.domain.model.ApiResponse;
+import com.kazuki43zoo.domain.service.ApiResponseService;
+import com.kazuki43zoo.domain.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.time.Clock;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RestController
@@ -27,77 +36,84 @@ class ApiStubRestController {
     private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
 
     @Autowired
-    MockApiResponseService mockApiResponseService;
+    ApiResponseService apiResponseService;
+
+    @Autowired
+    ApiService apiService;
 
     @Autowired
     DownloadSupport downloadSupport;
 
     @Autowired
-    ApiStubProperties apiStubProperties;
+    ApiStubProperties properties;
 
     @Autowired
     ApiEvidenceFactory apiEvidenceFactory;
 
     @Autowired(required = false)
-    Clock clock = Clock.systemDefaultZone();
+    Map<String, KeyExtractor> keyExtractorMap;
+
+    @Autowired
+    ObjectMapper jsonObjectMapper;
 
     @RequestMapping(path = API_PREFIX_PATH + "/**")
-    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request,
-                                                   RequestEntity<InputStreamResource> requestEntity)
+    public ResponseEntity<InputStreamResource> handleApiRequest(HttpServletRequest request,
+                                                                RequestEntity<String> requestEntity)
             throws IOException, ServletException, InterruptedException {
 
-        final String correlationId = Optional.ofNullable(request.getHeader(apiStubProperties.getCorrelationIdKey()))
+        final String correlationId = Optional.ofNullable(request.getHeader(properties.getCorrelationIdKey()))
                 .orElse(UUID.randomUUID().toString());
 
-        final ApiEvidence evidence = apiEvidenceFactory.create(request, correlationId);
+        final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
+        final String method = request.getMethod();
+
+        String dataKey = extractKey(path, method, request, requestEntity);
+
+        final ApiEvidence evidence = apiEvidenceFactory.create(request, dataKey, correlationId);
 
         try {
 
             evidence.start();
             evidence.request(request, requestEntity);
 
-            final String path = request.getServletPath().replace(API_PREFIX_PATH, "");
-            final String method = request.getMethod();
+            final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 
-            MockApiResponse mockApiResponse = mockApiResponseService.find(path, method);
-
-            if (mockApiResponse.getId() == 0) {
+            if (apiResponse.getId() == 0) {
                 evidence.warn("Mock Response is not found.");
             }
 
             // Status Code
-            Integer statusCode = Optional.ofNullable(mockApiResponse.getStatusCode())
+            final Integer statusCode = Optional.ofNullable(apiResponse.getStatusCode())
                     .orElse(HttpStatus.OK.value());
 
-            // Http Headers
-            HttpHeaders headers = new HttpHeaders();
-            if (StringUtils.hasLength(mockApiResponse.getHeader())) {
-                Stream.of(mockApiResponse.getHeader().split(HEADER_SEPARATOR)).forEach(e -> {
+            // Response Headers
+            final HttpHeaders responseHeaders = new HttpHeaders();
+            if (StringUtils.hasLength(apiResponse.getHeader())) {
+                Stream.of(apiResponse.getHeader().split(HEADER_SEPARATOR)).forEach(e -> {
                     String[] headerElements = e.split(HEADER_KEY_VALUE_SEPARATOR);
-                    headers.add(headerElements[0].trim(), headerElements[1].trim());
+                    responseHeaders.add(headerElements[0].trim(), headerElements[1].trim());
                 });
             }
-            if (StringUtils.hasLength(mockApiResponse.getFileName())
-                    && !headers.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
-                downloadSupport.addContentDisposition(headers, mockApiResponse.getFileName());
+            if (StringUtils.hasLength(apiResponse.getFileName())
+                    && !responseHeaders.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
+                downloadSupport.addContentDisposition(responseHeaders, apiResponse.getFileName());
             }
-            headers.add(apiStubProperties.getCorrelationIdKey(), correlationId);
+            responseHeaders.add(properties.getCorrelationIdKey(), correlationId);
 
-            // Http Body
-            Object body = Optional.ofNullable(mockApiResponse.getBody())
-                    .map(InputStreamResource::new).orElse(
-                            Optional.ofNullable(mockApiResponse.getAttachmentFile())
-                                    .map(InputStreamResource::new).orElse(null));
+            // Response Body
+            final InputStreamResource responseBody = Optional.ofNullable(apiResponse.getBody())
+                    .map(InputStreamResource::new).orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
+                            .map(InputStreamResource::new).orElse(null));
 
             // Wait processing
-            if (mockApiResponse.getWaitingMsec() != null && mockApiResponse.getWaitingMsec() > 0) {
-                evidence.info("Waiting {} msec.", mockApiResponse.getWaitingMsec());
-                TimeUnit.MILLISECONDS.sleep(mockApiResponse.getWaitingMsec());
+            if (apiResponse.getWaitingMsec() != null && apiResponse.getWaitingMsec() > 0) {
+                evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
+                TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
             }
 
-            // Create Response Entity
-            ResponseEntity<Object> responseEntity =
-                    ResponseEntity.status(statusCode).headers(headers).body(body);
+            // Response Entity
+            final ResponseEntity<InputStreamResource> responseEntity =
+                    ResponseEntity.status(statusCode).headers(responseHeaders).body(responseBody);
 
             evidence.response(responseEntity);
 
@@ -107,6 +123,25 @@ class ApiStubRestController {
             evidence.end();
         }
 
+    }
+
+    private String extractKey(String path, String method, HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException {
+        String key = null;
+        Api api = apiService.findOne(path, method);
+        if (api != null) {
+            KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
+            if (keyExtractor != null && api.getExpressions() != null && api.getKeyGeneratingStrategy() != null) {
+                String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
+                        .filter(StringUtils::hasLength)
+                        .collect(Collectors.toList())
+                        .toArray(new String[]{});
+                try {
+                    List<String> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
+                    key = api.getKeyGeneratingStrategy().generate(keys);
+                } catch (Exception e) {/*Skip*/}
+            }
+        }
+        return key;
     }
 
 }

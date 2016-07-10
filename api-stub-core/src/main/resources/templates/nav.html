@@ -32,6 +32,25 @@
                 </li>
             </ul>
         </div>
+        <div class="navbar-header">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a id="menuLink" href="javascript:void(0);"
+                       class="dropdown-toggle" data-toggle="dropdown">
+                        <span th:text="#{title.menu}"></span>
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a id="apiResponseLink" th:href="@{/manager/responses}" th:text="#{title.responseList}"></a>
+                        </li>
+                        <li>
+                            <a id="apiLink" th:href="@{/manager/apis}" th:text="#{title.apiList}"></a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 
 </nav>

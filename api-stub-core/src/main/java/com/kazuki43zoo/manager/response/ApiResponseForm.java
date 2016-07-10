@@ -1,4 +1,4 @@
-package com.kazuki43zoo.manager;
+package com.kazuki43zoo.manager.response;
 
 
 import lombok.Data;
@@ -12,13 +12,14 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
-class MockApiResponseForm implements Serializable {
+class ApiResponseForm implements Serializable {
     private static final long serialVersionUID = 1L;
     @NotEmpty
     @Size(max = 256)
     private String path;
     @Pattern(regexp = "GET|POST|PUT|DELETE|PATCH", flags = Pattern.Flag.CASE_INSENSITIVE)
     private String method;
+    private String dataKey;
     @Min(100)
     @Max(599)
     private Integer statusCode = 200;

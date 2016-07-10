@@ -2,25 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="#{title.list}"></title>
+    <title th:text="#{title.apiList}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
 <body>
 
-<nav th:replace="mock/nav :: #topNav"></nav>
+<nav th:replace="nav :: #topNav"></nav>
 
 <div class="container">
 
-    <h2 th:text="#{title.list}"></h2>
+    <h2 th:text="#{title.apiList}"></h2>
 
-    <form th:action="@{/manager/mocks}"
-          th:object="${mockApiResponseSearchForm}" method="get" class="form-horizontal">
+    <form th:action="@{/manager/apis}"
+          th:object="${apiSearchForm}" method="get" class="form-horizontal">
         <div class="form-group">
-            <label for="path" class="col-sm-2 control-label" th:text="#{requestPath}"></label>
-            <div class="col-sm-10">
+            <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
+            <div class="col-sm-5">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"/>
                 <span th:errors="*{path}"></span>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"/>
+                <span th:errors="*{method}"></span>
             </div>
         </div>
         <div class="form-group">
@@ -42,7 +46,7 @@
     </form>
 
     <div>
-        <a th:href="@{/manager/mocks/create}" class="btn btn-default">
+        <a th:href="@{/manager/apis/create}" class="btn btn-default">
             <span class="glyphicon glyphicon-plus"></span>
             <span th:text="#{action.add}"></span>
         </a>
@@ -50,28 +54,28 @@
 
     <table class="table table-striped">
         <tr>
-            <th>-</th>
+            <th></th>
             <th th:text="#{requestPath}"></th>
             <th th:text="#{httpMethod}"></th>
-            <th th:text="#{httpStatusCode}"></th>
             <th th:text="#{description}"></th>
         </tr>
-        <tr th:each="mockApiResponse : ${mockApiResponses}">
+        <tr th:each="api : ${apis}">
             <td>
-                <a class="btn btn-default" th:href="@{/manager/mocks/{id}(id=${mockApiResponse.id})}">
+                <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}">
                     <span class="glyphicon glyphicon-edit"></span>
                     <span th:text="#{action.edit}"></span>
                 </a>
             </td>
-            <td th:text="${mockApiResponse.path}"></td>
-            <td th:text="${mockApiResponse.method}"></td>
-            <td th:text="${mockApiResponse.statusCode}"></td>
-            <td th:text="${mockApiResponse.description}"></td>
+            <td th:text="${api.path}"></td>
+            <td th:text="${api.method}"></td>
+            <td th:text="${api.description}"></td>
         </tr>
     </table>
 
 </div>
+
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
 </body>
 </html>
