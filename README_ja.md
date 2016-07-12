@@ -2,16 +2,24 @@
 
 Web API用のスタブアプリケーションです。
 
-## 必須要件
+## 必須要件 (Mavenコンパイル & 実行時)
 
 * Java SE 8 (JDK 1.8)
 
-> **ノート**
->
-> IDE(STS, IDEA, etc...)を使用する場合は、Lombokをインストールしてください。Lombokのインストールについては、以下を参照してください。
->
-> * http://jnb.ociweb.com/jnb/jnbJan2010.html#installation
-> * https://projectlombok.org/download.html
+## 必須要件 (IDE利用時)
+
+### Lombokのインストール
+
+IDE(STS, IDEA, etc...)を使用する場合は、Lombokをインストールしてください。Lombokのインストールについては、以下を参照してください。
+
+* http://jnb.ociweb.com/jnb/jnbJan2010.html#installation
+* https://projectlombok.org/download.html
+
+### Groovy Eclipseのインストール
+
+IDEとしてSTS(又はEclipse)を使用する場合は、Groovy Eclipseををインストールしてください。Groovy Eclipseのインストールについては、以下を参照してください。
+
+* https://github.com/groovy/groovy-eclipse/wiki
 
 
 ## ビルド
