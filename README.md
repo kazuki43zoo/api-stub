@@ -3,16 +3,25 @@ Stub for API
 
 * [日本語](./README_ja.md)
 
-## Requirements
+## Requirements for Maven compile and runtime
 
 * Java SE 8 (JDK 1.8)
 
-> **Note**
->
-> If you use a IDE(STS, IDEA, etc...), please install the lombok. About how to install the lombok, please see as follows:
->
-> * http://jnb.ociweb.com/jnb/jnbJan2010.html#installation
-> * https://projectlombok.org/download.html
+## Requirements for IDE
+
+### Install lombok
+
+If you use a IDE(STS, IDEA, etc...), please install the lombok. About how to install the lombok, please see as follows:
+
+* http://jnb.ociweb.com/jnb/jnbJan2010.html#installation
+* https://projectlombok.org/download.html
+
+### Groovy Eclipse
+
+If you use a STS(or Eclipse), please install the Groovy Eclipse plugin. About how install the Groovy Eclipse, please see as follow:
+
+* https://github.com/groovy/groovy-eclipse/wiki
+
 
 ## Build
 
