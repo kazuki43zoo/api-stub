@@ -105,7 +105,7 @@
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
                     <compilerArguments>
-                        <javaAgentClass>lombok.core.Agent</javaAgentClass>
+                        <javaAgentClass>lombok.launch.Agent</javaAgentClass>
                     </compilerArguments>
                     <fork>true</fork>
                 </configuration>
@@ -123,7 +123,7 @@
                     <dependency>
                         <groupId>org.projectlombok</groupId>
                         <artifactId>lombok</artifactId>
-                        <version>1.14.8</version>
+                        <version>${lombok.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
