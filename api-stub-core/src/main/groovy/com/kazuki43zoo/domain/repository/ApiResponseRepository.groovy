@@ -87,7 +87,7 @@ interface ApiResponseRepository {
     @Update('''
         UPDATE mock_api_response
         SET
-            data_key = #{dataKey}, status_code = #{statusCode}, header = #{header}, body = #{body}
+            data_key = IFNULL(#{dataKey},''), status_code = #{statusCode}, header = #{header}, body = #{body}
             , body_editor_mode = #{bodyEditorMode}, attachment_file = #{attachmentFile}, file_name = #{fileName}
             , waiting_msec = #{waitingMsec}, description = #{description}
         WHERE
