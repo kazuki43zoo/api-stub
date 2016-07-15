@@ -22,10 +22,16 @@ If you use a STS(or Eclipse), please install the Groovy Eclipse plugin. About ho
 
 * https://github.com/groovy/groovy-eclipse/wiki
 
+## Clone project
+
+```bash
+$ git clone https://github.com/kazuki43zoo/api-stub.git
+```
 
 ## Build
 
 ```bash
+$ cd api-stub
 $ ./mvnw clean install
 ```
 
