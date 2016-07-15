@@ -21,10 +21,16 @@ IDEとしてSTS(又はEclipse)を使用する場合は、Groovy Eclipseををイ
 
 * https://github.com/groovy/groovy-eclipse/wiki
 
+## プロジェクトのクローン(ダウンロード)
+
+```bash
+$ git clone https://github.com/kazuki43zoo/api-stub.git
+```
 
 ## ビルド
 
 ```bash
+$ cd api-stub
 $ ./mvnw clean install
 ```
 
