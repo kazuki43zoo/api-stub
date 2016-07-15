@@ -121,7 +121,7 @@ interface ApiResponseRepository {
     ''')
     void deleteAllHistory(int id);
 
-    class SqlProvider {
+    static class SqlProvider {
         public String findAll(
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
             return new SQL() {
