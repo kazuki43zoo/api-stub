@@ -99,7 +99,7 @@ interface ApiResponseRepository {
         DELETE FROM
             mock_api_response
         WHERE
-            id = #{id}"
+            id = #{id}
     ''')
     void delete(int id);
 
