@@ -126,21 +126,23 @@ class ApiStubRestController {
     }
 
     private String extractKey(String path, String method, HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException {
-        String key = null;
         Api api = apiService.findOne(path, method);
-        if (api != null) {
-            KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
-            if (keyExtractor != null && api.getExpressions() != null && api.getKeyGeneratingStrategy() != null) {
-                String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
-                        .filter(StringUtils::hasLength)
-                        .collect(Collectors.toList())
-                        .toArray(new String[]{});
-                try {
-                    List<String> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
-                    key = api.getKeyGeneratingStrategy().generate(keys);
-                } catch (Exception e) {/*Skip*/}
-            }
+        if (api == null) {
+            return null;
         }
+        KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
+        if (keyExtractor == null || api.getExpressions() == null || api.getKeyGeneratingStrategy() == null) {
+            return null;
+        }
+        String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
+                .filter(StringUtils::hasLength)
+                .collect(Collectors.toList())
+                .toArray(new String[]{});
+        String key = null;
+        try {
+            List<String> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
+            key = api.getKeyGeneratingStrategy().generate(keys);
+        } catch (Exception e) {/*Skip*/}
         return key;
     }
 
