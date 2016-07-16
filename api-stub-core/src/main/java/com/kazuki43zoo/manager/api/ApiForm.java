@@ -1,11 +1,10 @@
 package com.kazuki43zoo.manager.api;
 
-
+import com.kazuki43zoo.component.validation.HttpMethod;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
@@ -16,11 +15,11 @@ class ApiForm implements Serializable {
     @NotEmpty
     @Size(max = 256)
     private String path;
-    @Pattern(regexp = "GET|POST|PUT|DELETE|PATCH", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @NotEmpty
+    @HttpMethod
     private String method;
     private String keyExtractor;
     private KeyGeneratingStrategy keyGeneratingStrategy;
     private List<String> expressions;
     private String description;
-
 }

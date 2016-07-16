@@ -1,4 +1,4 @@
-package com.kazuki43zoo.component;
+package com.kazuki43zoo.component.web;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

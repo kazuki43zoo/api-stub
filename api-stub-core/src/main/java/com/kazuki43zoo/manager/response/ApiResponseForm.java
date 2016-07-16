@@ -1,6 +1,6 @@
 package com.kazuki43zoo.manager.response;
 
-
+import com.kazuki43zoo.component.validation.HttpMethod;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +17,8 @@ class ApiResponseForm implements Serializable {
     @NotEmpty
     @Size(max = 256)
     private String path;
-    @Pattern(regexp = "GET|POST|PUT|DELETE|PATCH", flags = Pattern.Flag.CASE_INSENSITIVE)
+    @NotEmpty
+    @HttpMethod
     private String method;
     private String dataKey;
     @Min(100)
@@ -31,5 +32,4 @@ class ApiResponseForm implements Serializable {
     private Long waitingMsec;
     private String description;
     private boolean saveHistory;
-
 }

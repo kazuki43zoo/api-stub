@@ -1,6 +1,6 @@
 package com.kazuki43zoo.manager.response;
 
-import com.kazuki43zoo.component.DownloadSupport;
+import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
