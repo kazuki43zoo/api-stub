@@ -36,9 +36,13 @@ interface ApiRepository {
 
     @Insert('''
         INSERT INTO mock_api
-            (path, method, key_extractor, key_generating_strategy, expressions, description)
+            (
+                path, method, key_extractor, key_generating_strategy, expressions, description
+            )
         VALUES
-            (#{path}, UPPER(#{method}), #{keyExtractor}, #{keyGeneratingStrategy}, #{expressions}, #{description})
+            (
+                #{path}, UPPER(#{method}), #{keyExtractor}, #{keyGeneratingStrategy}, #{expressions}, #{description}
+            )
     ''')
     @Options(useGeneratedKeys = true)
     void create(Api api)
@@ -46,7 +50,8 @@ interface ApiRepository {
     @Update('''
         UPDATE mock_api
         SET
-            description = #{description}, key_extractor = #{keyExtractor}, key_generating_strategy = #{keyGeneratingStrategy}, expressions = #{expressions}
+            description = #{description}, key_extractor = #{keyExtractor}
+            , key_generating_strategy = #{keyGeneratingStrategy}, expressions = #{expressions}
         WHERE
             id = #{id}
     ''')
@@ -54,7 +59,7 @@ interface ApiRepository {
 
     @Delete('''
         DELETE FROM
-            mock_api
+           mock_api
         WHERE
             id = #{id}
     ''')

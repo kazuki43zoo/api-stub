@@ -8,6 +8,8 @@ import org.springframework.util.StringUtils
 @Mapper
 interface ApiResponseRepository {
 
+
+
     @SelectProvider(type = SqlProvider.class, method = "findAll")
     List<ApiResponse> findAll(
             @Param("path") String path, @Param("method") String method, @Param("description") String description)
@@ -16,7 +18,9 @@ interface ApiResponseRepository {
         SELECT
             h.id, h.sub_id, o.path, o.method, o.data_key, h.status_code, h.description, h.created_at
         FROM
-            mock_api_response_history h JOIN mock_api_response o ON o.id = h.id
+            mock_api_response_history h
+        INNER JOIN
+            mock_api_response o ON o.id = h.id
         WHERE
             h.id = #{id}
         ORDER BY
@@ -26,7 +30,8 @@ interface ApiResponseRepository {
 
     @Select('''
         SELECT
-            id, path, method, data_key, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description
+            id, path, method, data_key, status_code, header, body, body_editor_mode
+            , attachment_file, file_name, waiting_msec, description
         FROM
             mock_api_response
         WHERE
@@ -41,7 +46,8 @@ interface ApiResponseRepository {
 
     @Select('''
         SELECT
-            id, path, method, data_key, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description
+            id, path, method, data_key, status_code, header, body, body_editor_mode
+            , attachment_file, file_name, waiting_msec, description
         FROM
             mock_api_response
         WHERE
@@ -64,19 +70,28 @@ interface ApiResponseRepository {
 
     @Insert('''
         INSERT INTO mock_api_response
-            (path, method, data_key, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description)
+            (
+                path, method, data_key, status_code, header, body, body_editor_mode
+                , attachment_file, file_name, waiting_msec, description
+            )
         VALUES
-            (#{path}, UPPER(#{method}), IFNULL(#{dataKey},''), #{statusCode}, #{header}, #{body}, #{bodyEditorMode}, #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})
+            (
+                #{path}, UPPER(#{method}), IFNULL(#{dataKey},''), #{statusCode}, #{header}, #{body}, #{bodyEditorMode}
+                , #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})
     ''')
     @Options(useGeneratedKeys = true)
     void create(ApiResponse mockResponse)
 
     @Insert('''
         INSERT INTO mock_api_response_history
-            (id, sub_id, status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec, description, created_at)
+            (
+                id, sub_id, status_code, header, body, body_editor_mode
+                , attachment_file, file_name, waiting_msec, description, created_at
+            )
         SELECT
-            id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id}), status_code, header
-            , body, body_editor_mode, attachment_file, file_name, waiting_msec, description, CURRENT_TIMESTAMP
+            id, (SELECT IFNULL(MAX(sub_id), 0) + 1 FROM mock_api_response_history WHERE id = #{id})
+            , status_code, header, body, body_editor_mode, attachment_file, file_name, waiting_msec
+            , description, CURRENT_TIMESTAMP
         FROM
             mock_api_response
         WHERE
@@ -87,9 +102,9 @@ interface ApiResponseRepository {
     @Update('''
         UPDATE mock_api_response
         SET
-            data_key = IFNULL(#{dataKey},''), status_code = #{statusCode}, header = #{header}, body = #{body}
-            , body_editor_mode = #{bodyEditorMode}, attachment_file = #{attachmentFile}, file_name = #{fileName}
-            , waiting_msec = #{waitingMsec}, description = #{description}
+            data_key = IFNULL(#{dataKey},''), status_code = #{statusCode}, header = #{header}
+            , body = #{body}, body_editor_mode = #{bodyEditorMode}, attachment_file = #{attachmentFile}
+            , file_name = #{fileName}, waiting_msec = #{waitingMsec}, description = #{description}
         WHERE
             id = #{id}
     ''')
