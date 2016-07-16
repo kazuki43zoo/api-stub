@@ -94,7 +94,7 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-2 col-sm-2">
                 <button type="submit" name="create" class="btn btn-default" th:id="saveButton"
                         th:if="${apiResponse == null}">
                     <span class="glyphicon glyphicon-floppy-save"></span>
@@ -110,6 +110,11 @@
                     <span class="glyphicon glyphicon-trash"></span>
                     <span th:text="#{action.delete}"></span>
                 </button>
+            </div>
+        </div>
+        <div class="form-group" th:if="${apiResponse != null}">
+            <div class="col-sm-offset-2 col-sm-2">
+                <input type="checkbox" id="saveHistory" th:field="*{saveHistory}"/> <label for="saveHistory" th:text="#{msg.saveHistory}"></label>
             </div>
         </div>
         <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">

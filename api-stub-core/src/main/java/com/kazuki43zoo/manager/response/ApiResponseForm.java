@@ -30,5 +30,6 @@ class ApiResponseForm implements Serializable {
     private boolean deleteFile;
     private Long waitingMsec;
     private String description;
+    private boolean saveHistory;
 
 }

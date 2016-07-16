@@ -126,7 +126,7 @@ class ApiResponseManagementController {
         } else if (!form.isDeleteFile()) {
             keepAttachmentFile = true;
         }
-        apiResponseService.update(id, apiResponse, keepAttachmentFile);
+        apiResponseService.update(id, apiResponse, keepAttachmentFile, form.isSaveHistory());
         return "redirect:/manager/responses/{id}";
     }
 
