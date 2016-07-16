@@ -49,7 +49,7 @@ public class ApiResponseService {
         repository.createHistory(newMockResponse.getId());
     }
 
-    public void update(int id, ApiResponse newMockResponse, boolean keepAttachmentFile) {
+    public void update(int id, ApiResponse newMockResponse, boolean keepAttachmentFile, boolean saveHistory) {
         newMockResponse.setId(id);
         if (keepAttachmentFile) {
             ApiResponse mockResponse = findOne(id);
@@ -57,7 +57,9 @@ public class ApiResponseService {
             newMockResponse.setFileName(mockResponse.getFileName());
         }
         repository.update(newMockResponse);
-        repository.createHistory(id);
+        if (saveHistory) {
+            repository.createHistory(id);
+        }
     }
 
 
