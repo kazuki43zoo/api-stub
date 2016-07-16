@@ -150,6 +150,9 @@ class ApiResponseManagementController {
             return "redirect:/manager/responses";
         }
         List<ApiResponse> apiResponses = apiResponseService.findAllHistoryById(id);
+        if (apiResponses.isEmpty()) {
+            return "redirect:/manager/responses/{id}";
+        }
         Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
 
         model.addAttribute(apiResponse);
@@ -160,12 +163,18 @@ class ApiResponseManagementController {
         return "response/historyList";
     }
 
+    @RequestMapping(path = "{id}/histories", method = RequestMethod.POST, params = "delete")
+    public String deleteHistories(@PathVariable int id, @RequestParam List<Integer> subIds) {
+        apiResponseService.deleteHistories(id, subIds);
+        return "redirect:/manager/responses/{id}/histories";
+    }
+
+
     @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.GET)
-    public String history(@PathVariable int id, @PathVariable int subId, Model model, RedirectAttributes redirectAttributes) throws IOException {
+    public String history(@PathVariable int id, @PathVariable int subId, Model model) throws IOException {
         ApiResponse apiResponse = apiResponseService.findHistory(id, subId);
         if (apiResponse == null) {
-            redirectAttributes.addAttribute("id", id);
-            return "redirect:/manager/responses/{id}";
+            return "redirect:/manager/responses/{id}/histories";
         }
         ApiResponseForm form = new ApiResponseForm();
         BeanUtils.copyProperties(apiResponse, form, "body");
@@ -183,13 +192,13 @@ class ApiResponseManagementController {
 
 
     @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "restore")
-    public String restoreHistory(@PathVariable int id, @PathVariable int subId) throws IOException {
+    public String restoreHistory(@PathVariable int id, @PathVariable int subId) {
         apiResponseService.restoreHistory(id, subId);
         return "redirect:/manager/responses/{id}";
     }
 
     @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "delete")
-    public String deleteHistory(@PathVariable int id, @PathVariable int subId) throws IOException {
+    public String deleteHistory(@PathVariable int id, @PathVariable int subId) {
         apiResponseService.deleteHistory(id, subId);
         return "redirect:/manager/responses/{id}/histories";
     }
