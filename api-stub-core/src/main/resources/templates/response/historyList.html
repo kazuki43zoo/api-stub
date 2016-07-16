@@ -14,28 +14,61 @@
 
     <h2 th:text="#{title.responseHistoryList(${apiResponse.method},${apiResponse.path})}"></h2>
 
-    <table class="table table-striped">
-        <tr>
-            <th></th>
-            <th th:text="#{dataKey}" th:if="${api != null}"></th>
-            <th th:text="#{httpStatusCode}"></th>
-            <th th:text="#{description}"></th>
-            <th th:text="#{createdAt}"></th>
-        </tr>
-        <tr th:each="apiResponseHistory : ${apiResponses}">
-            <td><a class="btn btn-default"
-                   th:href="@{/manager/responses/{id}/histories/{subId}(id=${apiResponseHistory.id},subId=${apiResponseHistory.subId})}">
-                <span class="glyphicon glyphicon-share-alt"></span>
-                <span th:text="#{action.view}"></span>
-            </a>
-            </td>
-            <td th:text="${apiResponseHistory.dataKey}" th:if="${api != null}"></td>
-            <td th:text="${apiResponseHistory.statusCode}"></td>
-            <td th:text="${apiResponseHistory.description}"></td>
-            <td th:text="${apiResponseHistory.createdAt}"></td>
-        </tr>
-    </table>
-
+    <form method="post">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    <label>
+                        <input type="checkbox" id="toggleCheckboxes"/>
+                    </label>
+                </th>
+                <th></th>
+                <th th:text="#{dataKey}" th:if="${api != null}"></th>
+                <th th:text="#{httpStatusCode}"></th>
+                <th th:text="#{description}"></th>
+                <th th:text="#{createdAt}"></th>
+            </tr>
+            <tr th:each="apiResponseHistory : ${apiResponses}">
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="subIds" th:value="${apiResponseHistory.subId}"/>
+                        </label>
+                    </div>
+                </td>
+                <td><a class="btn btn-default"
+                       th:href="@{/manager/responses/{id}/histories/{subId}(id=${apiResponseHistory.id},subId=${apiResponseHistory.subId})}">
+                    <span class="glyphicon glyphicon-share-alt"></span>
+                    <span th:text="#{action.view}"></span>
+                </a>
+                </td>
+                <td th:text="${apiResponseHistory.dataKey}" th:if="${api != null}"></td>
+                <td th:text="${apiResponseHistory.statusCode}"></td>
+                <td th:text="${apiResponseHistory.description}"></td>
+                <td th:text="${apiResponseHistory.createdAt}"></td>
+            </tr>
+        </table>
+        <div class="form-group">
+            <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponses)}">
+                <span class="glyphicon glyphicon-trash"></span>
+                <span th:text="#{action.delete}"></span>
+            </button>
+        </div>
+        <div id="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <p th:text="#{msg.confirmDelete}">Do delete ?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="delete" class="btn btn-default">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <div class="form-horizontal">
         <div class="form-group">
             <div class="col-sm-10">
@@ -51,6 +84,7 @@
 
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/app/response/historyList.js}"></script>
 
 </body>
 </html>
