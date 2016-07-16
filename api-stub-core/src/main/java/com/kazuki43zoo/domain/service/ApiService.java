@@ -16,7 +16,7 @@ public class ApiService {
     ApiRepository repository;
 
     public Api findOne(String path, String method) {
-        return repository.findOneByUk(path, method.toUpperCase());
+        return repository.findOneByUk(path, method);
     }
 
     public Api findOne(int id) {
