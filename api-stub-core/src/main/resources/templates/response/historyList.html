@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
-<body>
+<body th:with="hasApi=${api != null}">
 
 <nav th:replace="nav :: #topNav"></nav>
 
@@ -23,7 +23,7 @@
                     </label>
                 </th>
                 <th></th>
-                <th th:text="#{dataKey}" th:if="${api != null}"></th>
+                <th th:text="#{dataKey}" th:if="${hasApi}"></th>
                 <th th:text="#{httpStatusCode}"></th>
                 <th th:text="#{description}"></th>
                 <th th:text="#{createdAt}"></th>
@@ -42,7 +42,7 @@
                     <span th:text="#{action.view}"></span>
                 </a>
                 </td>
-                <td th:text="*{dataKey}" th:if="${api != null}"></td>
+                <td th:text="*{dataKey}" th:if="${hasApi}"></td>
                 <td th:text="*{statusCode}"></td>
                 <td th:text="*{description}"></td>
                 <td th:text="*{#temporals.format(createdAt,'uuuu/MM/dd HH:mm:ss')}"></td>

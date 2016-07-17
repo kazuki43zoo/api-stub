@@ -6,29 +6,31 @@
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
-<body>
+<body th:with="isCreate=${api == null},isUpdate=${api != null}">
 
 <nav th:replace="nav :: #topNav"></nav>
 
 <div class="container">
+
     <h2 th:text="#{title.apiForm}"></h2>
+
     <form th:object="${apiForm}" method="post" class="form-horizontal">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"
-                   th:classappend="${api == null ? 'required' : ''}"></label>
+                   th:classappend="${isCreate ? 'required' : ''}"></label>
             <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"
-                       th:readonly="${api != null}"/>
+                       th:readonly="${isUpdate}"/>
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"
-                       th:readonly="${api != null}"/>
+                       th:readonly="${isUpdate}"/>
                 <span th:errors="*{method}"></span>
             </div>
             <a class="btn btn-default"
                th:href="@{/manager/responses?path={path}&amp;method={method}&amp;description=(path=${api.path},method=${api.method})}"
-               th:if="${api != null}">
+               th:if="${isUpdate}">
                 <span class="glyphicon glyphicon-share-alt"></span>
                 <span th:text="#{title.responseList}"></span>
             </a>
@@ -46,9 +48,8 @@
             <div class="col-sm-3">
                 <select class="form-control" id="keyExtractor" th:field="*{keyExtractor}">
                     <option value="" th:text="#{KeyExtractor.NONE}"></option>
-                    <option th:each="keyExtractor : ${keyExtractors}"
-                            th:value="${keyExtractor}"
-                            th:text="#{'KeyExtractor.'+${keyExtractor}}"></option>
+                    <option th:each="keyExtractor : ${keyExtractors}" th:value="${keyExtractor}"
+                            th:text="#{'KeyExtractor.' + ${keyExtractor}}"></option>
                 </select>
             </div>
         </div>
@@ -91,24 +92,23 @@
                     <option value="" th:text="#{KeyGeneratingStrategy.NONE}"></option>
                     <option th:each="keyGeneratingStrategy : ${keyGeneratingStrategies}"
                             th:value="${keyGeneratingStrategy}"
-                            th:text="#{'KeyGeneratingStrategy.'+${keyGeneratingStrategy}}"></option>
+                            th:text="#{'KeyGeneratingStrategy.' + ${keyGeneratingStrategy}}"></option>
                 </select>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" name="create" class="btn btn-default" th:id="saveButton"
-                        th:if="${api == null}">
+                <button type="submit" name="create" class="btn btn-default" th:id="saveButton" th:if="${isCreate}">
                     <span class="glyphicon glyphicon-floppy-save"></span>
                     <span th:text="#{action.save}"></span>
                 </button>
                 <button type="submit" id="updateButton" name="update" class="btn btn-default" th:id="saveButton"
-                        th:if="${api != null}">
+                        th:if="${isUpdate}">
                     <span class="glyphicon glyphicon-floppy-save"></span>
                     <span th:text="#{action.save}"></span>
                 </button>
                 <button type="button" name="delete" class="btn btn-default" data-toggle="modal"
-                        data-target="#deleteModal" th:if="${api != null}">
+                        data-target="#deleteModal" th:if="${isUpdate}">
                     <span class="glyphicon glyphicon-trash"></span>
                     <span th:text="#{action.delete}"></span>
                 </button>
@@ -128,8 +128,8 @@
                 </form>
             </div>
         </div>
-
     </div>
+
 </div>
 
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>

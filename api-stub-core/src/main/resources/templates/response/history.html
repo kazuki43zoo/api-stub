@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
-<body>
+<body th:with="hasApi=${api != null}">
 
 <nav th:replace="nav :: #topNav"></nav>
 
@@ -15,7 +15,7 @@
     <h2 th:text="#{title.responseHistory(${apiResponse.method},${apiResponse.path})}"></h2>
 
     <form th:object="${apiResponseForm}" class="form-horizontal">
-        <div class="form-group" th:if="${api != null}">
+        <div class="form-group" th:if="${hasApi}">
             <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
             <div class="col-sm-7">
                 <input type="text" class="form-control" id="dataKey" th:field="*{dataKey}" readonly="readonly"/>
@@ -44,7 +44,7 @@
                 <textarea class="form-control" id="body" rows="15" th:field="*{body}" readonly="readonly"></textarea>
             </div>
             <div class="col-sm-offset-2 col-sm-10"
-                 th:if="${apiResponse != null and apiResponse.fileName != null}">
+                 th:if="${apiResponse.fileName != null}">
                 <a th:href="@{/manager/responses/{id}/histories/{subId}/file(id=${apiResponse.id},subId=${apiResponse.subId})}"
                    th:text="${apiResponse.fileName}"></a>
             </div>

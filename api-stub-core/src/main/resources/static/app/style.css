@@ -3,10 +3,9 @@ body {
 }
 
 .has-error span {
-    color: red;
+    color: #a94442;
 }
-
 label.required:before {
     content: "※ ";
-    color: red;
+    color: #a94442;
 }

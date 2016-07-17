@@ -6,33 +6,35 @@
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
     <link rel="stylesheet" type="text/css" th:href="@{/app/style.css}"/>
 </head>
-<body>
+<body th:with="isCreate=${apiResponse == null},isUpdate=${apiResponse != null},hasApi=${api != null}">
 
 <nav th:replace="nav :: #topNav"></nav>
 
 <div class="container">
+
     <h2 th:text="#{title.responseForm}"></h2>
+
     <form th:object="${apiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"
-                   th:classappend="${apiResponse == null ? 'required' : ''}"></label>
+                   th:classappend="${isCreate ? 'required' : ''}"></label>
             <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"
-                       th:readonly="${apiResponse != null}"/>
+                       th:readonly="${isUpdate}"/>
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"
-                       th:readonly="${apiResponse != null}"/>
+                       th:readonly="${isUpdate}"/>
                 <span th:errors="*{method}"></span>
             </div>
-            <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}" th:if="${api != null}">
+            <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}" th:if="${hasApi}">
                 <span class="glyphicon glyphicon-share-alt"></span>
                 <span th:text="#{title.apiForm}"></span>
             </a>
         </div>
         <div class="form-group"
-             th:if="${api != null and not #strings.isEmpty(api.keyExtractor) and api.keyGeneratingStrategy != null}">
+             th:if="${hasApi and not #strings.isEmpty(api.keyExtractor) and api.keyGeneratingStrategy != null}">
             <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
             <div class="col-sm-7" th:classappend="${#fields.hasErrors('dataKey') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="dataKey" th:placeholder="#{dataKey}" th:field="*{dataKey}"/>
@@ -80,7 +82,7 @@
                 <span th:errors="*{file}"></span>
             </div>
             <div class="col-sm-offset-2 col-sm-10"
-                 th:if="${apiResponse != null and apiResponse.fileName != null}">
+                 th:if="${isUpdate and apiResponse.fileName != null}">
                 <a th:href="@{/manager/responses/{id}/file(id=${apiResponse.id})}"
                    th:text="${apiResponse.fileName}"></a>
                 <input type="checkbox" id="deleteFile" th:field="*{deleteFile}"/>
@@ -102,27 +104,26 @@
         </div>
         <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" name="create" class="btn btn-default" th:id="saveButton"
-                        th:if="${apiResponse == null}">
+                <button type="submit" name="create" class="btn btn-default" th:id="saveButton" th:if="${isCreate}">
                     <span class="glyphicon glyphicon-floppy-save"></span>
                     <span th:text="#{action.save}"></span>
                 </button>
                 <button type="submit" id="updateButton" name="update" class="btn btn-default" th:id="saveButton"
-                        th:if="${apiResponse != null}">
+                        th:if="${isUpdate}">
                     <span class="glyphicon glyphicon-floppy-save"></span>
                     <span th:text="#{action.save}"></span>
                 </button>
                 <button type="button" name="delete" class="btn btn-default" data-toggle="modal"
-                        data-target="#deleteModal" th:if="${apiResponse != null}">
+                        data-target="#deleteModal" th:if="${isUpdate}">
                     <span class="glyphicon glyphicon-trash"></span>
                     <span th:text="#{action.delete}"></span>
                 </button>
             </div>
         </div>
-        <div class="form-group" th:if="${apiResponse != null}">
+        <div class="form-group" th:if="${isUpdate}">
             <div class="col-sm-offset-2 col-sm-10">
-                <input type="checkbox" id="saveHistory" th:field="*{saveHistory}"/> <label for="saveHistory"
-                                                                                           th:text="#{msg.saveHistory}"></label>
+                <input type="checkbox" id="saveHistory" th:field="*{saveHistory}"/>
+                <label for="saveHistory" th:text="#{msg.saveHistory}"></label>
             </div>
         </div>
         <div th:replace="dialog :: #deleteModal"></div>
@@ -136,7 +137,7 @@
                     <span th:text="#{title.responseList}"></span>
                 </a>
                 <a class="btn btn-default" th:href="@{/manager/responses/{id}/histories(id=${apiResponse.id})}"
-                   th:if="${apiResponse != null and apiResponse.historyNumber != 0}">
+                   th:if="${isUpdate and apiResponse.historyNumber != 0}">
                     <span class="glyphicon glyphicon-share-alt"></span>
                     <span th:text="#{action.viewChangeHistories}"></span>
                 </a>
