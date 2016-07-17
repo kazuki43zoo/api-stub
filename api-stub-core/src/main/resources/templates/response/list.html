@@ -91,7 +91,7 @@
         </table>
         <div class="form-group">
             <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
-                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponses)}">
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponseList)}">
                 <span class="glyphicon glyphicon-trash"></span>
                 <span th:text="#{action.delete}"></span>
             </button>
