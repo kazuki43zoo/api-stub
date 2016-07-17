@@ -140,7 +140,7 @@
                     <span th:text="#{title.responseList}"></span>
                 </a>
                 <a class="btn btn-default" th:href="@{/manager/responses/{id}/histories(id=${apiResponse.id})}"
-                   th:if="${apiResponse != null}">
+                   th:if="${apiResponse != null and apiResponse.historyNumber != 0}">
                     <span class="glyphicon glyphicon-share-alt"></span>
                     <span th:text="#{action.viewChangeHistories}"></span>
                 </a>

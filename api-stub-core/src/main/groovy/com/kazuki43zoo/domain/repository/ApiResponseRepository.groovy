@@ -8,8 +8,6 @@ import org.springframework.util.StringUtils
 @Mapper
 interface ApiResponseRepository {
 
-
-
     @SelectProvider(type = SqlProvider.class, method = "findAll")
     List<ApiResponse> findAll(
             @Param("path") String path, @Param("method") String method, @Param("description") String description)
@@ -48,6 +46,7 @@ interface ApiResponseRepository {
         SELECT
             id, path, method, data_key, status_code, header, body, body_editor_mode
             , attachment_file, file_name, waiting_msec, description
+            , SELECT COUNT(sub_id) FROM mock_api_response_history WHERE id = #{id} AS historyNumber
         FROM
             mock_api_response
         WHERE

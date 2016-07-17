@@ -23,4 +23,5 @@ public class ApiResponse implements Serializable {
     private Long waitingMsec;
     private String description;
     private LocalDateTime createdAt;
+    private int historyNumber;
 }
