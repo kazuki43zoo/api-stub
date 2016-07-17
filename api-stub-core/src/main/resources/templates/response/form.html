@@ -14,7 +14,8 @@
     <h2 th:text="#{title.responseForm}"></h2>
     <form th:object="${apiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
+            <label for="path" class="col-sm-2 control-label" th:text="#{api}"
+                   th:classappend="${apiResponse == null ? 'required' : ''}"></label>
             <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"
                        th:readonly="${apiResponse != null}"/>
@@ -30,7 +31,8 @@
                 <span th:text="#{title.apiForm}"></span>
             </a>
         </div>
-        <div class="form-group" th:if="${api != null and api.keyGeneratingStrategy != null}">
+        <div class="form-group"
+             th:if="${api != null and not #strings.isEmpty(api.keyExtractor) and api.keyGeneratingStrategy != null}">
             <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
             <div class="col-sm-7" th:classappend="${#fields.hasErrors('dataKey') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="dataKey" th:placeholder="#{dataKey}" th:field="*{dataKey}"/>
@@ -86,6 +88,11 @@
             </div>
         </div>
         <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10"
+                 th:utext="#{guidance.httpBody}">
+            </div>
+        </div>
+        <div class="form-group">
             <label for="waitingMsec" class="col-sm-2 control-label" th:text="#{waitingMillisecond}"></label>
             <div class="col-sm-3" th:classappend="${#fields.hasErrors('waitingMsec') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="waitingMsec" th:placeholder="#{waitingMillisecond}"
@@ -114,7 +121,8 @@
         </div>
         <div class="form-group" th:if="${apiResponse != null}">
             <div class="col-sm-offset-2 col-sm-10">
-                <input type="checkbox" id="saveHistory" th:field="*{saveHistory}"/> <label for="saveHistory" th:text="#{msg.saveHistory}"></label>
+                <input type="checkbox" id="saveHistory" th:field="*{saveHistory}"/> <label for="saveHistory"
+                                                                                           th:text="#{msg.saveHistory}"></label>
             </div>
         </div>
         <div th:replace="dialog :: #deleteModal"></div>

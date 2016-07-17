@@ -5,3 +5,8 @@ body {
 .has-error span {
     color: red;
 }
+
+label.required:before {
+    content: "※ ";
+    color: red;
+}
