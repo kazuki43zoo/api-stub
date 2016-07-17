@@ -68,25 +68,25 @@
                 <th th:text="#{httpStatusCode}"></th>
                 <th th:text="#{description}"></th>
             </tr>
-            <tr th:each="apiResponse : ${apiResponseList}">
+            <tr th:each="apiResponse : ${apiResponseList}" th:object="${apiResponse}">
                 <td>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="ids" th:value="${apiResponse.id}"/>
+                            <input type="checkbox" name="ids" th:value="*{id}"/>
                         </label>
                     </div>
                 </td>
                 <td>
-                    <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=${apiResponse.id})}">
+                    <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=*{id})}">
                         <span class="glyphicon glyphicon-edit"></span>
                         <span th:text="#{action.edit}"></span>
                     </a>
                 </td>
-                <td th:text="${apiResponse.path}"></td>
-                <td th:text="${apiResponse.method}"></td>
-                <td th:text="${apiResponse.dataKey}"></td>
-                <td th:text="${apiResponse.statusCode}"></td>
-                <td th:text="${apiResponse.description}"></td>
+                <td th:text="*{path}"></td>
+                <td th:text="*{method}"></td>
+                <td th:text="*{dataKey}"></td>
+                <td th:text="*{statusCode}"></td>
+                <td th:text="*{description}"></td>
             </tr>
         </table>
         <div class="form-group">

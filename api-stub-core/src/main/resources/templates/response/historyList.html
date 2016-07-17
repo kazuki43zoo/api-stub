@@ -28,24 +28,24 @@
                 <th th:text="#{description}"></th>
                 <th th:text="#{createdAt}"></th>
             </tr>
-            <tr th:each="apiResponseHistory : ${apiResponseList}">
+            <tr th:each="apiResponseHistory : ${apiResponseList}" th:object="${apiResponseHistory}">
                 <td>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="subIds" th:value="${apiResponseHistory.subId}"/>
+                            <input type="checkbox" name="subIds" th:value="*{subId}"/>
                         </label>
                     </div>
                 </td>
                 <td><a class="btn btn-default"
-                       th:href="@{/manager/responses/{id}/histories/{subId}(id=${apiResponseHistory.id},subId=${apiResponseHistory.subId})}">
+                       th:href="@{/manager/responses/{id}/histories/{subId}(id=*{id},subId=*{subId})}">
                     <span class="glyphicon glyphicon-share-alt"></span>
                     <span th:text="#{action.view}"></span>
                 </a>
                 </td>
-                <td th:text="${apiResponseHistory.dataKey}" th:if="${api != null}"></td>
-                <td th:text="${apiResponseHistory.statusCode}"></td>
-                <td th:text="${apiResponseHistory.description}"></td>
-                <td th:text="${#temporals.format(apiResponseHistory.createdAt,'uuuu/MM/dd HH:mm:ss')}"></td>
+                <td th:text="*{dataKey}" th:if="${api != null}"></td>
+                <td th:text="*{statusCode}"></td>
+                <td th:text="*{description}"></td>
+                <td th:text="*{#temporals.format(createdAt,'uuuu/MM/dd HH:mm:ss')}"></td>
             </tr>
         </table>
         <div class="form-group">

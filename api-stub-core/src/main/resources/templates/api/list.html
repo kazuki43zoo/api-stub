@@ -66,23 +66,23 @@
                 <th th:text="#{httpMethod}"></th>
                 <th th:text="#{description}"></th>
             </tr>
-            <tr th:each="api : ${apiList}">
+            <tr th:each="api : ${apiList}" th:object="${api}">
                 <td>
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" name="ids" th:value="${api.id}"/>
+                            <input type="checkbox" name="ids" th:value="*{id}"/>
                         </label>
                     </div>
                 </td>
                 <td>
-                    <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}">
+                    <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=*{id})}">
                         <span class="glyphicon glyphicon-edit"></span>
                         <span th:text="#{action.edit}"></span>
                     </a>
                 </td>
-                <td th:text="${api.path}"></td>
-                <td th:text="${api.method}"></td>
-                <td th:text="${api.description}"></td>
+                <td th:text="*{path}"></td>
+                <td th:text="*{method}"></td>
+                <td th:text="*{description}"></td>
             </tr>
         </table>
         <div class="form-group">
