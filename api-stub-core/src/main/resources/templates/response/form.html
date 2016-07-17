@@ -15,12 +15,12 @@
     <form th:object="${apiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
-            <div class="col-sm-5">
+            <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"
                        th:readonly="${apiResponse != null}"/>
                 <span th:errors="*{path}"></span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"
                        th:readonly="${apiResponse != null}"/>
                 <span th:errors="*{method}"></span>
@@ -32,14 +32,14 @@
         </div>
         <div class="form-group" th:if="${api != null and api.keyGeneratingStrategy != null}">
             <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
-            <div class="col-sm-7">
+            <div class="col-sm-7" th:classappend="${#fields.hasErrors('dataKey') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="dataKey" th:placeholder="#{dataKey}" th:field="*{dataKey}"/>
                 <span th:errors="*{dataKey}"></span>
             </div>
         </div>
         <div class="form-group">
             <label for="description" class="col-sm-2 control-label" th:text="#{description}"></label>
-            <div class="col-sm-10">
+            <div class="col-sm-10" th:classappend="${#fields.hasErrors('description') ? 'has-error' : ''}">
                 <textarea class="form-control" id="description" placeholder="Description" rows="2"
                           th:field="*{description}"></textarea>
                 <span th:errors="*{description}"></span>
@@ -47,13 +47,13 @@
         </div>
         <div class="form-group">
             <label for="header" class="col-sm-2 control-label" th:text="#{httpHeader}"></label>
-            <div class="col-sm-6">
+            <div class="col-sm-6" th:classappend="${#fields.hasErrors('header') ? 'has-error' : ''}">
                 <textarea class="form-control" id="header" th:placeholder="#{httpHeader}" rows="3"
                           th:field="*{header}"></textarea>
                 <span th:errors="*{header}"></span>
             </div>
             <label for="statusCode" class="col-sm-2 control-label" th:text="#{httpStatusCode}"></label>
-            <div class="col-sm-2">
+            <div class="col-sm-2" th:classappend="${#fields.hasErrors('statusCode') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="statusCode" th:placeholder="#{httpStatusCode}"
                        th:field="*{statusCode}"/>
                 <span th:errors="*{statusCode}"></span>
@@ -68,12 +68,12 @@
                     <option value="text">text</option>
                 </select>
             </label>
-            <div class="col-sm-10">
+            <div class="col-sm-10" th:classappend="${#fields.hasErrors('body') ? 'has-error' : ''}">
                 <div class="form-control" id="bodyEditor" th:text="*{body}" style="height: 300px;"></div>
                 <input type="hidden" name="body" th:field="*{body}"/>
                 <span th:errors="*{body}"></span>
             </div>
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-2 col-sm-10" th:classappend="${#fields.hasErrors('file') ? 'has-error' : ''}">
                 <input type="file" class="form-control" id="file" th:placeholder="#{uploadFile}" th:field="*{file}"/>
                 <span th:errors="*{file}"></span>
             </div>
@@ -87,7 +87,7 @@
         </div>
         <div class="form-group">
             <label for="waitingMsec" class="col-sm-2 control-label" th:text="#{waitingMillisecond}"></label>
-            <div class="col-sm-3">
+            <div class="col-sm-3" th:classappend="${#fields.hasErrors('waitingMsec') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="waitingMsec" th:placeholder="#{waitingMillisecond}"
                        th:field="*{waitingMsec}"/>
                 <span th:errors="*{waitingMsec}"></span>

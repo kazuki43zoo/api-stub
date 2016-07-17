@@ -1,3 +1,7 @@
 body {
     padding: 50px;
 }
+
+.has-error span {
+    color: red;
+}

@@ -17,6 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})
 @Retention(RUNTIME)
 @Pattern(regexp = "|GET|POST|PUT|DELETE|PATCH", flags = Pattern.Flag.CASE_INSENSITIVE)
+@ReportAsSingleViolation
 public @interface HttpMethod {
 
     String message() default "{com.kazuki43zoo.component.validation.HttpMethod.message}";

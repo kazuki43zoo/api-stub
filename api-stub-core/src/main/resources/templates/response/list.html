@@ -18,22 +18,22 @@
           th:object="${apiResponseSearchForm}" method="get" class="form-horizontal">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
-            <div class="col-sm-5">
+            <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"/>
-                <span th:errors="*{path}"></span>
+                <span class="error" th:errors="*{path}"></span>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
                        th:field="*{method}"/>
-                <span th:errors="*{method}"></span>
+                <span class="error" th:errors="*{method}"></span>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" th:classappend="${#fields.hasErrors('description') ? 'has-error' : ''}">
             <label for="description" class="col-sm-2 control-label" th:text="#{description}"></label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" id="description" th:placeholder="#{description}"
-                       th:field="*{description}"/>
-                <span th:errors="*{description}"></span>
+                       th:field="*{description}" th:errorclass="error"/>
+                <span class="error" th:errors="*{description}"></span>
             </div>
         </div>
         <div class="form-group">
