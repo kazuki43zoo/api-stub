@@ -59,6 +59,12 @@ class ApiResponseManagementController {
         return "response/list";
     }
 
+    @RequestMapping(method = RequestMethod.POST, params = "delete")
+    public String delete(@RequestParam List<Integer> ids) {
+        apiResponseService.delete(ids);
+        return "redirect:/manager/responses";
+    }
+
     @RequestMapping(path = "create", method = RequestMethod.GET)
     public String createForm(Model model) {
         model.addAttribute(new ApiResponseForm());
@@ -169,7 +175,6 @@ class ApiResponseManagementController {
         return "redirect:/manager/responses/{id}/histories";
     }
 
-
     @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.GET)
     public String history(@PathVariable int id, @PathVariable int subId, Model model) throws IOException {
         ApiResponse apiResponse = apiResponseService.findHistory(id, subId);
@@ -202,7 +207,6 @@ class ApiResponseManagementController {
         apiResponseService.deleteHistory(id, subId);
         return "redirect:/manager/responses/{id}/histories";
     }
-
 
     @RequestMapping(path = "{id}/histories/{subId}/file", method = RequestMethod.GET)
     public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {

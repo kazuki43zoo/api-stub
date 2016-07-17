@@ -80,6 +80,10 @@ public class ApiResponseService {
         repository.deleteAllHistory(id);
     }
 
+    public void delete(List<Integer> ids) {
+        ids.forEach(this::delete);
+    }
+
     public void deleteHistory(int id, int subId) {
         repository.deleteHistory(id, subId);
     }

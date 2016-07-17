@@ -23,7 +23,8 @@
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"/>
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
+                       th:field="*{method}"/>
                 <span th:errors="*{method}"></span>
             </div>
         </div>
@@ -52,34 +53,56 @@
         </a>
     </div>
 
-    <table class="table table-striped">
-        <tr>
-            <th></th>
-            <th th:text="#{requestPath}"></th>
-            <th th:text="#{httpMethod}"></th>
-            <th th:text="#{dataKey}"></th>
-            <th th:text="#{httpStatusCode}"></th>
-            <th th:text="#{description}"></th>
-        </tr>
-        <tr th:each="apiResponse : ${apiResponses}">
-            <td>
-                <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=${apiResponse.id})}">
-                    <span class="glyphicon glyphicon-edit"></span>
-                    <span th:text="#{action.edit}"></span>
-                </a>
-            </td>
-            <td th:text="${apiResponse.path}"></td>
-            <td th:text="${apiResponse.method}"></td>
-            <td th:text="${apiResponse.dataKey}"></td>
-            <td th:text="${apiResponse.statusCode}"></td>
-            <td th:text="${apiResponse.description}"></td>
-        </tr>
-    </table>
-
+    <form method="post">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    <label>
+                        <input type="checkbox" id="toggleCheckboxes"/>
+                    </label>
+                </th>
+                <th></th>
+                <th th:text="#{requestPath}"></th>
+                <th th:text="#{httpMethod}"></th>
+                <th th:text="#{dataKey}"></th>
+                <th th:text="#{httpStatusCode}"></th>
+                <th th:text="#{description}"></th>
+            </tr>
+            <tr th:each="apiResponse : ${apiResponses}">
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="ids" th:value="${apiResponse.id}"/>
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-default" th:href="@{/manager/responses/{id}(id=${apiResponse.id})}">
+                        <span class="glyphicon glyphicon-edit"></span>
+                        <span th:text="#{action.edit}"></span>
+                    </a>
+                </td>
+                <td th:text="${apiResponse.path}"></td>
+                <td th:text="${apiResponse.method}"></td>
+                <td th:text="${apiResponse.dataKey}"></td>
+                <td th:text="${apiResponse.statusCode}"></td>
+                <td th:text="${apiResponse.description}"></td>
+            </tr>
+        </table>
+        <div class="form-group">
+            <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponses)}">
+                <span class="glyphicon glyphicon-trash"></span>
+                <span th:text="#{action.delete}"></span>
+            </button>
+        </div>
+        <div th:replace="dialog :: #deleteModal"></div>
+    </form>
 </div>
 
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/app/response/list.js}"></script>
 
 </body>
 </html>

@@ -23,7 +23,8 @@
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"/>
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
+                       th:field="*{method}"/>
                 <span th:errors="*{method}"></span>
             </div>
         </div>
@@ -52,30 +53,52 @@
         </a>
     </div>
 
-    <table class="table table-striped">
-        <tr>
-            <th></th>
-            <th th:text="#{requestPath}"></th>
-            <th th:text="#{httpMethod}"></th>
-            <th th:text="#{description}"></th>
-        </tr>
-        <tr th:each="api : ${apis}">
-            <td>
-                <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}">
-                    <span class="glyphicon glyphicon-edit"></span>
-                    <span th:text="#{action.edit}"></span>
-                </a>
-            </td>
-            <td th:text="${api.path}"></td>
-            <td th:text="${api.method}"></td>
-            <td th:text="${api.description}"></td>
-        </tr>
-    </table>
-
+    <form method="post">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    <label>
+                        <input type="checkbox" id="toggleCheckboxes"/>
+                    </label>
+                </th>
+                <th></th>
+                <th th:text="#{requestPath}"></th>
+                <th th:text="#{httpMethod}"></th>
+                <th th:text="#{description}"></th>
+            </tr>
+            <tr th:each="api : ${apis}">
+                <td>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="ids" th:value="${api.id}"/>
+                        </label>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}">
+                        <span class="glyphicon glyphicon-edit"></span>
+                        <span th:text="#{action.edit}"></span>
+                    </a>
+                </td>
+                <td th:text="${api.path}"></td>
+                <td th:text="${api.method}"></td>
+                <td th:text="${api.description}"></td>
+            </tr>
+        </table>
+        <div class="form-group">
+            <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apis)}">
+                <span class="glyphicon glyphicon-trash"></span>
+                <span th:text="#{action.delete}"></span>
+            </button>
+        </div>
+        <div th:replace="dialog :: #deleteModal"></div>
+    </form>
 </div>
 
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script th:src="@{/app/api/list.js}"></script>
 
 </body>
 </html>

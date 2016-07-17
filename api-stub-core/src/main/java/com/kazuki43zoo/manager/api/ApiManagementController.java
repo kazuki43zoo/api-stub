@@ -1,7 +1,6 @@
 package com.kazuki43zoo.manager.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.api.key.KeyExtractor;
 import com.kazuki43zoo.domain.model.Api;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -54,7 +54,8 @@ public class ApiManagementController {
     @ModelAttribute("keyGeneratingStrategies")
     public List<String> keyGeneratingStrategies() {
         return Stream.of(KeyGeneratingStrategy.values())
-                .map(KeyGeneratingStrategy::name).collect(Collectors.toList());
+                .map(KeyGeneratingStrategy::name)
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -65,6 +66,12 @@ public class ApiManagementController {
         List<Api> apis = service.findAll(form.getPath(), form.getMethod(), form.getDescription());
         model.addAttribute("apis", apis);
         return "api/list";
+    }
+
+    @RequestMapping(method = RequestMethod.POST, params = "delete")
+    public String delete(@RequestParam List<Integer> ids) {
+        service.delete(ids);
+        return "redirect:/manager/apis";
     }
 
     @RequestMapping(path = "create", method = RequestMethod.GET)
@@ -101,8 +108,7 @@ public class ApiManagementController {
         }
         ApiForm form = new ApiForm();
         BeanUtils.copyProperties(api, form);
-        form.setExpressions(jsonObjectMapper.readValue(api.getExpressions(), new TypeReference<List<String>>() {
-        }));
+        form.setExpressions(Arrays.asList(jsonObjectMapper.readValue(api.getExpressions(), String[].class)));
         model.addAttribute(api);
         model.addAttribute(form);
         return "api/form";

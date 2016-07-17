@@ -36,9 +36,12 @@ public class ApiService {
         repository.update(newApi);
     }
 
+    public void delete(List<Integer> ids) {
+        ids.forEach(this::delete);
+    }
+
     public void delete(int id) {
         repository.delete(id);
     }
-
 
 }
