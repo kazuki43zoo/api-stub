@@ -45,7 +45,7 @@
                 <td th:text="${apiResponseHistory.dataKey}" th:if="${api != null}"></td>
                 <td th:text="${apiResponseHistory.statusCode}"></td>
                 <td th:text="${apiResponseHistory.description}"></td>
-                <td th:text="${apiResponseHistory.createdAt}"></td>
+                <td th:text="${#temporals.format(apiResponseHistory.createdAt,'uuuu/MM/dd HH:mm:ss')}"></td>
             </tr>
         </table>
         <div class="form-group">

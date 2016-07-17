@@ -17,17 +17,28 @@
     </parent>
 
     <properties>
+        <!-- for dependencies -->
         <mybatis-spring-boot.version>1.1.1</mybatis-spring-boot.version>
         <mybatis-typehandlers-jsr310.version>1.0.1</mybatis-typehandlers-jsr310.version>
         <lombok.version>1.16.8</lombok.version>
         <bootstrap.version>3.3.6</bootstrap.version>
         <ace-builds.version>1.2.3</ace-builds.version>
+        <thymeleaf-extras-java8time.version>2.1.0.RELEASE</thymeleaf-extras-java8time.version>
+        <!-- for build plugin -->
+        <groovy-eclipse-compiler.version>2.9.1-01</groovy-eclipse-compiler.version>
+        <groovy-eclipse-batch.version>2.3.7-01</groovy-eclipse-batch.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-java8time</artifactId>
+            <version>${thymeleaf-extras-java8time.version}</version>
         </dependency>
 
         <dependency>
@@ -113,12 +124,12 @@
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-compiler</artifactId>
-                        <version>2.9.1-01</version>
+                        <version>${groovy-eclipse-compiler.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.codehaus.groovy</groupId>
                         <artifactId>groovy-eclipse-batch</artifactId>
-                        <version>2.3.7-01</version>
+                        <version>${groovy-eclipse-batch.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.projectlombok</groupId>

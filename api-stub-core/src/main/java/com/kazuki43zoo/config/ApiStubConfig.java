@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 
 import java.util.Locale;
 
@@ -35,6 +36,11 @@ public class ApiStubConfig extends WebMvcConfigurerAdapter {
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("locale");
         return localeResolver;
+    }
+
+    @Bean
+    Java8TimeDialect java8TimeDialect() {
+        return new Java8TimeDialect();
     }
 
 }

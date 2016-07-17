@@ -58,7 +58,7 @@
         <div class="form-group">
             <label for="createdAt" class="col-sm-2 control-label" th:text="#{createdAt}"></label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="createdAt" th:value="${apiResponse.createdAt}"
+                <input type="text" class="form-control" id="createdAt" th:value="${#temporals.format(apiResponse.createdAt,'uuuu/MM/dd HH:mm:ss')}"
                        readonly="readonly"/>
             </div>
         </div>
