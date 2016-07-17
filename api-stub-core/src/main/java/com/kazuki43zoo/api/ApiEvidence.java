@@ -50,14 +50,15 @@ class ApiEvidence {
 
     void start() {
         info("Start.");
-        if (!properties.getEvidence().isDisabledRequest() || !properties.getEvidence().isDisabledUpload()) {
-            if (!dir.toFile().exists()) {
-                if (!this.dir.toFile().mkdirs()) {
-                    error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
-                }
-            }
-            info("Evidence Dir : {}", dir.toAbsolutePath().toString());
+        if (properties.getEvidence().isDisabledRequest() && properties.getEvidence().isDisabledUpload()) {
+            return;
         }
+        if (!dir.toFile().exists()) {
+            if (!this.dir.toFile().mkdirs()) {
+                error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
+            }
+        }
+        info("Evidence Dir : {}", dir.toAbsolutePath().toString());
     }
 
     void request(HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException, ServletException {
