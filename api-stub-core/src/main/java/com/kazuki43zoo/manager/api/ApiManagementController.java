@@ -64,7 +64,7 @@ public class ApiManagementController {
             return "api/list";
         }
         List<Api> apis = service.findAll(form.getPath(), form.getMethod(), form.getDescription());
-        model.addAttribute("apis", apis);
+        model.addAttribute(apis);
         return "api/list";
     }
 

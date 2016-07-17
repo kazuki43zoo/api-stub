@@ -28,7 +28,7 @@
                 <th th:text="#{description}"></th>
                 <th th:text="#{createdAt}"></th>
             </tr>
-            <tr th:each="apiResponseHistory : ${apiResponses}">
+            <tr th:each="apiResponseHistory : ${apiResponseList}">
                 <td>
                     <div class="checkbox">
                         <label>

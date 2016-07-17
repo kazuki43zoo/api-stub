@@ -68,7 +68,7 @@
                 <th th:text="#{httpStatusCode}"></th>
                 <th th:text="#{description}"></th>
             </tr>
-            <tr th:each="apiResponse : ${apiResponses}">
+            <tr th:each="apiResponse : ${apiResponseList}">
                 <td>
                     <div class="checkbox">
                         <label>

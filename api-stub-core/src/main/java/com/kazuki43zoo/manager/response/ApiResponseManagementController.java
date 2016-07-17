@@ -55,7 +55,7 @@ class ApiResponseManagementController {
             return "response/list";
         }
         List<ApiResponse> apiResponses = apiResponseService.findAll(form.getPath(), form.getMethod(), form.getDescription());
-        model.addAttribute("apiResponses", apiResponses);
+        model.addAttribute(apiResponses);
         return "response/list";
     }
 
@@ -162,7 +162,7 @@ class ApiResponseManagementController {
         Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
 
         model.addAttribute(apiResponse);
-        model.addAttribute("apiResponses", apiResponses);
+        model.addAttribute(apiResponses);
         if (api != null) {
             model.addAttribute(api);
         }
