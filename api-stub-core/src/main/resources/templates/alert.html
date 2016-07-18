@@ -7,6 +7,12 @@
 
 <div id="messages">
 
+    <div class="alert alert-info alert-dismissible" role="alert" th:if="${infoMessage != null}">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <span th:text="${#messages.msgWithParams(infoMessage.code.value, infoMessage.args)}"></span>
+    </div>
+
     <div class="alert alert-success alert-dismissible" role="alert" th:if="${successMessage != null}">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>

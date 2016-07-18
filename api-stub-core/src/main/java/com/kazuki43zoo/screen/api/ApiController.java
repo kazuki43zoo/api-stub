@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.api.key.KeyExtractor;
 import com.kazuki43zoo.component.message.ErrorMessage;
+import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.domain.model.Api;
@@ -114,6 +115,9 @@ public class ApiController {
         if (api == null) {
             redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/apis";
+        }
+        if (api.getKeyedResponseNumber() != 0) {
+            model.addAttribute(InfoMessage.builder().code(MessageCode.KEYED_RESPONSE_EXISTS).build());
         }
         ApiForm form = new ApiForm();
         BeanUtils.copyProperties(api, form);

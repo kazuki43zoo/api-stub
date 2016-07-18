@@ -14,4 +14,5 @@ public class Api implements Serializable {
     private KeyGeneratingStrategy keyGeneratingStrategy;
     private String expressions;
     private String description;
+    private int keyedResponseNumber;
 }

@@ -70,7 +70,7 @@
             </tr>
             <tr th:each="api : ${apiList}" th:object="${api}">
                 <td>
-                    <div class="checkbox">
+                    <div class="checkbox" th:if="*{keyedResponseNumber == 0}">
                         <label>
                             <input type="checkbox" name="ids" th:value="*{id}"/>
                         </label>

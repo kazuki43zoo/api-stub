@@ -18,7 +18,10 @@ public enum MessageCode {
     /** */
     , DATA_HAS_BEEN_DELETED("msg.dataHasBeenDeleted")
     /** */
-    , DATA_HAS_BEEN_RESTORED("msg.dataHasBeenRestored");
+    , DATA_HAS_BEEN_RESTORED("msg.dataHasBeenRestored")
+    /** */
+    , KEYED_RESPONSE_EXISTS("msg.keyedResponseExists")
+    ;
 
     private final String value;
 
