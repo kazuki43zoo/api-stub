@@ -1,9 +1,8 @@
-package com.kazuki43zoo.manager.response;
+package com.kazuki43zoo.screen.response;
 
 import com.kazuki43zoo.component.validation.HttpMethod;
 import lombok.Data;
 
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 @Data

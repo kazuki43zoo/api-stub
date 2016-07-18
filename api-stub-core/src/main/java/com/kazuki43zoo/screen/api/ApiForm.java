@@ -1,4 +1,4 @@
-package com.kazuki43zoo.manager.api;
+package com.kazuki43zoo.screen.api;
 
 import com.kazuki43zoo.component.validation.HttpMethod;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;

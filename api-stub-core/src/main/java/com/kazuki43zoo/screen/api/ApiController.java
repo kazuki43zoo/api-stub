@@ -1,4 +1,4 @@
-package com.kazuki43zoo.manager.api;
+package com.kazuki43zoo.screen.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

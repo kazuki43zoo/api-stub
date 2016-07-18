@@ -1,4 +1,4 @@
-package com.kazuki43zoo.manager.response;
+package com.kazuki43zoo.screen.response;
 
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.MessageCode;

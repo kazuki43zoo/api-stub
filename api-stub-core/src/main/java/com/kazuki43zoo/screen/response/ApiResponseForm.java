@@ -1,4 +1,4 @@
-package com.kazuki43zoo.manager.response;
+package com.kazuki43zoo.screen.response;
 
 import com.kazuki43zoo.component.validation.HttpMethod;
 import lombok.Data;
@@ -7,7 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
