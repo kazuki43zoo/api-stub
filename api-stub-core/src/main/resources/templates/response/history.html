@@ -14,6 +14,8 @@
 
     <h2 th:text="#{title.responseHistory(${apiResponse.method},${apiResponse.path})}"></h2>
 
+    <div th:replace="alert :: #messages"></div>
+
     <form th:object="${apiResponseForm}" class="form-horizontal">
         <div class="form-group" th:if="${hasApi}">
             <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>

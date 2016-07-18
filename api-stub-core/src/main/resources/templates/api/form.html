@@ -14,6 +14,8 @@
 
     <h2 th:text="#{title.apiForm}"></h2>
 
+    <div th:replace="alert :: #messages"></div>
+
     <form th:object="${apiForm}" method="post" class="form-horizontal">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"

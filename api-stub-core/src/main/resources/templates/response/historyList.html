@@ -14,6 +14,8 @@
 
     <h2 th:text="#{title.responseHistoryList(${apiResponse.method},${apiResponse.path})}"></h2>
 
+    <div th:replace="alert :: #messages"></div>
+
     <form method="post">
         <table class="table table-striped">
             <tr>

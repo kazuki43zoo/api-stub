@@ -3,6 +3,9 @@ package com.kazuki43zoo.manager.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.api.key.KeyExtractor;
+import com.kazuki43zoo.component.message.ErrorMessage;
+import com.kazuki43zoo.component.message.MessageCode;
+import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
@@ -27,7 +30,7 @@ import java.util.stream.Stream;
 @RequestMapping("/manager/apis")
 @Controller
 @SessionAttributes(types = ApiSearchForm.class)
-public class ApiManagementController {
+public class ApiController {
 
     @Autowired
     ApiService service;
@@ -64,13 +67,17 @@ public class ApiManagementController {
             return "api/list";
         }
         List<Api> apis = service.findAll(form.getPath(), form.getMethod(), form.getDescription());
+        if (apis.isEmpty()) {
+            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+        }
         model.addAttribute(apis);
         return "api/list";
     }
 
     @RequestMapping(method = RequestMethod.POST, params = "delete")
-    public String delete(@RequestParam List<Integer> ids) {
+    public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
         service.delete(ids);
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/apis";
     }
 
@@ -86,7 +93,6 @@ public class ApiManagementController {
         if (result.hasErrors()) {
             return "api/form";
         }
-
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
         api.setExpressions(jsonObjectMapper.writeValueAsString(form.getExpressions()));
@@ -96,14 +102,16 @@ public class ApiManagementController {
             return "api/form";
         }
         redirectAttributes.addAttribute("id", api.getId());
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
         return "redirect:/manager/apis/{id}";
     }
 
 
     @RequestMapping(path = "{id}", method = RequestMethod.GET)
-    public String editForm(@PathVariable int id, Model model) throws IOException {
+    public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
         Api api = service.findOne(id);
         if (api == null) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/apis";
         }
         ApiForm form = new ApiForm();
@@ -116,7 +124,7 @@ public class ApiManagementController {
 
 
     @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "update")
-    public String edit(@PathVariable int id, @Validated ApiForm form, BindingResult result, Model model) throws JsonProcessingException {
+    public String edit(@PathVariable int id, @Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         if (result.hasErrors()) {
             model.addAttribute(service.findOne(id));
             return "api/form";
@@ -125,12 +133,14 @@ public class ApiManagementController {
         BeanUtils.copyProperties(form, api);
         api.setExpressions(jsonObjectMapper.writeValueAsString(form.getExpressions()));
         service.update(id, api);
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/apis/{id}";
     }
 
     @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "delete")
-    public String delete(@PathVariable int id) {
+    public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         service.delete(id);
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/apis";
     }
 
