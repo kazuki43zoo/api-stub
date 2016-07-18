@@ -89,7 +89,7 @@ public class ApiController {
 
 
     @RequestMapping(path = "create", method = RequestMethod.POST)
-    public String create(@Validated ApiForm form, BindingResult result, RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    public String create(@Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         if (result.hasErrors()) {
             return "api/form";
         }
@@ -99,6 +99,7 @@ public class ApiController {
         try {
             service.create(api);
         } catch (DuplicateKeyException e) {
+            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "api/form";
         }
         redirectAttributes.addAttribute("id", api.getId());

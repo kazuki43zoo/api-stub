@@ -25,7 +25,7 @@
                        th:readonly="${isUpdate}"/>
                 <span th:errors="*{path}"></span>
             </div>
-            <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
+            <div class="col-sm-3" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
                 <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:field="*{method}"
                        th:readonly="${isUpdate}"/>
                 <span th:errors="*{method}"></span>

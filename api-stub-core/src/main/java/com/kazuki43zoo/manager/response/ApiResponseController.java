@@ -79,7 +79,7 @@ class ApiResponseController {
     }
 
     @RequestMapping(path = "create", method = RequestMethod.POST)
-    public String create(@Validated ApiResponseForm form, BindingResult result, RedirectAttributes redirectAttributes) throws IOException {
+    public String create(@Validated ApiResponseForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws IOException {
         if (result.hasErrors()) {
             return "response/form";
         }
@@ -95,6 +95,7 @@ class ApiResponseController {
         try {
             apiResponseService.create(apiResponse);
         } catch (DuplicateKeyException e) {
+            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "response/form";
         }
         redirectAttributes.addAttribute("id", apiResponse.getId());
