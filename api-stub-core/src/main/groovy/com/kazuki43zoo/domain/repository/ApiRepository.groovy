@@ -70,15 +70,10 @@ interface ApiRepository {
     static class SqlProvider {
         public String findAll(
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
-            final String keyedResponseNumberCountQuery = new SQL()
-                    .SELECT("COUNT(r.id)")
-                    .FROM("mock_api_response r")
-                    .WHERE("r.path = a.path").WHERE("r.method = a.method").WHERE("r.data_key NOT IN ('', 'default')")
-                    .toString() + " AS keyed_response_number";
             return new SQL() {
                 {
                     SELECT("a.id").SELECT("a.path").SELECT("a.method").SELECT("a.description")
-                            .SELECT(keyedResponseNumberCountQuery)
+                            .SELECT("SELECT COUNT(r.id) FROM mock_api_response r WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number")
                     FROM("mock_api a")
                     if (StringUtils.hasLength(path)) {
                         WHERE("a.path REGEXP #{path}")
