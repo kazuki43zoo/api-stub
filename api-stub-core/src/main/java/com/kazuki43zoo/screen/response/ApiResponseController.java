@@ -1,6 +1,7 @@
 package com.kazuki43zoo.screen.response;
 
 import com.kazuki43zoo.component.message.ErrorMessage;
+import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.web.DownloadSupport;
@@ -59,7 +60,7 @@ class ApiResponseController {
         }
         List<ApiResponse> apiResponses = apiResponseService.findAll(form.getPath(), form.getMethod(), form.getDescription());
         if (apiResponses.isEmpty()) {
-            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(apiResponses);
         return "response/list";

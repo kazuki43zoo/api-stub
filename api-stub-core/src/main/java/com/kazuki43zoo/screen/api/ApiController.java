@@ -69,7 +69,7 @@ public class ApiController {
         }
         List<Api> apis = service.findAll(form.getPath(), form.getMethod(), form.getDescription());
         if (apis.isEmpty()) {
-            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(apis);
         return "api/list";
