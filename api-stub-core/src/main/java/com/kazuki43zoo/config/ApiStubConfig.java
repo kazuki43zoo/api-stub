@@ -38,9 +38,4 @@ public class ApiStubConfig extends WebMvcConfigurerAdapter {
         return localeResolver;
     }
 
-    @Bean
-    Java8TimeDialect java8TimeDialect() {
-        return new Java8TimeDialect();
-    }
-
 }

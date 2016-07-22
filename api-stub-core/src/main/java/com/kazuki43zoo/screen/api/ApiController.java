@@ -62,7 +62,7 @@ public class ApiController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String list(@Validated ApiSearchForm form, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "api/list";
@@ -75,21 +75,21 @@ public class ApiController {
         return "api/list";
     }
 
-    @RequestMapping(method = RequestMethod.POST, params = "delete")
+    @PostMapping(params = "delete")
     public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
         service.delete(ids);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/apis";
     }
 
-    @RequestMapping(path = "create", method = RequestMethod.GET)
+    @GetMapping(path = "create")
     public String createForm(Model model) {
         model.addAttribute(new ApiForm());
         return "api/form";
     }
 
 
-    @RequestMapping(path = "create", method = RequestMethod.POST)
+    @PostMapping(path = "create")
     public String create(@Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         if (result.hasErrors()) {
             return "api/form";
@@ -109,7 +109,7 @@ public class ApiController {
     }
 
 
-    @RequestMapping(path = "{id}", method = RequestMethod.GET)
+    @GetMapping(path = "{id}")
     public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
         Api api = service.findOne(id);
         if (api == null) {
@@ -128,7 +128,7 @@ public class ApiController {
     }
 
 
-    @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "update")
+    @PostMapping(path = "{id}", params = "update")
     public String edit(@PathVariable int id, @Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         if (result.hasErrors()) {
             model.addAttribute(service.findOne(id));
@@ -142,7 +142,7 @@ public class ApiController {
         return "redirect:/manager/apis/{id}";
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "delete")
+    @PostMapping(path = "{id}", params = "delete")
     public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         service.delete(id);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
