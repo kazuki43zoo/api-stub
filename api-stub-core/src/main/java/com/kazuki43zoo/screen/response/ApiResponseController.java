@@ -53,7 +53,7 @@ class ApiResponseController {
         return new ApiResponseSearchForm();
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String list(@Validated ApiResponseSearchForm form, BindingResult result, Model model) {
         if (result.hasErrors()) {
             return "response/list";
@@ -66,20 +66,20 @@ class ApiResponseController {
         return "response/list";
     }
 
-    @RequestMapping(method = RequestMethod.POST, params = "delete")
+    @PostMapping(params = "delete")
     public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
         apiResponseService.delete(ids);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/responses";
     }
 
-    @RequestMapping(path = "create", method = RequestMethod.GET)
+    @GetMapping(path = "create")
     public String createForm(Model model) {
         model.addAttribute(new ApiResponseForm());
         return "response/form";
     }
 
-    @RequestMapping(path = "create", method = RequestMethod.POST)
+    @PostMapping(path = "create")
     public String create(@Validated ApiResponseForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws IOException {
         if (result.hasErrors()) {
             return "response/form";
@@ -104,7 +104,7 @@ class ApiResponseController {
         return "redirect:/manager/responses/{id}";
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.GET)
+    @GetMapping(path = "{id}")
     public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
         ApiResponse apiResponse = apiResponseService.findOne(id);
         if (apiResponse == null) {
@@ -126,7 +126,7 @@ class ApiResponseController {
         return "response/form";
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "update")
+    @PostMapping(path = "{id}", params = "update")
     public String edit(@PathVariable int id, @Validated ApiResponseForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws IOException {
         if (result.hasErrors()) {
             model.addAttribute(apiResponseService.findOne(id));
@@ -148,7 +148,7 @@ class ApiResponseController {
         return "redirect:/manager/responses/{id}";
     }
 
-    @RequestMapping(path = "{id}", method = RequestMethod.POST, params = "delete")
+    @PostMapping(path = "{id}", params = "delete")
     public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         apiResponseService.delete(id);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
@@ -156,13 +156,13 @@ class ApiResponseController {
     }
 
 
-    @RequestMapping(path = "{id}/file", method = RequestMethod.GET)
+    @GetMapping(path = "{id}/file")
     public ResponseEntity<Resource> download(@PathVariable int id) throws UnsupportedEncodingException {
         return download(apiResponseService.findOne(id));
     }
 
 
-    @RequestMapping(path = "{id}/histories", method = RequestMethod.GET)
+    @GetMapping(path = "{id}/histories")
     public String histories(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) {
         ApiResponse apiResponse = apiResponseService.findOne(id);
         if (apiResponse == null) {
@@ -184,7 +184,7 @@ class ApiResponseController {
         return "response/historyList";
     }
 
-    @RequestMapping(path = "{id}/histories", method = RequestMethod.POST, params = "delete")
+    @PostMapping(path = "{id}/histories", params = "delete")
     public String deleteHistories(@PathVariable int id, @RequestParam List<Integer> subIds, RedirectAttributes redirectAttributes) {
         apiResponseService.deleteHistories(id, subIds);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
@@ -195,7 +195,7 @@ class ApiResponseController {
         }
     }
 
-    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.GET)
+    @GetMapping(path = "{id}/histories/{subId}")
     public String history(@PathVariable int id, @PathVariable int subId, Model model, RedirectAttributes redirectAttributes) throws IOException {
         ApiResponse apiResponse = apiResponseService.findHistory(id, subId);
         if (apiResponse == null) {
@@ -217,14 +217,14 @@ class ApiResponseController {
     }
 
 
-    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "restore")
+    @PostMapping(path = "{id}/histories/{subId}", params = "restore")
     public String restoreHistory(@PathVariable int id, @PathVariable int subId, RedirectAttributes redirectAttributes) {
         apiResponseService.restoreHistory(id, subId);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_RESTORED).build());
         return "redirect:/manager/responses/{id}";
     }
 
-    @RequestMapping(path = "{id}/histories/{subId}", method = RequestMethod.POST, params = "delete")
+    @PostMapping(path = "{id}/histories/{subId}", params = "delete")
     public String deleteHistory(@PathVariable int id, @PathVariable int subId, RedirectAttributes redirectAttributes) {
         apiResponseService.deleteHistory(id, subId);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
@@ -235,7 +235,7 @@ class ApiResponseController {
         }
     }
 
-    @RequestMapping(path = "{id}/histories/{subId}/file", method = RequestMethod.GET)
+    @GetMapping(path = "{id}/histories/{subId}/file")
     public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {
         return download(apiResponseService.findHistory(id, subId));
     }
