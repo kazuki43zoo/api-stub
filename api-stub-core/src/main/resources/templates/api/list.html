@@ -65,12 +65,23 @@
         </div>
     </form>
 
-    <div>
-        <a th:href="@{/manager/apis/create}" class="btn btn-default">
-            <span class="glyphicon glyphicon-plus"></span>
-            <span th:text="#{action.add}"></span>
-        </a>
-    </div>
+    <form method="post" class="form-inline" enctype="multipart/form-data" style="margin-bottom: 15px;">
+        <div class="form-group">
+            <a th:href="@{/manager/apis/create}" class="btn btn-default" style="margin-right: 40px;">
+                <span class="glyphicon glyphicon-plus"></span>
+                <span th:text="#{action.add}"></span>
+            </a>
+            <input type="file" class="form-control" name="file"/>
+            <input type="checkbox" name="override" id="override"/>
+            <label for="override" th:text="#{msg.override}"></label>
+            <button type="button" class="btn btn-default" name="import" data-toggle="modal"
+                    data-target="#importModal">
+                <span class="glyphicon glyphicon-import"></span>
+                <span th:text="#{action.import}"></span>
+            </button>
+            <div th:replace="dialog :: #importModal"></div>
+        </div>
+    </form>
 
     <form method="post">
         <table class="table table-striped">
@@ -105,7 +116,11 @@
             </tr>
         </table>
         <div class="form-group">
-            <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
+            <button class="btn btn-default" name="export">
+                <span class="glyphicon glyphicon-export"></span>
+                <span th:text="#{action.export}"></span>
+            </button>
+            <button type="button" class="btn btn-default bulkButton" name="delete" data-toggle="modal"
                     data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiList)}">
                 <span class="glyphicon glyphicon-trash"></span>
                 <span th:text="#{action.delete}"></span>

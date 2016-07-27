@@ -15,6 +15,7 @@
  */
 package com.kazuki43zoo.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -29,5 +30,6 @@ public class Api implements Serializable {
     private KeyGeneratingStrategy keyGeneratingStrategy;
     private String expressions;
     private String description;
+    @JsonIgnore
     private int keyedResponseNumber;
 }

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -57,6 +58,13 @@ public class ApiService {
 
     public void delete(int id) {
         repository.delete(id);
+    }
+
+
+    public List<Api> findAllForExport() {
+        return findAll(null, null, null).stream()
+                .map(api -> repository.findOne(api.getId()))
+                .collect(Collectors.toList());
     }
 
 }
