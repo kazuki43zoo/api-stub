@@ -66,13 +66,13 @@
     </form>
 
 
-    <form method="post" class="form-inline" enctype="multipart/form-data">
+    <form method="post" class="form-inline" enctype="multipart/form-data" style="margin-bottom: 15px;">
         <div class="form-group">
             <a th:href="@{/manager/responses/create}" class="btn btn-default" style="margin-right: 40px;">
                 <span class="glyphicon glyphicon-plus"></span>
                 <span th:text="#{action.add}"></span>
             </a>
-            <input type="file" class="form-control" name="file" th:placeholder="#{description}"/>
+            <input type="file" class="form-control" name="file"/>
             <input type="checkbox" name="override" id="override"/>
             <label for="override" th:text="#{msg.override}"></label>
             <button type="button" class="btn btn-default" name="import" data-toggle="modal"
@@ -84,7 +84,7 @@
         </div>
     </form>
 
-    <form method="post" style="margin-top: 15px;">
+    <form method="post">
         <table class="table table-striped">
             <tr>
                 <th>

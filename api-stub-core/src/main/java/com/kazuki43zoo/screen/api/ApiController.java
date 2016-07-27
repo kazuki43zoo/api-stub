@@ -15,13 +15,16 @@
  */
 package com.kazuki43zoo.screen.api;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.api.key.KeyExtractor;
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
+import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
@@ -30,14 +33,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Conventions;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +69,10 @@ public class ApiController {
     List<KeyExtractor> keyExtractors;
 
     @Autowired
-    ObjectMapper jsonObjectMapper;
+    ObjectMapper objectMapper;
+
+    @Autowired
+    DownloadSupport downloadSupport;
 
     @ModelAttribute("apiSearchForm")
     public ApiSearchForm setUpSearchForm() {
@@ -111,7 +125,7 @@ public class ApiController {
         }
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
-        api.setExpressions(jsonObjectMapper.writeValueAsString(form.getExpressions()));
+        api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
         try {
             service.create(api);
         } catch (DuplicateKeyException e) {
@@ -136,7 +150,7 @@ public class ApiController {
         }
         ApiForm form = new ApiForm();
         BeanUtils.copyProperties(api, form);
-        form.setExpressions(Arrays.asList(jsonObjectMapper.readValue(api.getExpressions(), String[].class)));
+        form.setExpressions(Arrays.asList(objectMapper.readValue(api.getExpressions(), String[].class)));
         model.addAttribute(api);
         model.addAttribute(form);
         return "api/form";
@@ -151,7 +165,7 @@ public class ApiController {
         }
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
-        api.setExpressions(jsonObjectMapper.writeValueAsString(form.getExpressions()));
+        api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
         service.update(id, api);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/apis/{id}";
@@ -161,6 +175,64 @@ public class ApiController {
     public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         service.delete(id);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        return "redirect:/manager/apis";
+    }
+
+    @PostMapping(params = "export")
+    public ResponseEntity<List<Api>> exportApis() throws UnsupportedEncodingException {
+        List<Api> apis = service.findAllForExport();
+        HttpHeaders headers = new HttpHeaders();
+        downloadSupport.addContentDisposition(headers, "exportApis.json");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .headers(headers)
+                .body(apis);
+    }
+
+    @PostMapping(params = "import")
+    public String importApis(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
+        if (!StringUtils.hasLength(file.getOriginalFilename())) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
+            return "redirect:/manager/apis";
+        }
+        if (file.getSize() == 0) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/apis";
+        }
+        List<Api> newApis;
+        try {
+            newApis = Arrays.asList(objectMapper.readValue(file.getInputStream(), Api[].class));
+        } catch (JsonParseException | JsonMappingException e) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/apis";
+        }
+        if (newApis.isEmpty()) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/apis";
+        }
+
+        List<Api> ignoredApis = new ArrayList<>();
+        newApis.forEach(newApi -> {
+            Api api = service.findOne(newApi.getPath(), newApi.getMethod());
+            if (api == null) {
+                service.create(newApi);
+            } else {
+                if (override) {
+                    service.update(api.getId(), newApi);
+                } else {
+                    ignoredApis.add(newApi);
+                }
+            }
+        });
+        if (newApis.size() == ignoredApis.size()) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
+        } else {
+            redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
+            if (!ignoredApis.isEmpty()) {
+                redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
+            }
+        }
         return "redirect:/manager/apis";
     }
 
