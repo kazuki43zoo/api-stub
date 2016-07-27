@@ -69,9 +69,7 @@ public class ApiResponse implements Serializable {
     private static class Base64JsonDeserializer extends JsonDeserializer<InputStream> {
         @Override
         public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            byte[] v = p.getBinaryValue();
-            System.out.println(v.length);
-            return new ByteArrayInputStream(v);
+            return new ByteArrayInputStream(p.getBinaryValue());
         }
     }
 
@@ -86,7 +84,6 @@ public class ApiResponse implements Serializable {
         @Override
         public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
             String value = p.getValueAsString();
-            System.out.println(value);
             if (value != null) {
                 return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
             } else {
