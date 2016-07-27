@@ -35,8 +35,21 @@ public enum MessageCode {
     /** */
     , DATA_HAS_BEEN_RESTORED("msg.dataHasBeenRestored")
     /** */
+    , DATA_HAS_BEEN_IMPORTED("msg.dataHasBeenImported")
+    /** */
+    , ALL_DATA_HAS_NOT_BEEN_IMPORTED("msg.allDataHasNotBeenImported")
+    /** */
+    , PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED("msg.partiallyDataHasNotBeenImported")
+    /** */
     , KEYED_RESPONSE_EXISTS("msg.keyedResponseExists")
-    ;
+    /** */
+    , IMPORT_FILE_NOT_SELECTED("msg.importFileNotSelected")
+    /** */
+    , IMPORT_FILE_EMPTY("msg.importFileEmpty")
+    /** */
+    , IMPORT_DATA_EMPTY("msg.importDataEmpty")
+    /** */
+    , INVALID_JSON("msg.invalidJson");
 
     private final String value;
 

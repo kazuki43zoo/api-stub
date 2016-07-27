@@ -15,6 +15,9 @@
  */
 package com.kazuki43zoo.screen.response;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
@@ -22,6 +25,7 @@ import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiResponse;
+import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +44,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.ByteArrayInputStream;
@@ -47,6 +52,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequestMapping("/manager/responses")
@@ -58,10 +65,16 @@ class ApiResponseController {
     ApiResponseService apiResponseService;
 
     @Autowired
+    ApiResponseRepository apiResponseRepository;
+
+    @Autowired
     ApiService apiService;
 
     @Autowired
     DownloadSupport downloadSupport;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {
@@ -253,6 +266,64 @@ class ApiResponseController {
     @GetMapping(path = "{id}/histories/{subId}/file")
     public ResponseEntity<Resource> download(@PathVariable int id, @PathVariable int subId) throws UnsupportedEncodingException {
         return download(apiResponseService.findHistory(id, subId));
+    }
+
+    @PostMapping(params = "export")
+    public ResponseEntity<List<ApiResponse>> exportApiResponses(@RequestParam List<Integer> ids) throws UnsupportedEncodingException {
+        List<ApiResponse> apiResponses = apiResponseService.findAllForExport(ids);
+        HttpHeaders headers = new HttpHeaders();
+        downloadSupport.addContentDisposition(headers, "exportApiResponses.json");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .headers(headers)
+                .body(apiResponses);
+    }
+
+    @PostMapping(params = "import")
+    public String importApiResponses(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
+        if (!StringUtils.hasLength(file.getOriginalFilename())) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
+            return "redirect:/manager/responses";
+        }
+        if (file.getSize() == 0) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/responses";
+        }
+        List<ApiResponse> newApiResponses;
+        try {
+            newApiResponses = Arrays.asList(objectMapper.readValue(file.getInputStream(), ApiResponse[].class));
+        } catch (JsonParseException | JsonMappingException e) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/responses";
+        }
+        if (newApiResponses.isEmpty()) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            return "redirect:/manager/responses";
+        }
+
+        List<ApiResponse> ignoredApiResponses = new ArrayList<>();
+        newApiResponses.forEach(newApiResponse -> {
+            ApiResponse apiResponse = apiResponseRepository.findOneByUk(newApiResponse.getPath(), newApiResponse.getMethod(), newApiResponse.getDataKey());
+            if (apiResponse == null) {
+                apiResponseService.create(newApiResponse);
+            } else {
+                if (override) {
+                    apiResponseService.update(apiResponse.getId(), newApiResponse, false, false);
+                } else {
+                    ignoredApiResponses.add(newApiResponse);
+                }
+            }
+        });
+        if (newApiResponses.size() == ignoredApiResponses.size()) {
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
+        } else {
+            redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
+            if (!ignoredApiResponses.isEmpty()) {
+                redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
+            }
+        }
+        return "redirect:/manager/responses";
     }
 
     private ResponseEntity<Resource> download(ApiResponse apiResponse) throws UnsupportedEncodingException {

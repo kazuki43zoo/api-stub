@@ -15,10 +15,23 @@
  */
 package com.kazuki43zoo.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
+import org.springframework.util.StreamUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Data
@@ -31,12 +44,55 @@ public class ApiResponse implements Serializable {
     private String dataKey;
     private Integer statusCode;
     private String header;
+    @JsonDeserialize(using = TextJsonDeserializer.class)
+    @JsonSerialize(using = TextJsonSerializer.class)
     private InputStream body;
     private String bodyEditorMode;
+    @JsonDeserialize(using = Base64JsonDeserializer.class)
+    @JsonSerialize(using = Base64JsonSerializer.class)
     private InputStream attachmentFile;
     private String fileName;
     private Long waitingMsec;
     private String description;
+    @JsonIgnore
     private LocalDateTime createdAt;
+    @JsonIgnore
     private int historyNumber;
+
+    private static class Base64JsonSerializer extends JsonSerializer<InputStream> {
+        @Override
+        public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeBinary(StreamUtils.copyToByteArray(value));
+        }
+    }
+
+    private static class Base64JsonDeserializer extends JsonDeserializer<InputStream> {
+        @Override
+        public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            byte[] v = p.getBinaryValue();
+            System.out.println(v.length);
+            return new ByteArrayInputStream(v);
+        }
+    }
+
+    private static class TextJsonSerializer extends JsonSerializer<InputStream> {
+        @Override
+        public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(StreamUtils.copyToString(value, StandardCharsets.UTF_8));
+        }
+    }
+
+    private static class TextJsonDeserializer extends JsonDeserializer<InputStream> {
+        @Override
+        public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+            String value = p.getValueAsString();
+            System.out.println(value);
+            if (value != null) {
+                return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
+            } else {
+                return null;
+            }
+        }
+    }
+
 }
