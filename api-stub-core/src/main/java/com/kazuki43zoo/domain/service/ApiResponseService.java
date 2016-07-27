@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -105,6 +106,10 @@ public class ApiResponseService {
 
     public void deleteHistories(int id, List<Integer> subIds) {
         subIds.forEach(subId -> deleteHistory(id, subId));
+    }
+
+    public List<ApiResponse> findAllForExport(List<Integer> ids) {
+        return ids.stream().map(id -> repository.findOne(id)).collect(Collectors.toList());
     }
 
 }
