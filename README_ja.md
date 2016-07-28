@@ -55,7 +55,7 @@ $ java -jar api-stub-app/target/api-stub.jar
 例)
 
 ```bash
-java -jar api-stub.jar --server.port=9999
+$ java -jar api-stub.jar --server.port=9999
 ```
 
 
