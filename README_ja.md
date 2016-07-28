@@ -58,6 +58,14 @@ $ java -jar api-stub-app/target/api-stub.jar
 java -jar api-stub.jar --server.port=9999
 ```
 
+
+## プロジェクトの最新化と再ビルド
+
+```bash
+$ git pull
+$ ./mvnw clean install
+```
+
 ## 管理画面の使い方
 
 ### 擬似レスポンスの検索
