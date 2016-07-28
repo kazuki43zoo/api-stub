@@ -59,6 +59,21 @@ interface ApiResponseRepository {
 
     @Select('''
         SELECT
+            id
+        FROM
+            mock_api_response
+        WHERE
+            path = #{path}
+        AND
+            method = UPPER(#{method})
+        AND
+            data_key = IFNULL(#{dataKey},'')
+    ''')
+    Integer findIdByUk(
+            @Param("path") String path, @Param("method") String method, @Param("dataKey") String dataKey)
+
+    @Select('''
+        SELECT
             id, path, method, data_key, status_code, header, body, body_editor_mode
             , attachment_file, file_name, waiting_msec, description
             , SELECT COUNT(sub_id) FROM mock_api_response_history WHERE id = #{id} AS historyNumber

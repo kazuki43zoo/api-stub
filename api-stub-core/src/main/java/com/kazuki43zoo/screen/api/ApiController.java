@@ -28,6 +28,7 @@ import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
+import com.kazuki43zoo.screen.ImportHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -69,10 +70,13 @@ public class ApiController {
     List<KeyExtractor> keyExtractors;
 
     @Autowired
-    ObjectMapper objectMapper;
+    ImportHelper importHelper;
 
     @Autowired
     DownloadSupport downloadSupport;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     @ModelAttribute("apiSearchForm")
     public ApiSearchForm setUpSearchForm() {
@@ -214,25 +218,18 @@ public class ApiController {
 
         List<Api> ignoredApis = new ArrayList<>();
         newApis.forEach(newApi -> {
-            Api api = service.findOne(newApi.getPath(), newApi.getMethod());
-            if (api == null) {
+            Integer id = service.findIdByUk(newApi.getPath(), newApi.getMethod());
+            if (id == null) {
                 service.create(newApi);
             } else {
                 if (override) {
-                    service.update(api.getId(), newApi);
+                    service.update(id, newApi);
                 } else {
                     ignoredApis.add(newApi);
                 }
             }
         });
-        if (newApis.size() == ignoredApis.size()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
-        } else {
-            redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
-            if (!ignoredApis.isEmpty()) {
-                redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
-            }
-        }
+        importHelper.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);
         return "redirect:/manager/apis";
     }
 

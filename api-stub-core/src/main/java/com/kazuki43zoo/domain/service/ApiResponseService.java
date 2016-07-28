@@ -48,6 +48,10 @@ public class ApiResponseService {
         return repository.findOne(id);
     }
 
+    public Integer findIdByUk(String path, String method, String dataKey) {
+        return repository.findIdByUk(path, method, dataKey);
+    }
+
     public List<ApiResponse> findAll(String path, String method, String description) {
         return repository.findAll(path, method, description);
     }
@@ -77,7 +81,6 @@ public class ApiResponseService {
             repository.createHistory(id);
         }
     }
-
 
     public void restoreHistory(int id, int subId) {
         ApiResponse history = repository.findHistory(id, subId);

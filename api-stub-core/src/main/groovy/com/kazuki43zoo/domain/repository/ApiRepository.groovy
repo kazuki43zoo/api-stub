@@ -51,6 +51,18 @@ interface ApiRepository {
     ''')
     Api findOneByUk(@Param("path") String path, @Param("method") String method)
 
+    @Select('''
+        SELECT
+            id
+        FROM
+            mock_api
+        WHERE
+            path = #{path}
+        AND
+            method = UPPER(#{method})
+    ''')
+    Integer findIdByUk(@Param("path") String path, @Param("method") String method)
+
     @Insert('''
         INSERT INTO mock_api
             (

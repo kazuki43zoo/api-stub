@@ -35,6 +35,10 @@ public class ApiService {
         return repository.findOneByUk(path, method);
     }
 
+    public Integer findIdByUk(String path, String method) {
+        return repository.findIdByUk(path, method);
+    }
+
     public Api findOne(int id) {
         return repository.findOne(id);
     }

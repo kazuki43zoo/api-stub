@@ -28,6 +28,7 @@ import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
+import com.kazuki43zoo.screen.ImportHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -71,10 +72,14 @@ class ApiResponseController {
     ApiService apiService;
 
     @Autowired
+    ImportHelper importHelper;
+
+    @Autowired
     DownloadSupport downloadSupport;
 
     @Autowired
     ObjectMapper objectMapper;
+
 
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {
@@ -304,27 +309,21 @@ class ApiResponseController {
 
         List<ApiResponse> ignoredApiResponses = new ArrayList<>();
         newApiResponses.forEach(newApiResponse -> {
-            ApiResponse apiResponse = apiResponseRepository.findOneByUk(newApiResponse.getPath(), newApiResponse.getMethod(), newApiResponse.getDataKey());
-            if (apiResponse == null) {
+            Integer id = apiResponseService.findIdByUk(newApiResponse.getPath(), newApiResponse.getMethod(), newApiResponse.getDataKey());
+            if (id == null) {
                 apiResponseService.create(newApiResponse);
             } else {
                 if (override) {
-                    apiResponseService.update(apiResponse.getId(), newApiResponse, false, false);
+                    apiResponseService.update(id, newApiResponse, false, false);
                 } else {
                     ignoredApiResponses.add(newApiResponse);
                 }
             }
         });
-        if (newApiResponses.size() == ignoredApiResponses.size()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
-        } else {
-            redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
-            if (!ignoredApiResponses.isEmpty()) {
-                redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
-            }
-        }
+        importHelper.storeProcessingResultMessages(redirectAttributes, newApiResponses, ignoredApiResponses);
         return "redirect:/manager/responses";
     }
+
 
     private ResponseEntity<Resource> download(ApiResponse apiResponse) throws UnsupportedEncodingException {
         HttpHeaders headers = new HttpHeaders();
