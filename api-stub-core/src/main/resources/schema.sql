@@ -17,6 +17,9 @@
 -- DROP TABLE IF EXISTS mock_api_response;
 -- DROP TABLE IF EXISTS mock_api_response_history;
 -- DROP TABLE IF EXISTS mock_api;
+-- DROP TABLE IF EXISTS api_proxy;
+-- DROP TABLE IF EXISTS api_proxy_response;
+
 
 CREATE TABLE IF NOT EXISTS mock_api_response (
   id IDENTITY
@@ -61,3 +64,26 @@ CREATE TABLE IF NOT EXISTS mock_api (
   ,CONSTRAINT pk_mock_api PRIMARY KEY(id)
   ,CONSTRAINT uk1_mock_api UNIQUE KEY(path, method)
 );
+
+CREATE TABLE IF NOT EXISTS api_proxy (
+   id INTEGER
+  ,enabled BOOLEAN NOT NULL
+  ,url VARCHAR (256)
+  ,capturing BOOLEAN NOT NULL
+  ,CONSTRAINT pk_api_proxy PRIMARY KEY(id)
+);
+
+CREATE TABLE IF NOT EXISTS api_proxy_response (
+   id IDENTITY
+  ,path VARCHAR (256) NOT NULL
+  ,method VARCHAR (16) NOT NULL
+  ,data_key VARCHAR (2048)
+  ,status_code INTEGER
+  ,header TEXT
+  ,body BLOB
+  ,attachment_file BLOB
+  ,file_name VARCHAR (256)
+  ,CONSTRAINT pk_api_proxy_response PRIMARY KEY(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_api_proxy_response1 ON api_proxy_response (path, method, data_key);

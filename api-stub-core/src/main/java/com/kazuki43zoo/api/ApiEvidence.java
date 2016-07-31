@@ -17,7 +17,9 @@ package com.kazuki43zoo.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazuki43zoo.config.ApiStubProperties;
 import lombok.Data;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -53,6 +55,8 @@ class ApiEvidence {
     private final Logger logger;
     private final String contentExtension;
     private final ApiStubProperties properties;
+    @Getter
+    private final String correlationId;
 
     ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
         MDC.put(properties.getCorrelationIdKey(), correlationId);
@@ -61,6 +65,7 @@ class ApiEvidence {
         this.logger = LoggerFactory.getLogger(method + " " + path + (dataKey != null ? (" dataKey=" + dataKey) : ""));
         this.contentExtension = contentExtension;
         this.properties = properties;
+        this.correlationId = correlationId;
     }
 
     void start() {
@@ -93,6 +98,8 @@ class ApiEvidence {
                     StreamUtils.copy(body, StandardCharsets.UTF_8, out);
                 }
             }
+        } else {
+            info("Request body : empty");
         }
 
         if (request instanceof MultipartHttpServletRequest) {
@@ -113,11 +120,10 @@ class ApiEvidence {
         }
     }
 
-    void response(ResponseEntity<InputStreamResource> responseEntity) throws JsonProcessingException {
+    void response(ResponseEntity<?> responseEntity) throws JsonProcessingException {
         EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
         info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
     }
-
 
     void end() {
         info("End.");

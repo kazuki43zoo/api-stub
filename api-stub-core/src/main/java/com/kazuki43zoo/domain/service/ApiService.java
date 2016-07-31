@@ -15,6 +15,7 @@
  */
 package com.kazuki43zoo.domain.service;
 
+import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.repository.ApiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ApiService {
 
     @Autowired
     ApiRepository repository;
+
+    @Autowired
+    ApiStubProperties properties;
 
     public Api findOne(String path, String method) {
         return repository.findOneByUk(path, method);
@@ -48,12 +52,17 @@ public class ApiService {
     }
 
     public void create(Api newApi) {
+        newApi.setPath(newApi.getPath().replace(properties.getRootPath(), ""));
         repository.create(newApi);
+        repository.createProxy(newApi);
     }
 
     public void update(int id, Api newApi) {
         newApi.setId(id);
         repository.update(newApi);
+        if (!repository.updateProxy(newApi)) {
+            repository.createProxy(newApi);
+        }
     }
 
     public void delete(List<Integer> ids) {
@@ -62,8 +71,8 @@ public class ApiService {
 
     public void delete(int id) {
         repository.delete(id);
+        repository.deleteProxy(id);
     }
-
 
     public List<Api> findAllForExport() {
         return findAll(null, null, null).stream()
