@@ -32,23 +32,39 @@ interface ApiRepository {
             a.id, a.path, a.method, a.key_extractor, a.key_generating_strategy, a.expressions, a.description
             , SELECT COUNT(r.id) FROM mock_api_response r
                   WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number
+            , p.enabled, p.url, p.capturing
         FROM
             mock_api a
+        LEFT OUTER JOIN
+            api_proxy p ON p.id = a.id
         WHERE
             a.id = #{id}
     ''')
+    @Results([
+            @Result(property = "proxy.enabled" ,column = "enabled")
+            , @Result(property = "proxy.url" ,column = "url")
+            , @Result(property = "proxy.capturing" ,column = "capturing")
+    ])
     Api findOne(int id)
 
     @Select('''
         SELECT
-            id, path, method, key_extractor, key_generating_strategy, expressions, description
+            a.id, a.path, a.method, a.key_extractor, a.key_generating_strategy, a.expressions, a.description
+            , p.enabled, p.url, p.capturing
         FROM
-            mock_api
+            mock_api a
+        LEFT OUTER JOIN
+            api_proxy p ON p.id = a.id
         WHERE
-            path = #{path}
+            a.path = #{path}
         AND
-            method = UPPER(#{method})
+            a.method = UPPER(#{method})
     ''')
+    @Results([
+        @Result(property = "proxy.enabled" ,column = "enabled")
+        , @Result(property = "proxy.url" ,column = "url")
+        , @Result(property = "proxy.capturing" ,column = "capturing")
+    ])
     Api findOneByUk(@Param("path") String path, @Param("method") String method)
 
     @Select('''
@@ -76,6 +92,18 @@ interface ApiRepository {
     @Options(useGeneratedKeys = true)
     void create(Api api)
 
+    @Insert('''
+        INSERT INTO api_proxy
+            (
+                id, enabled, url, capturing
+            )
+        VALUES
+            (
+                #{id}, IFNULL(#{proxy.enabled},false), #{proxy.url}, IFNULL(#{proxy.capturing},false)
+            )
+    ''')
+    void createProxy(Api api)
+
     @Update('''
         UPDATE mock_api
         SET
@@ -86,6 +114,15 @@ interface ApiRepository {
     ''')
     void update(Api newApi)
 
+    @Update('''
+        UPDATE api_proxy
+        SET
+            enabled = IFNULL(#{proxy.enabled},false), url = #{proxy.url}, capturing = IFNULL(#{proxy.capturing},false)
+        WHERE
+            id = #{id}
+    ''')
+    boolean updateProxy(Api newApi)
+
     @Delete('''
         DELETE FROM
            mock_api
@@ -93,6 +130,14 @@ interface ApiRepository {
             id = #{id}
     ''')
     void delete(int id)
+
+    @Delete('''
+        DELETE FROM
+           api_proxy
+        WHERE
+            id = #{id}
+    ''')
+    void deleteProxy(int id)
 
     static class SqlProvider {
         public String findAll(

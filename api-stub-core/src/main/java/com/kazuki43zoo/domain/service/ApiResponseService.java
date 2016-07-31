@@ -15,6 +15,7 @@
  */
 package com.kazuki43zoo.domain.service;
 
+import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,9 @@ public class ApiResponseService {
 
     @Autowired
     ApiResponseRepository repository;
+
+    @Autowired
+    ApiStubProperties properties;
 
     public ApiResponse findOne(String path, String method, String dataKey) {
         ApiResponse mockResponse = repository.findOneByUk(path, method, dataKey);
@@ -65,8 +69,14 @@ public class ApiResponseService {
     }
 
     public void create(ApiResponse newMockResponse) {
+        newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
         repository.create(newMockResponse);
         repository.createHistory(newMockResponse.getId());
+    }
+
+    public void createProxyResponse(ApiResponse newMockResponse) {
+        newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
+        repository.createProxyResponse(newMockResponse);
     }
 
     public void update(int id, ApiResponse newMockResponse, boolean keepAttachmentFile, boolean saveHistory) {

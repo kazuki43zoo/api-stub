@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.api;
+package com.kazuki43zoo.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,19 +25,27 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 @ConfigurationProperties(prefix = "api")
-class ApiStubProperties {
+public class ApiStubProperties {
 
     /**
      * key for correlation id
      */
     private String correlationIdKey = "x-correlation-id";
 
+    /**
+     * Root path for API
+     */
+    private String rootPath = "/api";
+
     @NestedConfigurationProperty
     private Evidence evidence = new Evidence();
 
+    @NestedConfigurationProperty
+    private Proxy proxy = new Proxy();
+
     @Setter
     @Getter
-    static class Evidence {
+    public static class Evidence {
         /**
          * Evidence directory.
          */
@@ -53,6 +61,23 @@ class ApiStubProperties {
          */
         private boolean disabledUpload = false;
 
+    }
+
+    @Setter
+    @Getter
+    public static class Proxy {
+        /**
+         * Disabled proxy.
+         */
+        private boolean defaultEnabled = false;
+        /**
+         * Disabled proxy capturing.
+         */
+        private boolean defaultCapturing = false;
+        /**
+         * Base url of proxy.
+         */
+        private String defaultUrl;
     }
 
 }

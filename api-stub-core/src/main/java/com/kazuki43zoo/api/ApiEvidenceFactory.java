@@ -15,6 +15,7 @@
  */
 package com.kazuki43zoo.api;
 
+import com.kazuki43zoo.config.ApiStubProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 class ApiEvidenceFactory {
@@ -34,9 +36,12 @@ class ApiEvidenceFactory {
     ContentNegotiationManager contentNegotiationManager;
 
 
-    ApiEvidence create(HttpServletRequest request, String dataKey, String correlationId) {
+    ApiEvidence create(HttpServletRequest request, String dataKey) {
 
-        String contentExtension = Optional.ofNullable(request.getContentType())
+        final String correlationId = Optional.ofNullable(request.getHeader(properties.getCorrelationIdKey()))
+                .orElse(UUID.randomUUID().toString());
+
+        final String contentExtension = Optional.ofNullable(request.getContentType())
                 .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
                 .orElseGet(ArrayList::new).stream().findFirst().orElse("txt");
 

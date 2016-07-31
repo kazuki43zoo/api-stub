@@ -129,6 +129,7 @@ public class ApiController {
         }
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
+        BeanUtils.copyProperties(form.getProxy(), api.getProxy());
         api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
         try {
             service.create(api);
@@ -154,6 +155,7 @@ public class ApiController {
         }
         ApiForm form = new ApiForm();
         BeanUtils.copyProperties(api, form);
+        BeanUtils.copyProperties(api.getProxy(), form.getProxy());
         form.setExpressions(Arrays.asList(objectMapper.readValue(api.getExpressions(), String[].class)));
         model.addAttribute(api);
         model.addAttribute(form);
@@ -169,6 +171,7 @@ public class ApiController {
         }
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
+        BeanUtils.copyProperties(form.getProxy(), api.getProxy());
         api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
         service.update(id, api);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());

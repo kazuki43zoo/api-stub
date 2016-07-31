@@ -116,6 +116,20 @@
             </div>
         </div>
         <div class="form-group">
+            <label for="proxy.enabled" class="col-sm-2 control-label" th:text="#{proxy}"></label>
+            <div class="col-sm-3">
+                <input type="checkbox" id="proxy.enabled" th:field="*{proxy.enabled}"/> <label for="proxy.enabled" th:text="#{msg.useProxy}"></label>
+            </div>
+            <div class="col-sm-3">
+                <input type="checkbox" id="proxy.capturing" th:field="*{proxy.capturing}"/> <label for="proxy.capturing" th:text="#{msg.useProxyResponseCapture}"></label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="text" id="proxy.url" class="form-control" th:field="*{proxy.url}" th:placeholder="#{proxy.url}"/>
+            </div>
+        </div>
+        <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
                 <button type="submit" name="create" class="btn btn-default" th:id="saveButton" th:if="${isCreate}">
                     <span class="glyphicon glyphicon-floppy-save"></span>

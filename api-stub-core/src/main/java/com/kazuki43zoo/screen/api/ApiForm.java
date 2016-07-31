@@ -37,4 +37,13 @@ class ApiForm implements Serializable {
     private KeyGeneratingStrategy keyGeneratingStrategy;
     private List<String> expressions;
     private String description;
+    private Proxy proxy = new Proxy();
+
+    @Data
+    public static class Proxy {
+        private Boolean enabled;
+        private String url;
+        private Boolean capturing;
+    }
+
 }

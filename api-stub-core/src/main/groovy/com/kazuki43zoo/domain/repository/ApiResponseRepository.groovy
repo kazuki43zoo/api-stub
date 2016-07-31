@@ -106,7 +106,8 @@ interface ApiResponseRepository {
         VALUES
             (
                 #{path}, UPPER(#{method}), IFNULL(#{dataKey},''), #{statusCode}, #{header}, #{body}, #{bodyEditorMode}
-                , #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description})
+                , #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description}
+            )
     ''')
     @Options(useGeneratedKeys = true)
     void create(ApiResponse mockResponse)
@@ -127,6 +128,19 @@ interface ApiResponseRepository {
             id = #{id}
     ''')
     void createHistory(int id)
+
+    @Insert('''
+        INSERT INTO api_proxy_response
+            (
+                path, method, data_key, status_code, header, body, attachment_file, file_name
+            )
+        VALUES
+            (
+                #{path}, UPPER(#{method}), IFNULL(#{dataKey},''), #{statusCode}, #{header}, #{body}, #{attachmentFile}, #{fileName}
+            )
+    ''')
+    @Options(useGeneratedKeys = true)
+    void createProxyResponse(ApiResponse mockResponse)
 
     @Update('''
         UPDATE mock_api_response
