@@ -67,6 +67,7 @@ public class ApiStubConfig extends WebMvcConfigurerAdapter {
 
                 @Override
                 public void handleError(ClientHttpResponse response) throws IOException {
+                    // NOP
                 }
             });
         };
