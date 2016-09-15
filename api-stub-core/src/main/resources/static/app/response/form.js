@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-function setBodyEditorMode() {
+function setBodyEditorMode(bodyEditor) {
     bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
 }
 $(function () {
@@ -39,7 +39,7 @@ $(function () {
     });
 
     bodyEditorMode.on("change", function () {
-        setBodyEditorMode();
+        setBodyEditorMode(bodyEditor);
     });
 
     setBodyEditorMode();
