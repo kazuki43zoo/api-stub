@@ -23,13 +23,13 @@ $(function () {
     toggleCheckboxes.on("change", function () {
         subIds.prop("checked", toggleCheckboxes.prop("checked"));
         checkedCount = toggleCheckboxes.prop("checked") ? subIds.length : 0;
-        deleteButton.prop("disabled", checkedCount == 0);
+        deleteButton.prop("disabled", checkedCount === 0);
     });
 
     subIds.on("change", function (event) {
         checkedCount += ($(event.target).prop("checked") ? 1 : -1);
-        deleteButton.prop("disabled", checkedCount == 0);
-        toggleCheckboxes.prop("checked", checkedCount == subIds.length);
+        deleteButton.prop("disabled", checkedCount === 0);
+        toggleCheckboxes.prop("checked", checkedCount === subIds.length);
     });
 
 });

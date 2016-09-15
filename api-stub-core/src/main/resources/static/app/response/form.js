@@ -13,11 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+function setBodyEditorMode(bodyEditor, bodyEditorMode) {
+    bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
+}
 $(function () {
-
-    function setBodyEditorMode() {
-        bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
-    }
 
     var bodyEditor = ace.edit("bodyEditor");
     var body = $("#body");
@@ -40,9 +39,9 @@ $(function () {
     });
 
     bodyEditorMode.on("change", function () {
-        setBodyEditorMode();
+        setBodyEditorMode(bodyEditor, $(this));
     });
 
-    setBodyEditorMode();
+    setBodyEditorMode(bodyEditor, bodyEditorMode);
 
 });
