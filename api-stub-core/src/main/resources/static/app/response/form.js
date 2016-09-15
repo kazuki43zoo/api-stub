@@ -24,10 +24,10 @@ $(function () {
     var bodyEditorMode = $("#bodyEditorMode");
 
     bodyEditor.commands.addCommand({
-        name: 'saveCommand',
+        name: "saveCommand",
         bindKey: {
-            win: 'Ctrl-S',
-            mac: 'Command-S'
+            win: "Ctrl-S",
+            mac: "Command-S"
         },
         exec: function () {
             saveButton.click();
