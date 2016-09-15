@@ -72,10 +72,8 @@ class ApiEvidence {
         if (properties.getEvidence().isDisabledRequest() && properties.getEvidence().isDisabledUpload()) {
             return;
         }
-        if (!dir.toFile().exists()) {
-            if (!this.dir.toFile().mkdirs()) {
-                error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
-            }
+        if (!dir.toFile().exists() && !this.dir.toFile().mkdirs()) {
+            error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
         }
         info("Evidence Dir : {}", dir.toAbsolutePath().toString());
     }

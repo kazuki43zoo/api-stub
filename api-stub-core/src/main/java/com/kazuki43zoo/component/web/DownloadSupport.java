@@ -52,18 +52,14 @@ public class DownloadSupport {
         }
         {
             final Matcher matcher = PATTERN_FOR_ENC_FILENAME.matcher(contentDisposition);
-            if (matcher.find()) {
-                if (matcher.groupCount() > 1) {
-                    return UriUtils.decode(matcher.group(2), matcher.group(1));
-                }
+            if (matcher.find() && matcher.groupCount() > 1) {
+                return UriUtils.decode(matcher.group(2), matcher.group(1));
             }
         }
         {
             Matcher matcher = PATTERN_FOR_FILENAME.matcher(contentDisposition);
-            if (matcher.find()) {
-                if (matcher.groupCount() > 0) {
-                    return matcher.group(1);
-                }
+            if (matcher.find() && matcher.groupCount() > 0) {
+                return matcher.group(1);
             }
         }
         return null;
