@@ -15,6 +15,10 @@
  */
 $(function () {
 
+    function setBodyEditorMode() {
+        bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
+    }
+
     var bodyEditor = ace.edit("bodyEditor");
     var body = $("#body");
     var saveButton = $("#saveButton");
@@ -40,9 +44,5 @@ $(function () {
     });
 
     setBodyEditorMode();
-
-    function setBodyEditorMode() {
-        bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
-    }
 
 });
