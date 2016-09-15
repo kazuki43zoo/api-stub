@@ -1,4 +1,4 @@
-/*
+日sとryList/*
  *    Copyright 2016 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,13 +23,13 @@ $(function () {
     toggleCheckboxes.on("change", function () {
         subIds.prop("checked", toggleCheckboxes.prop("checked"));
         checkedCount = toggleCheckboxes.prop("checked") ? subIds.length : 0;
-        deleteButton.prop("disabled", checkedCount == 0);
+        deleteButton.prop("disabled", checkedCount === 0);
     });
 
     subIds.on("change", function (event) {
         checkedCount += ($(event.target).prop("checked") ? 1 : -1);
-        deleteButton.prop("disabled", checkedCount == 0);
-        toggleCheckboxes.prop("checked", checkedCount == subIds.length);
+        deleteButton.prop("disabled", checkedCount === 0);
+        toggleCheckboxes.prop("checked", checkedCount === subIds.length);
     });
 
 });
