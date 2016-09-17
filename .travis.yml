@@ -10,3 +10,4 @@ install: true
 
 script:
   - ./mvnw -U install
+
