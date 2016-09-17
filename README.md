@@ -1,5 +1,5 @@
 
-
+[![Build Status](https://travis-ci.org/kazuki43zoo/api-stub.svg?branch=master)](https://travis-ci.org/kazuki43zoo/api-stub)
 [![Dependency Status](https://www.versioneye.com/user/projects/57dcb1dc037c200040cdcef9/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/57dcb1dc037c200040cdcef9)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4ff22966f0a848fa9a880fd1fc0f50e6)](https://www.codacy.com/app/kazuki43zoo/api-stub?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=kazuki43zoo/api-stub&amp;utm_campaign=Badge_Grade)
 
