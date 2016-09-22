@@ -20,6 +20,7 @@ import org.apache.ibatis.annotations.*
 import org.apache.ibatis.jdbc.SQL
 import org.springframework.util.StringUtils
 
+//language=SQL
 @Mapper
 interface ApiResponseRepository {
 
