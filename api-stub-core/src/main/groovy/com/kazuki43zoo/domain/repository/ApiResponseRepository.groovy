@@ -110,7 +110,6 @@ interface ApiResponseRepository {
                 , #{attachmentFile}, #{fileName}, #{waitingMsec}, #{description}
             )
     ''')
-    @Options(useGeneratedKeys = true)
     void create(ApiResponse mockResponse)
 
     @Insert('''
@@ -140,7 +139,6 @@ interface ApiResponseRepository {
                 #{path}, UPPER(#{method}), IFNULL(#{dataKey},''), #{statusCode}, #{header}, #{body}, #{attachmentFile}, #{fileName}
             )
     ''')
-    @Options(useGeneratedKeys = true)
     void createProxyResponse(ApiResponse mockResponse)
 
     @Update('''

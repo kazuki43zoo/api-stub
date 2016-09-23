@@ -90,7 +90,6 @@ interface ApiRepository {
                 #{path}, UPPER(#{method}), #{keyExtractor}, #{keyGeneratingStrategy}, #{expressions}, #{description}
             )
     ''')
-    @Options(useGeneratedKeys = true)
     void create(Api api)
 
     @Insert('''
