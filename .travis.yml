@@ -1,8 +1,9 @@
 #sudo: false
-os: linux
 language: java
 jdk:
   - oraclejdk8
+os:
+  - linux
 cache:
   directories:
     - $HOME/.m2
