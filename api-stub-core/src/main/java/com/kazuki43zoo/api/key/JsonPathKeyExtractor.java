@@ -17,6 +17,7 @@ package com.kazuki43zoo.api.key;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 @Order(1)
 public class JsonPathKeyExtractor implements KeyExtractor {
@@ -39,7 +41,8 @@ public class JsonPathKeyExtractor implements KeyExtractor {
                     values.add(id);
                 }
             } catch (Exception e) {
-                // skip
+                // ignore
+                log.debug(e.getMessage(), e);
             }
         }
         return values;

@@ -24,6 +24,7 @@ import com.kazuki43zoo.domain.model.ApiProxy;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @RestController
 class ApiStubRestController {
 
@@ -78,7 +80,7 @@ class ApiStubRestController {
     }
 
     @RequestMapping(path = "${api.root-path:/api}/**")
-    public ResponseEntity<?> handleApiRequest(HttpServletRequest request, RequestEntity<String> requestEntity)
+    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, RequestEntity<String> requestEntity)
             throws IOException, ServletException, InterruptedException {
 
         final String path = request.getServletPath().replace(properties.getRootPath(), "");
@@ -94,7 +96,7 @@ class ApiStubRestController {
             evidence.start();
             evidence.request(request, requestEntity);
 
-            final ResponseEntity<?> responseEntity;
+            final ResponseEntity<Object> responseEntity;
 
             boolean enabledProxy = Optional.ofNullable(api).map(Api::getProxy).map(ApiProxy::getEnabled)
                     .orElseGet(() -> properties.getProxy().isDefaultEnabled());
@@ -132,11 +134,14 @@ class ApiStubRestController {
         try {
             List<String> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
             key = api.getKeyGeneratingStrategy().generate(keys);
-        } catch (Exception e) {/*Skip*/}
+        } catch (Exception e) {
+            // ignore
+            log.debug(e.getMessage(), e);
+        }
         return key;
     }
 
-    private ResponseEntity<?> doProxy(HttpServletRequest request, RequestEntity<String> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
+    private ResponseEntity<Object> doProxy(HttpServletRequest request, RequestEntity<String> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
 
         final String url = Optional.ofNullable(api).map(Api::getProxy).map(ApiProxy::getUrl).filter(StringUtils::hasLength)
                 .orElse(properties.getProxy().getDefaultUrl()) + path + (StringUtils.hasLength(request.getQueryString()) ? "?" + request.getQueryString() : "");
@@ -171,7 +176,7 @@ class ApiStubRestController {
         return ResponseEntity.status(proxyResponseEntity.getStatusCodeValue()).headers(responseHeaders).body(body);
     }
 
-    private ResponseEntity<?> getMockedResponse(String path, String method, String dataKey, ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
+    private ResponseEntity<Object> getMockedResponse(String path, String method, String dataKey, ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
 
         final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 

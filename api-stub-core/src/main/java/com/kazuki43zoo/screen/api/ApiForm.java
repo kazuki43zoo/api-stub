@@ -40,7 +40,8 @@ class ApiForm implements Serializable {
     private Proxy proxy = new Proxy();
 
     @Data
-    public static class Proxy {
+    public static class Proxy implements Serializable{
+        private static final long serialVersionUID = 1L;
         private Boolean enabled;
         private String url;
         private Boolean capturing;

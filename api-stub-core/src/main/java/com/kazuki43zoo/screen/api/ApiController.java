@@ -29,6 +29,7 @@ import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
 import com.kazuki43zoo.screen.ImportHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -55,6 +56,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @RequestMapping("/manager/apis")
 @Controller
 @SessionAttributes(types = ApiSearchForm.class)
@@ -134,6 +136,7 @@ public class ApiController {
         try {
             service.create(api);
         } catch (DuplicateKeyException e) {
+            log.debug(e.getMessage(), e);
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "api/form";
         }
@@ -211,6 +214,7 @@ public class ApiController {
         try {
             newApis = Arrays.asList(objectMapper.readValue(file.getInputStream(), Api[].class));
         } catch (JsonParseException | JsonMappingException e) {
+            log.warn(e.getMessage(), e);
             redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/apis";
         }
@@ -224,12 +228,10 @@ public class ApiController {
             Integer id = service.findIdByUk(newApi.getPath(), newApi.getMethod());
             if (id == null) {
                 service.create(newApi);
+            } else if (override) {
+                service.update(id, newApi);
             } else {
-                if (override) {
-                    service.update(id, newApi);
-                } else {
-                    ignoredApis.add(newApi);
-                }
+                ignoredApis.add(newApi);
             }
         });
         importHelper.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);

@@ -15,6 +15,7 @@
  */
 package com.kazuki43zoo.api.key;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Component
 @Order(2)
 public class XPathKeyExtractor implements KeyExtractor {
@@ -50,7 +52,8 @@ public class XPathKeyExtractor implements KeyExtractor {
                 String id = (String) xPathExpression.evaluate(document, XPathConstants.STRING);
                 values.add(id);
             } catch (Exception e) {
-                // skip
+                // ignore
+                log.debug(e.getMessage(), e);
             }
         }
         return values;

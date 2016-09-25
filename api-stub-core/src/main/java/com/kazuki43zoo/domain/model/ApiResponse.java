@@ -46,11 +46,11 @@ public class ApiResponse implements Serializable {
     private String header;
     @JsonDeserialize(using = TextJsonDeserializer.class)
     @JsonSerialize(using = TextJsonSerializer.class)
-    private InputStream body;
+    private transient InputStream body;
     private String bodyEditorMode;
     @JsonDeserialize(using = Base64JsonDeserializer.class)
     @JsonSerialize(using = Base64JsonSerializer.class)
-    private InputStream attachmentFile;
+    private transient InputStream attachmentFile;
     private String fileName;
     private Long waitingMsec;
     private String description;

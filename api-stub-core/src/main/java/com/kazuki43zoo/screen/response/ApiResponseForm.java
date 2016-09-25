@@ -41,7 +41,7 @@ class ApiResponseForm implements Serializable {
     private String header = "Content-Type: application/json";
     private String body;
     private String bodyEditorMode;
-    private MultipartFile file;
+    private transient MultipartFile file;
     private boolean deleteFile;
     private Long waitingMsec;
     private String description;

@@ -29,6 +29,7 @@ import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
 import com.kazuki43zoo.screen.ImportHelper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @RequestMapping("/manager/responses")
 @Controller
 @SessionAttributes(types = ApiResponseSearchForm.class)
@@ -129,6 +131,7 @@ class ApiResponseController {
         try {
             apiResponseService.create(apiResponse);
         } catch (DuplicateKeyException e) {
+            log.debug(e.getMessage(), e);
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "response/form";
         }
@@ -299,6 +302,7 @@ class ApiResponseController {
         try {
             newApiResponses = Arrays.asList(objectMapper.readValue(file.getInputStream(), ApiResponse[].class));
         } catch (JsonParseException | JsonMappingException e) {
+            log.warn(e.getMessage(), e);
             redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/responses";
         }
@@ -312,12 +316,10 @@ class ApiResponseController {
             Integer id = apiResponseService.findIdByUk(newApiResponse.getPath(), newApiResponse.getMethod(), newApiResponse.getDataKey());
             if (id == null) {
                 apiResponseService.create(newApiResponse);
+            } else if (override) {
+                apiResponseService.update(id, newApiResponse, false, false);
             } else {
-                if (override) {
-                    apiResponseService.update(id, newApiResponse, false, false);
-                } else {
-                    ignoredApiResponses.add(newApiResponse);
-                }
+                ignoredApiResponses.add(newApiResponse);
             }
         });
         importHelper.storeProcessingResultMessages(redirectAttributes, newApiResponses, ignoredApiResponses);
