@@ -21,10 +21,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ApiStubApplication {
 
-    private ApiStubApplication(){
-        // NOP
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(ApiStubApplication.class, args).close();
     }
