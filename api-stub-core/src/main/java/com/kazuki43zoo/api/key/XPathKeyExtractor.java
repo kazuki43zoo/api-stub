@@ -40,10 +40,14 @@ import java.util.List;
 public class XPathKeyExtractor implements KeyExtractor {
 
     @Override
-    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions)
-            throws ParserConfigurationException, IOException, SAXException {
-        Document document = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8)));
+    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
+        Document document;
+        try {
+            document = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8)));
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+        }
         XPath xpath = XPathFactory.newInstance().newXPath();
         List<String> values = new ArrayList<>();
         for (String expression : expressions) {
