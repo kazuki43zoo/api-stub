@@ -27,7 +27,32 @@
 
     <name>api-stub</name>
     <description>API Stub project for Spring Boot</description>
+    <url>https://github.com/kazuki43zoo/api-stub/</url>
     <inceptionYear>2016</inceptionYear>
+
+    <organization />
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>kazuki43zoo</id>
+            <name>Kazuki Shimizu</name>
+            <email>kazuki43zoo@gmail.com</email>
+            <roles>
+                <role>Project lead</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/kazuki43zoo/api-stub.git</url>
+    </scm>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
