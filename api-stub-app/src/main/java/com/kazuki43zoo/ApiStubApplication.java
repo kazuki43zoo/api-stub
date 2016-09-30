@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ApiStubApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiStubApplication.class, args).close();
+        SpringApplication.run(ApiStubApplication.class, args);
     }
 
 }
