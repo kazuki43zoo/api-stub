@@ -14,13 +14,6 @@
 --    limitations under the License.
 --
 
--- DROP TABLE IF EXISTS mock_api_response;
--- DROP TABLE IF EXISTS mock_api_response_history;
--- DROP TABLE IF EXISTS mock_api;
--- DROP TABLE IF EXISTS api_proxy;
--- DROP TABLE IF EXISTS api_proxy_response;
-
-
 CREATE TABLE IF NOT EXISTS mock_api_response (
   id IDENTITY
   ,path VARCHAR (256) NOT NULL
