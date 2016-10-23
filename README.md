@@ -202,7 +202,7 @@ Add the `api-stub-core` into your pom file as follow:
 <dependency>
     <groupId>com.kazuki43zoo</groupId>
     <artifactId>api-stub-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 </dependency>
 ```
 
