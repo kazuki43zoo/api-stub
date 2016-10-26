@@ -13,7 +13,7 @@ Stub for API
 
 ## Getting started !!
 
-* Download the [api-stub.jar](https://github.com/kazuki43zoo/api-stub/releases/download/1.0.0.RELEASE/api-stub.jar) and save to any directory
+* Download the [api-stub.jar](../../releases/download/1.0.0.RELEASE/api-stub.jar) and save to any directory
 
 * Run the application
   
@@ -154,33 +154,15 @@ If you use a STS(or Eclipse), please install the Groovy Eclipse plugin. About ho
 
 * https://github.com/groovy/groovy-eclipse/wiki
 
-### How to build 
+### How to build and run
 
-* Clone the project
-
-  ```bash
-  $ git clone https://github.com/kazuki43zoo/api-stub.git
-  ```
-
-* Build a jar
-
-  ```bash
-  $ cd api-stub
-  $ ./mvnw clean install
-  ```
-
-* Run the application using building jar
-
-  ```bash
-  $ java -jar api-stub-app/target/api-stub.jar
-  ```
-
+* See [wiki](../../wiki/How-to-build-&-run)
 
 ## Known Issues
 
-* https://github.com/kazuki43zoo/api-stub/issues
+* View [issues](../../issues)
 
 ## Feature request and bug report
 
-* https://github.com/kazuki43zoo/api-stub/issues/new
+* Open [new issue](../../issues/new)
 
