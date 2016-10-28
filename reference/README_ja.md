@@ -135,7 +135,7 @@ RESTfulなURL設計にしていない（データを識別するIDがリクエ�
 > **Note:**
 > 
 > 「キーの生成方法」には、「最初にマッチしたルールを利用して生成」か「全てのルールを使用して生成」のいずれかを選択してください。
-> 「キーの抽出ルール」を複数指定＋それらのルールをAND条件で扱いたい場合は、「全てのルールを使用して生成」を選択します。
+> 「キーの抽出ルール」を複数指定＋それらのルールをAND条件（＝複合キー）として扱いたい場合は、「全てのルールを使用して生成」を選択します。
 
 
 ![Input for create api](images/switch-using-json-api.png)
@@ -154,6 +154,10 @@ RESTfulなURL設計にしていない（データを識別するIDがリクエ�
 ![Input for create api](images/switch-using-json-response-create.png)
 
 データ登録後に「データキー」（「データを識別するID」）を指定して保存します。
+
+> **Note:**
+>
+> 「キーの抽出ルール」を複数指定＋「キーの生成方法」に「全てのルールを使用して生成」を選択した場合は、各キー値を「`/`」を結合した値をを指定してください。例）「0000000001/001」
 
 ![Input for create api](images/switch-using-json-response-update.png)
 
