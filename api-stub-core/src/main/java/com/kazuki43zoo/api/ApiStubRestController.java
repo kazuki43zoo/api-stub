@@ -98,8 +98,11 @@ class ApiStubRestController {
 
             final ResponseEntity<Object> responseEntity;
 
-            boolean enabledProxy = Optional.ofNullable(api).map(Api::getProxy).map(ApiProxy::getEnabled)
-                    .orElseGet(() -> properties.getProxy().isDefaultEnabled());
+            boolean enabledProxy = Optional.ofNullable(api)
+                    .map(Api::getProxy)
+                    .map(ApiProxy::getEnabled)
+                    .orElse(properties.getProxy().isDefaultEnabled());
+
             if (enabledProxy) {
                 responseEntity = doProxy(request, requestEntity, path, method, dataKey, api, evidence);
 
@@ -143,7 +146,10 @@ class ApiStubRestController {
 
     private ResponseEntity<Object> doProxy(HttpServletRequest request, RequestEntity<String> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
 
-        final String url = Optional.ofNullable(api).map(Api::getProxy).map(ApiProxy::getUrl).filter(StringUtils::hasLength)
+        final String url = Optional.ofNullable(api)
+                .map(Api::getProxy)
+                .map(ApiProxy::getUrl)
+                .filter(StringUtils::hasLength)
                 .orElse(properties.getProxy().getDefaultUrl()) + path + (StringUtils.hasLength(request.getQueryString()) ? "?" + request.getQueryString() : "");
 
 
@@ -167,8 +173,11 @@ class ApiStubRestController {
             body = proxyResponseEntity.getBody();
         }
 
-        boolean enabledCapturing = Optional.ofNullable(api).map(Api::getProxy).map(ApiProxy::getCapturing)
+        boolean enabledCapturing = Optional.ofNullable(api)
+                .map(Api::getProxy)
+                .map(ApiProxy::getCapturing)
                 .orElseGet(() -> properties.getProxy().isDefaultCapturing());
+
         if (enabledCapturing) {
             doCapture(path, method, dataKey, proxyResponseEntity, responseHeaders, evidence);
         }
@@ -210,8 +219,8 @@ class ApiStubRestController {
 
         // Response Body
         final InputStreamResource responseBody = Optional.ofNullable(apiResponse.getBody())
-                .map(InputStreamResource::new).orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
-                        .map(InputStreamResource::new).orElse(null));
+                .map(InputStreamResource::new)
+                .orElse(Optional.ofNullable(apiResponse.getAttachmentFile()).map(InputStreamResource::new).orElse(null));
 
         // Wait processing
         if (apiResponse.getWaitingMsec() != null && apiResponse.getWaitingMsec() > 0) {
