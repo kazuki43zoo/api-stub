@@ -29,11 +29,13 @@ import java.util.stream.Collectors;
 @Service
 public class ApiResponseService {
 
-    @Autowired
-    ApiResponseRepository repository;
+    private final ApiResponseRepository repository;
+    private final ApiStubProperties properties;
 
-    @Autowired
-    ApiStubProperties properties;
+    public ApiResponseService(ApiResponseRepository repository, ApiStubProperties properties) {
+        this.repository = repository;
+        this.properties = properties;
+    }
 
     public ApiResponse findOne(String path, String method, String dataKey) {
         ApiResponse mockResponse = repository.findOneByUk(path, method, dataKey);

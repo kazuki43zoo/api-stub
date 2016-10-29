@@ -29,11 +29,13 @@ import java.util.stream.Collectors;
 @Service
 public class ApiService {
 
-    @Autowired
-    ApiRepository repository;
+    private final ApiRepository repository;
+    private final ApiStubProperties properties;
 
-    @Autowired
-    ApiStubProperties properties;
+    public ApiService (ApiRepository repository, ApiStubProperties properties) {
+        this.repository = repository;
+        this.properties = properties;
+    }
 
     public Api findOne(String path, String method) {
         return repository.findOneByUk(path, method);

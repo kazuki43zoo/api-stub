@@ -31,11 +31,13 @@ import java.util.UUID;
 @Component
 public class ApiEvidenceFactory {
 
-    @Autowired
-    ApiStubProperties properties;
+    private final ApiStubProperties properties;
+    private final ContentNegotiationManager contentNegotiationManager;
 
-    @Autowired
-    ContentNegotiationManager contentNegotiationManager;
+    public ApiEvidenceFactory(ApiStubProperties properties, ContentNegotiationManager contentNegotiationManager) {
+        this.properties = properties;
+        this.contentNegotiationManager = contentNegotiationManager;
+    }
 
     public ApiEvidence create(HttpServletRequest request, String dataKey) {
 

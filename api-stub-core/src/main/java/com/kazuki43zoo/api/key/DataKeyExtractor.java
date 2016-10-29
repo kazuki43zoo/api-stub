@@ -36,12 +36,11 @@ import java.util.stream.Stream;
 public class DataKeyExtractor {
 
     private final Map<String, KeyExtractor> keyExtractorMap;
-
     private final ObjectMapper jsonObjectMapper;
 
-    DataKeyExtractor(ObjectProvider<Map<String, KeyExtractor>> keyExtractorMap, ObjectMapper jsonObjectMapper) {
+    DataKeyExtractor(ObjectProvider<Map<String, KeyExtractor>> keyExtractorMapProvider, ObjectMapper jsonObjectMapper) {
         this.jsonObjectMapper = jsonObjectMapper;
-        this.keyExtractorMap = keyExtractorMap.getIfAvailable();
+        this.keyExtractorMap = keyExtractorMapProvider.getIfAvailable();
     }
 
     public String extract(Api api, HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException {

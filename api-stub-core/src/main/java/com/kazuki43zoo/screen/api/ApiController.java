@@ -31,8 +31,7 @@ import com.kazuki43zoo.domain.service.ApiService;
 import com.kazuki43zoo.screen.ImportHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Conventions;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
@@ -62,23 +61,23 @@ import java.util.stream.Stream;
 @SessionAttributes(types = ApiSearchForm.class)
 public class ApiController {
 
-    @Autowired
-    ApiService service;
+    private final ApiService service;
+    private final List<KeyExtractor> keyExtractors;
+    private final ImportHelper importHelper;
+    private final DownloadSupport downloadSupport;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired(required = false)
-    List<KeyExtractor> keyExtractors;
-
-    @Autowired
-    ImportHelper importHelper;
-
-    @Autowired
-    DownloadSupport downloadSupport;
-
-    @Autowired
-    ObjectMapper objectMapper;
+    public ApiController(ApiService service,
+                         ObjectProvider<List<KeyExtractor>> keyExtractorsProvider,
+                         ImportHelper importHelper,
+                         DownloadSupport downloadSupport,
+                         ObjectMapper objectMapper) {
+        this.service = service;
+        this.keyExtractors = keyExtractorsProvider.getIfAvailable();
+        this.importHelper = importHelper;
+        this.downloadSupport = downloadSupport;
+        this.objectMapper = objectMapper;
+    }
 
     @ModelAttribute("apiSearchForm")
     public ApiSearchForm setUpSearchForm() {
