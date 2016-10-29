@@ -44,7 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 
-class ApiEvidence {
+public class ApiEvidence {
 
     private static final DateTimeFormatter DIR_NAME_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
     private static ObjectMapper objectMapperForLog = Jackson2ObjectMapperBuilder.json().indentOutput(false).build();
@@ -57,7 +57,7 @@ class ApiEvidence {
     @Getter
     private final String correlationId;
 
-    ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
+    public ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
         MDC.put(properties.getCorrelationIdKey(), correlationId);
         this.dir = Paths.get(properties.getEvidence().getDir(),
                 path, (dataKey != null ? dataKey : ""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
@@ -67,7 +67,7 @@ class ApiEvidence {
         this.correlationId = correlationId;
     }
 
-    void start() {
+    public void start() {
         info("Start.");
         if (properties.getEvidence().isDisabledRequest() && properties.getEvidence().isDisabledUpload()) {
             return;
@@ -78,7 +78,7 @@ class ApiEvidence {
         info("Evidence Dir : {}", dir.toAbsolutePath().toString());
     }
 
-    void request(HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException, ServletException {
+    public void request(HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException, ServletException {
         final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
         info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
@@ -117,25 +117,25 @@ class ApiEvidence {
         }
     }
 
-    void response(ResponseEntity<?> responseEntity) throws JsonProcessingException {
+    public void response(ResponseEntity<?> responseEntity) throws JsonProcessingException {
         EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
         info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
     }
 
-    void end() {
+    public void end() {
         info("End.");
         MDC.clear();
     }
 
-    void error(String format, Object... args) {
+    public void error(String format, Object... args) {
         logger.error(format, args);
     }
 
-    void warn(String format, Object... args) {
+    public void warn(String format, Object... args) {
         logger.warn(format, args);
     }
 
-    void info(String format, Object... args) {
+    public void info(String format, Object... args) {
         logger.info(format, args);
     }
 
