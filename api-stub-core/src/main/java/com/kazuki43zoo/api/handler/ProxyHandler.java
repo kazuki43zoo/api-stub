@@ -63,15 +63,20 @@ public class ProxyHandler {
 
     public ResponseEntity<Object> perform(HttpServletRequest request, RequestEntity<String> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
 
-        final String url = Optional.ofNullable(api)
+        final String baseUrl = Optional.ofNullable(api)
                 .map(Api::getProxy)
                 .map(ApiProxy::getUrl)
                 .filter(StringUtils::hasLength)
-                .orElse(properties.getProxy().getDefaultUrl()) + path + (StringUtils.hasLength(request.getQueryString()) ? "?" + request.getQueryString() : "");
+                .orElse(properties.getProxy().getDefaultUrl());
 
-        final RequestEntity.BodyBuilder requestBodyBuilder = RequestEntity.method(HttpMethod.valueOf(method.toUpperCase()), URI.create(url));
+        final String url = baseUrl + path +
+                (StringUtils.hasLength(request.getQueryString()) ? "?" + request.getQueryString() : "");
+
+        final RequestEntity.BodyBuilder requestBodyBuilder =
+                RequestEntity.method(HttpMethod.valueOf(method.toUpperCase()), URI.create(url));
+
         Collections.list(request.getHeaderNames())
-                .forEach(headerName -> requestBodyBuilder.header(headerName, Collections.list(request.getHeaders(headerName)).toArray(new String[0])));
+                .forEach(name -> requestBodyBuilder.header(name, Collections.list(request.getHeaders(name)).toArray(new String[0])));
 
         evidence.info("Proxy to {}", url);
 
@@ -98,7 +103,9 @@ public class ProxyHandler {
             doCapture(path, method, dataKey, proxyResponseEntity, responseHeaders, evidence);
         }
 
-        return ResponseEntity.status(proxyResponseEntity.getStatusCodeValue()).headers(responseHeaders).body(body);
+        return ResponseEntity.status(proxyResponseEntity.getStatusCodeValue())
+                .headers(responseHeaders)
+                .body(body);
     }
 
     private void doCapture(String path, String method, String dataKey, ResponseEntity<byte[]> proxyResponseEntity, HttpHeaders responseHeaders, ApiEvidence evidence) throws UnsupportedEncodingException {

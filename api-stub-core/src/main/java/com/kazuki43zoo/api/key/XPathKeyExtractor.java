@@ -57,7 +57,9 @@ public class XPathKeyExtractor implements KeyExtractor {
                 values.add(id);
             } catch (Exception e) {
                 // ignore
-                log.debug(e.getMessage(), e);
+                if (log.isDebugEnabled()) {
+                    log.debug(e.getMessage(), e);
+                }
             }
         }
         return values;

@@ -84,15 +84,19 @@ public class MockResponseHandler {
         // Response Body
         final InputStreamResource responseBody = Optional.ofNullable(apiResponse.getBody())
                 .map(InputStreamResource::new)
-                .orElse(Optional.ofNullable(apiResponse.getAttachmentFile()).map(InputStreamResource::new).orElse(null));
+                .orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
+                        .map(InputStreamResource::new)
+                        .orElse(null));
 
         // Wait processing
-        if (apiResponse.getWaitingMsec() != null && apiResponse.getWaitingMsec() > 0) {
+        if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
             evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
             TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
         }
 
-        return ResponseEntity.status(statusCode).headers(responseHeaders).body(responseBody);
+        return ResponseEntity.status(statusCode)
+                .headers(responseHeaders)
+                .body(responseBody);
     }
 
 

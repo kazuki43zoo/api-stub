@@ -60,7 +60,9 @@ public class DataKeyExtractor {
             key = api.getKeyGeneratingStrategy().generate(keys);
         } catch (Exception e) {
             // ignore
-            log.debug(e.getMessage(), e);
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage(), e);
+            }
         }
         return key;
     }

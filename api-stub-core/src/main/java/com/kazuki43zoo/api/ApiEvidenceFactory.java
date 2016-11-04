@@ -45,7 +45,10 @@ public class ApiEvidenceFactory {
 
         final String contentExtension = Optional.ofNullable(request.getContentType())
                 .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
-                .orElseGet(ArrayList::new).stream().findFirst().orElse("txt");
+                .orElseGet(ArrayList::new)
+                .stream()
+                .findFirst()
+                .orElse("txt");
 
         return new ApiEvidence(properties, request.getMethod(), request.getServletPath(), dataKey, correlationId, contentExtension);
     }

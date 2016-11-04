@@ -42,7 +42,9 @@ public class JsonPathKeyExtractor implements KeyExtractor {
                 }
             } catch (Exception e) {
                 // ignore
-                log.debug(e.getMessage(), e);
+                if (log.isDebugEnabled()) {
+                    log.debug(e.getMessage(), e);
+                }
             }
         }
         return values;

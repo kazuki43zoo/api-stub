@@ -43,7 +43,13 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -92,7 +98,8 @@ class ApiResponseController {
         }
         List<ApiResponse> apiResponses = apiResponseService.findAll(form.getPath(), form.getMethod(), form.getDescription());
         if (apiResponses.isEmpty()) {
-            model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            model.addAttribute(
+                    InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(apiResponses);
         return "response/list";
@@ -101,7 +108,8 @@ class ApiResponseController {
     @PostMapping(params = "delete")
     public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
         apiResponseService.delete(ids);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/responses";
     }
 
@@ -128,12 +136,16 @@ class ApiResponseController {
         try {
             apiResponseService.create(apiResponse);
         } catch (DuplicateKeyException e) {
-            log.debug(e.getMessage(), e);
-            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage(), e);
+            }
+            model.addAttribute(
+                    ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "response/form";
         }
         redirectAttributes.addAttribute("id", apiResponse.getId());
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
         return "redirect:/manager/responses/{id}";
     }
 
@@ -141,7 +153,8 @@ class ApiResponseController {
     public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
         ApiResponse apiResponse = apiResponseService.findOne(id);
         if (apiResponse == null) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses";
         }
         ApiResponseForm form = new ApiResponseForm();
@@ -177,14 +190,16 @@ class ApiResponseController {
             keepAttachmentFile = true;
         }
         apiResponseService.update(id, apiResponse, keepAttachmentFile, form.isSaveHistory());
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/responses/{id}";
     }
 
     @PostMapping(path = "{id}", params = "delete")
     public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         apiResponseService.delete(id);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/responses";
     }
 
@@ -199,12 +214,14 @@ class ApiResponseController {
     public String histories(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) {
         ApiResponse apiResponse = apiResponseService.findOne(id);
         if (apiResponse == null) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses";
         }
         List<ApiResponse> apiResponses = apiResponseService.findAllHistoryById(id);
         if (apiResponses.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses/{id}";
         }
         Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
@@ -220,7 +237,8 @@ class ApiResponseController {
     @PostMapping(path = "{id}/histories", params = "delete")
     public String deleteHistories(@PathVariable int id, @RequestParam List<Integer> subIds, RedirectAttributes redirectAttributes) {
         apiResponseService.deleteHistories(id, subIds);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         if (apiResponseService.findAllHistoryById(id).isEmpty()) {
             return "redirect:/manager/responses/{id}";
         } else {
@@ -232,7 +250,8 @@ class ApiResponseController {
     public String history(@PathVariable int id, @PathVariable int subId, Model model, RedirectAttributes redirectAttributes) throws IOException {
         ApiResponse apiResponse = apiResponseService.findHistory(id, subId);
         if (apiResponse == null) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses/{id}/histories";
         }
         ApiResponseForm form = new ApiResponseForm();
@@ -253,14 +272,16 @@ class ApiResponseController {
     @PostMapping(path = "{id}/histories/{subId}", params = "restore")
     public String restoreHistory(@PathVariable int id, @PathVariable int subId, RedirectAttributes redirectAttributes) {
         apiResponseService.restoreHistory(id, subId);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_RESTORED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_RESTORED).build());
         return "redirect:/manager/responses/{id}";
     }
 
     @PostMapping(path = "{id}/histories/{subId}", params = "delete")
     public String deleteHistory(@PathVariable int id, @PathVariable int subId, RedirectAttributes redirectAttributes) {
         apiResponseService.deleteHistory(id, subId);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(
+                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         if (apiResponseService.findAllHistoryById(id).isEmpty()) {
             return "redirect:/manager/responses/{id}";
         } else {
@@ -288,11 +309,13 @@ class ApiResponseController {
     @PostMapping(params = "import")
     public String importApiResponses(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
         if (!StringUtils.hasLength(file.getOriginalFilename())) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
             return "redirect:/manager/responses";
         }
         if (file.getSize() == 0) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/responses";
         }
         List<ApiResponse> newApiResponses;
@@ -300,11 +323,13 @@ class ApiResponseController {
             newApiResponses = Arrays.asList(objectMapper.readValue(file.getInputStream(), ApiResponse[].class));
         } catch (JsonParseException | JsonMappingException e) {
             log.warn(e.getMessage(), e);
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/responses";
         }
         if (newApiResponses.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(
+                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/responses";
         }
 

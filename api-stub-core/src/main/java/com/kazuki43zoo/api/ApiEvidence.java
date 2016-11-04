@@ -46,9 +46,12 @@ import java.util.Map;
 
 public class ApiEvidence {
 
-    private static final DateTimeFormatter DIR_NAME_DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
-    private static ObjectMapper objectMapperForLog = Jackson2ObjectMapperBuilder.json().indentOutput(false).build();
-    private static ObjectMapper objectMapperForFile = Jackson2ObjectMapperBuilder.json().indentOutput(true).build();
+    private static final DateTimeFormatter DIR_NAME_DATE_TIME_FORMAT =
+            DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
+    private static ObjectMapper objectMapperForLog =
+            Jackson2ObjectMapperBuilder.json().indentOutput(false).build();
+    private static ObjectMapper objectMapperForFile =
+            Jackson2ObjectMapperBuilder.json().indentOutput(true).build();
 
     private final Path dir;
     private final Logger logger;
@@ -108,7 +111,8 @@ public class ApiEvidence {
                 UploadFile uploadFile = new UploadFile(part, saveFileName);
                 info("Upload file  : {}", objectMapperForLog.writeValueAsString(uploadFile));
                 if (!properties.getEvidence().isDisabledUpload()) {
-                    try (InputStream in = part.getInputStream(); OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
+                    try (InputStream in = part.getInputStream();
+                         OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
                         FileCopyUtils.copy(in, out);
                     }
                 }

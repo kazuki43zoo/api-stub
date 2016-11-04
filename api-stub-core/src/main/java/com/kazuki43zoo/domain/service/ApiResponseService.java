@@ -123,7 +123,9 @@ public class ApiResponseService {
     }
 
     public List<ApiResponse> findAllForExport(List<Integer> ids) {
-        return ids.stream().map(id -> repository.findOne(id)).collect(Collectors.toList());
+        return ids.stream()
+                .map(repository::findOne)
+                .collect(Collectors.toList());
     }
 
 }
