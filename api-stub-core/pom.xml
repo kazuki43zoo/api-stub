@@ -35,7 +35,7 @@
 
     <properties>
         <!-- for dependencies -->
-        <mybatis-spring-boot.version>1.1.1</mybatis-spring-boot.version>
+        <mybatis-spring-boot.version>1.2.0</mybatis-spring-boot.version>
         <mybatis-typehandlers-jsr310.version>1.0.1</mybatis-typehandlers-jsr310.version>
         <bootstrap.version>3.3.7-1</bootstrap.version>
         <ace-builds.version>1.2.5</ace-builds.version>
