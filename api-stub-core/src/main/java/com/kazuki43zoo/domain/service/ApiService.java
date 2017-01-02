@@ -18,6 +18,7 @@ package com.kazuki43zoo.domain.service;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.repository.ApiRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +27,11 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class ApiService {
 
     private final ApiRepository repository;
     private final ApiStubProperties properties;
-
-    public ApiService (ApiRepository repository, ApiStubProperties properties) {
-        this.repository = repository;
-        this.properties = properties;
-    }
 
     public Api findOne(String path, String method) {
         return repository.findOneByUk(path, method);

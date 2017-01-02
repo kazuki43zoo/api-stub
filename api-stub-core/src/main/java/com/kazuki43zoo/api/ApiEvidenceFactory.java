@@ -16,6 +16,7 @@
 package com.kazuki43zoo.api;
 
 import com.kazuki43zoo.config.ApiStubProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -28,15 +29,11 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class ApiEvidenceFactory {
 
     private final ApiStubProperties properties;
     private final ContentNegotiationManager contentNegotiationManager;
-
-    public ApiEvidenceFactory(ApiStubProperties properties, ContentNegotiationManager contentNegotiationManager) {
-        this.properties = properties;
-        this.contentNegotiationManager = contentNegotiationManager;
-    }
 
     public ApiEvidence create(HttpServletRequest request, String dataKey) {
 

@@ -17,8 +17,8 @@ package com.kazuki43zoo.api.key;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.domain.model.Api;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,15 +32,11 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class DataKeyExtractor {
 
     private final Map<String, KeyExtractor> keyExtractorMap;
     private final ObjectMapper jsonObjectMapper;
-
-    DataKeyExtractor(ObjectProvider<Map<String, KeyExtractor>> keyExtractorMapProvider, ObjectMapper jsonObjectMapper) {
-        this.jsonObjectMapper = jsonObjectMapper;
-        this.keyExtractorMap = keyExtractorMapProvider.getIfAvailable();
-    }
 
     public String extract(Api api, HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException {
         if (api == null) {

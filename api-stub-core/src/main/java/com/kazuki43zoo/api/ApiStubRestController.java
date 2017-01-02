@@ -22,6 +22,7 @@ import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiProxy;
 import com.kazuki43zoo.domain.service.ApiService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 class ApiStubRestController {
 
     private final ApiService apiService;
@@ -43,20 +45,6 @@ class ApiStubRestController {
     private final MockResponseHandler mockResponseHandler;
     private final ProxyHandler proxyHandler;
     private final DataKeyExtractor dataKeyExtractor;
-
-    public ApiStubRestController(ApiService apiService,
-                          ApiStubProperties properties,
-                          ApiEvidenceFactory apiEvidenceFactory,
-                          MockResponseHandler mockResponseHandler,
-                          ProxyHandler proxyHandler,
-                          DataKeyExtractor dataKeyExtractor) {
-        this.apiService = apiService;
-        this.properties = properties;
-        this.apiEvidenceFactory = apiEvidenceFactory;
-        this.mockResponseHandler = mockResponseHandler;
-        this.proxyHandler = proxyHandler;
-        this.dataKeyExtractor = dataKeyExtractor;
-    }
 
     @RequestMapping(path = "${api.root-path:/api}/**")
     public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, RequestEntity<String> requestEntity)

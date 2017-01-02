@@ -28,6 +28,7 @@ import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
 import com.kazuki43zoo.screen.ImportHelper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.InputStreamResource;
@@ -66,6 +67,7 @@ import java.util.List;
 @RequestMapping("/manager/responses")
 @Controller
 @SessionAttributes(types = ApiResponseSearchForm.class)
+@RequiredArgsConstructor
 class ApiResponseController {
 
     private final ApiResponseService apiResponseService;
@@ -73,18 +75,6 @@ class ApiResponseController {
     private final ImportHelper importHelper;
     private final DownloadSupport downloadSupport;
     private final ObjectMapper objectMapper;
-
-    public ApiResponseController(ApiResponseService apiResponseService,
-                                 ApiService apiService,
-                                 ImportHelper importHelper,
-                                 DownloadSupport downloadSupport,
-                                 ObjectMapper objectMapper) {
-        this.apiResponseService = apiResponseService;
-        this.apiService = apiService;
-        this.importHelper = importHelper;
-        this.downloadSupport = downloadSupport;
-        this.objectMapper = objectMapper;
-    }
 
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {

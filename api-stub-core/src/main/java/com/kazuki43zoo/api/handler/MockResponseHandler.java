@@ -20,6 +20,7 @@ import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 public class MockResponseHandler {
 
     private static final String HEADER_SEPARATOR = "\r\n";
@@ -42,12 +44,6 @@ public class MockResponseHandler {
     private final ApiResponseService apiResponseService;
     private final DownloadSupport downloadSupport;
     private final ApiStubProperties properties;
-
-    public MockResponseHandler(ApiResponseService apiResponseService, DownloadSupport downloadSupport, ApiStubProperties properties) {
-        this.apiResponseService = apiResponseService;
-        this.downloadSupport = downloadSupport;
-        this.properties = properties;
-    }
 
     public ResponseEntity<Object> perform(String path, String method, String dataKey, ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
 
