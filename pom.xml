@@ -85,6 +85,10 @@
                             <exclude>**/mvnw*</exclude>
                             <exclude>**/.factorypath</exclude>
                         </excludes>
+                        <mapping>
+                            <java>SLASHSTAR_STYLE</java>
+                            <groovy>SLASHSTAR_STYLE</groovy>
+                        </mapping>
                     </configuration>
                     <dependencies>
                         <dependency>
