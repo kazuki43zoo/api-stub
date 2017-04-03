@@ -183,7 +183,7 @@ interface ApiResponseRepository {
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
             return new SQL() {
                 {
-                    SELECT("id").SELECT("path").SELECT("method").SELECT("data_key").SELECT("status_code").SELECT("description")
+                    SELECT("id", "path", "method", "data_key", "status_code", "description")
                     FROM("mock_api_response")
                     if (StringUtils.hasLength(path)) {
                         WHERE("path REGEXP #{path}")
@@ -194,7 +194,7 @@ interface ApiResponseRepository {
                     if (StringUtils.hasLength(description)) {
                         WHERE("description REGEXP #{description}")
                     }
-                    ORDER_BY("path").ORDER_BY("method").ORDER_BY("data_key")
+                    ORDER_BY("path", "method", "data_key")
                 }
             }.toString()
         }

@@ -144,8 +144,7 @@ interface ApiRepository {
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
             return new SQL() {
                 {
-                    SELECT("a.id").SELECT("a.path").SELECT("a.method").SELECT("a.description")
-                            .SELECT("SELECT COUNT(r.id) FROM mock_api_response r WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number")
+                    SELECT("a.id", "a.path", "a.method", "a.description", "SELECT COUNT(r.id) FROM mock_api_response r WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number")
                     FROM("mock_api a")
                     if (StringUtils.hasLength(path)) {
                         WHERE("a.path REGEXP #{path}")
@@ -156,7 +155,7 @@ interface ApiRepository {
                     if (StringUtils.hasLength(description)) {
                         WHERE("a.description REGEXP #{description}")
                     }
-                    ORDER_BY("a.path").ORDER_BY("a.method")
+                    ORDER_BY("a.path", "a.method")
                 }
             }.toString()
         }
