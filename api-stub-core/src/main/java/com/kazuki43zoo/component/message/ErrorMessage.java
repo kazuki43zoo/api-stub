@@ -22,5 +22,5 @@ import lombok.Getter;
 @Builder
 public class ErrorMessage {
     private final MessageCode code;
-    private final Object args;
+    private final Object[] args;
 }
