@@ -21,6 +21,8 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SuccessMessage {
-    private final MessageCode code;
-    private final Object[] args;
+    @Builder.Default
+    private MessageCode code = MessageCode.UNDEFINED;
+    @Builder.Default
+    private MessageArgs args = MessageArgs.EMPTY;
 }

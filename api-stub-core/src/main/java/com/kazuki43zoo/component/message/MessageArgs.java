@@ -15,14 +15,15 @@
  */
 package com.kazuki43zoo.component.message;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Getter
-@Builder
-public class ErrorMessage {
-    @Builder.Default
-    private MessageCode code = MessageCode.UNDEFINED;
-    @Builder.Default
-    private MessageArgs args = MessageArgs.EMPTY;
+public class MessageArgs {
+    static final MessageArgs EMPTY = create();
+    private final Object[] values;
+    public static MessageArgs create(Object... values){
+        return new MessageArgs(values);
+    }
 }

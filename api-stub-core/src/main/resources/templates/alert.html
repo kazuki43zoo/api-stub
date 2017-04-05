@@ -27,19 +27,19 @@
     <div class="alert alert-info alert-dismissible" role="alert" th:if="${infoMessage != null}">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-        <span th:text="${#messages.msgWithParams(infoMessage.code.value, infoMessage.args)}"></span>
+        <span th:text="${#messages.msgWithParams(infoMessage.code.value, infoMessage.args.values)}"></span>
     </div>
 
     <div class="alert alert-success alert-dismissible" role="alert" th:if="${successMessage != null}">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-        <span th:text="${#messages.msgWithParams(successMessage.code.value, successMessage.args)}"></span>
+        <span th:text="${#messages.msgWithParams(successMessage.code.value, successMessage.args.values)}"></span>
     </div>
 
     <div class="alert alert-danger alert-dismissible" role="alert" th:if="${errorMessage != null}">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                 aria-hidden="true">&times;</span></button>
-        <span th:text="${#messages.msgWithParams(errorMessage.code.value, errorMessage.args)}"></span>
+        <span th:text="${#messages.msgWithParams(errorMessage.code.value, errorMessage.args.values)}"></span>
     </div>
 
 </div>

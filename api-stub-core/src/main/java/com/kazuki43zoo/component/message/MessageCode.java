@@ -15,13 +15,14 @@
  */
 package com.kazuki43zoo.component.message;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
 public enum MessageCode {
+    /** */
+    UNDEFINED("msg.undefined"),
     /** */
     DATA_NOT_FOUND("msg.dataNotFound")
     /** */
