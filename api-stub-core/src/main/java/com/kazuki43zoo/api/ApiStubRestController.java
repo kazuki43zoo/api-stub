@@ -22,8 +22,10 @@ import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiProxy;
 import com.kazuki43zoo.domain.service.ApiService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -55,6 +59,10 @@ class ApiStubRestController {
 
         final Api api = apiService.findOne(path, method);
 
+        if (Objects.isNull(api)) {
+            return ResponseEntity.notFound().build();
+        }
+        
         final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);
 
         final ApiEvidence evidence = apiEvidenceFactory.create(request, dataKey);
