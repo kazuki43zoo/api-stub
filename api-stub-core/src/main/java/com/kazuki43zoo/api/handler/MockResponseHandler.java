@@ -20,7 +20,10 @@ import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,12 +48,21 @@ public class MockResponseHandler {
     private final DownloadSupport downloadSupport;
     private final ApiStubProperties properties;
 
+    @Value("${mockresponse.notfound.return.error}")
+    private boolean isErrorResponse;
+    
+    @Value("${mockresponse.notfound.statuscode}")
+    private Integer notFoundStatus;
+    
     public ResponseEntity<Object> perform(String path, String method, String dataKey, ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
 
         final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 
         if (apiResponse.getId() == 0) {
             evidence.warn("Mock Response is not found.");
+            if (isErrorResponse) {
+                return ResponseEntity.status(notFoundStatus).build();
+            }
         } else {
             evidence.info("Mock Response is {}.", apiResponse.getId());
         }
