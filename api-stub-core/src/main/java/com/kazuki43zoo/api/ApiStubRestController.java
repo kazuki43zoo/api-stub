@@ -60,7 +60,7 @@ class ApiStubRestController {
         final Api api = apiService.findOne(path, method);
 
         if (Objects.isNull(api)) {
-            log.info("not match the request data. Path:{} Method:{}", path, method);
+            log.debug("not match the request data. Path:{} Method:{}", path, method);
         }
         
         final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);

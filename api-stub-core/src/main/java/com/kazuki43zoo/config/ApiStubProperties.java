@@ -17,8 +17,10 @@ package com.kazuki43zoo.config;
 
 import lombok.Getter;
 import lombok.Setter;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Setter
@@ -37,6 +39,11 @@ public class ApiStubProperties {
      */
     private String rootPath = "/api";
 
+    
+    private boolean isErrorResponse = true;
+    
+    private Integer notFoundStatus = HttpStatus.NOT_FOUND.value();
+    
     @NestedConfigurationProperty
     private Evidence evidence = new Evidence();
 

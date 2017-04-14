@@ -23,7 +23,6 @@ import com.kazuki43zoo.domain.service.ApiResponseService;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -48,28 +47,21 @@ public class MockResponseHandler {
     private final DownloadSupport downloadSupport;
     private final ApiStubProperties properties;
 
-    @Value("${mockresponse.notfound.return.error}")
-    private boolean isErrorResponse;
-    
-    @Value("${mockresponse.notfound.statuscode}")
-    private Integer notFoundStatus;
-    
     public ResponseEntity<Object> perform(String path, String method, String dataKey, ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
 
         final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 
+        // Status Code
+        final Integer statusCode;
+        
         if (apiResponse.getId() == 0) {
             evidence.warn("Mock Response is not found.");
-            if (isErrorResponse) {
-                return ResponseEntity.status(notFoundStatus).build();
-            }
+            statusCode = (properties.isErrorResponse()) ? properties.getNotFoundStatus() : HttpStatus.OK.value();
         } else {
             evidence.info("Mock Response is {}.", apiResponse.getId());
+            statusCode = Optional.ofNullable(apiResponse.getStatusCode())
+                         .orElse(HttpStatus.OK.value());
         }
-
-        // Status Code
-        final Integer statusCode = Optional.ofNullable(apiResponse.getStatusCode())
-                .orElse(HttpStatus.OK.value());
 
         // Response Headers
         final HttpHeaders responseHeaders = new HttpHeaders();
@@ -106,6 +98,5 @@ public class MockResponseHandler {
                 .headers(responseHeaders)
                 .body(responseBody);
     }
-
 
 }
