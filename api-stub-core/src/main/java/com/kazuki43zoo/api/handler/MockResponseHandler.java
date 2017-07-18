@@ -20,7 +20,9 @@ import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -49,15 +51,17 @@ public class MockResponseHandler {
 
         final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 
+        // Status Code
+        final Integer statusCode;
+        
         if (apiResponse.getId() == 0) {
             evidence.warn("Mock Response is not found.");
+            statusCode = (properties.isErrorResponse()) ? properties.getNotFoundStatus() : HttpStatus.OK.value();
         } else {
             evidence.info("Mock Response is {}.", apiResponse.getId());
+            statusCode = Optional.ofNullable(apiResponse.getStatusCode())
+                         .orElse(HttpStatus.OK.value());
         }
-
-        // Status Code
-        final Integer statusCode = Optional.ofNullable(apiResponse.getStatusCode())
-                .orElse(HttpStatus.OK.value());
 
         // Response Headers
         final HttpHeaders responseHeaders = new HttpHeaders();
@@ -94,6 +98,5 @@ public class MockResponseHandler {
                 .headers(responseHeaders)
                 .body(responseBody);
     }
-
 
 }
