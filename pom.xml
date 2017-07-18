@@ -66,7 +66,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <thymeleaf.version>3.0.6.RELEASE</thymeleaf.version>
-        <thymeleaf-layout-dialect.version>2.0.1</thymeleaf-layout-dialect.version>
+        <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
         <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
     </properties>
