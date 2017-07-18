@@ -39,7 +39,6 @@
         <mybatis-typehandlers-jsr310.version>1.0.2</mybatis-typehandlers-jsr310.version>
         <bootstrap.version>3.3.7-1</bootstrap.version>
         <ace-builds.version>1.2.6</ace-builds.version>
-        <lombok.version>1.16.16</lombok.version>
         <!-- for build plugin -->
         <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
@@ -81,7 +80,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <!--<version>${lombok.version}</version>-->
             <scope>provided</scope>
         </dependency>
 
