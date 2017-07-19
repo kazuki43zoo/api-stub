@@ -49,15 +49,16 @@ public class MockResponseHandler {
 
         final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
 
+        final Integer statusCode;
         if (apiResponse.getId() == 0) {
             evidence.warn("Mock Response is not found.");
+            statusCode = Optional.ofNullable(properties.getResponse().getHttpStatusForMockNotFound())
+                        .orElse(HttpStatus.OK).value();
         } else {
             evidence.info("Mock Response is {}.", apiResponse.getId());
+            statusCode = Optional.ofNullable(apiResponse.getStatusCode())
+                         .orElse(HttpStatus.OK.value());
         }
-
-        // Status Code
-        final Integer statusCode = Optional.ofNullable(apiResponse.getStatusCode())
-                .orElse(HttpStatus.OK.value());
 
         // Response Headers
         final HttpHeaders responseHeaders = new HttpHeaders();

@@ -55,6 +55,10 @@ class ApiStubRestController {
 
         final Api api = apiService.findOne(path, method);
 
+        if (api == null) {
+            log.debug("Not found the API registration that match this request. Path:{} Method:{}", path, method);
+        }
+        
         final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);
 
         final ApiEvidence evidence = apiEvidenceFactory.create(request, dataKey);

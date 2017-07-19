@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Setter
@@ -38,10 +39,22 @@ public class ApiStubProperties {
     private String rootPath = "/api";
 
     @NestedConfigurationProperty
+    private Response response = new Response();
+
+    @NestedConfigurationProperty
     private Evidence evidence = new Evidence();
 
     @NestedConfigurationProperty
     private Proxy proxy = new Proxy();
+
+    @Setter
+    @Getter
+    public static class Response {
+        /**
+         * HTTP status to respond when a mock response not found
+         */
+        private HttpStatus httpStatusForMockNotFound = HttpStatus.NOT_FOUND;
+    }
 
     @Setter
     @Getter
