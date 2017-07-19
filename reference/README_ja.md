@@ -5,7 +5,7 @@
 スタブをインストールした直後の状態（レスポンスデータが見つからない場合）では、APIスタブは常に「400 NOT FOUND」で空のボディを返却します。
 
 ```text
-$ curl -D - http://localhost:8080/api/v1/test
+$ curl -D - -s http://localhost:8080/api/v1/test
 HTTP/1.1 404 
 x-correlation-id: 0dbb5f82-da1e-4e5d-9d3a-64408b4db6e7
 Content-Length: 0
