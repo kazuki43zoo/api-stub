@@ -13,7 +13,7 @@ Stub for API
 
 ## Getting started !!
 
-* Download the [api-stub.jar](../../releases/download/1.0.0.RELEASE/api-stub.jar) and save to any directory
+* Download the [api-stub.jar](../../releases/download/1.1.0.RELEASE/api-stub.jar) and save to any directory
 
 * Run the application
   
@@ -37,16 +37,16 @@ Stub for API
 
 ## Try to access mock API
 
-### Default response (200 OK)
+### Default response (404 NOT FOUND)
 
 * Access to an unknown path
 
-  ```bash
+  ```text
   $ curl -D - http://localhost:8080/api/v1/test
-  HTTP/1.1 200 
-  x-correlation-id: 0d04375f-92ec-4f59-8a0b-78bfc542a7a8
+  HTTP/1.1 404 
+  x-correlation-id: 0dbb5f82-da1e-4e5d-9d3a-64408b4db6e7
   Content-Length: 0
-  Date: Sun, 23 Oct 2016 07:20:45 GMT
+  Date: Wed, 19 Jul 2017 18:45:39 GMT
   
   ```
 
@@ -64,7 +64,7 @@ Stub for API
 
 * Access to the creating path
 
-  ```bash
+  ```text
   $ curl -D - http://localhost:8080/api/v1/members/1
   HTTP/1.1 200 
   x-correlation-id: 9b8c538c-a3fd-478e-b62c-d0116c44c0ba
