@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -32,6 +33,9 @@ import java.util.List;
 public class JsonPathKeyExtractor implements KeyExtractor {
     @Override
     public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
+        if (StringUtils.isEmpty(requestBody)) {
+            return Collections.emptyList();
+        }
         List<String> values = new ArrayList<>();
         ReadContext context = JsonPath.parse(requestBody);
         for (String expression : expressions) {

@@ -18,6 +18,7 @@ package com.kazuki43zoo.api.key;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -32,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -41,6 +43,9 @@ public class XPathKeyExtractor implements KeyExtractor {
 
     @Override
     public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
+        if (StringUtils.isEmpty(requestBody)) {
+            return Collections.emptyList();
+        }
         Document document;
         try {
             document = DocumentBuilderFactory.newInstance()
@@ -54,12 +59,11 @@ public class XPathKeyExtractor implements KeyExtractor {
             try {
                 XPathExpression xPathExpression = xpath.compile(expression);
                 String id = (String) xPathExpression.evaluate(document, XPathConstants.STRING);
-                values.add(id);
-            } catch (Exception e) {
-                // ignore
-                if (log.isDebugEnabled()) {
-                    log.debug(e.getMessage(), e);
+                if (StringUtils.hasLength(id)) {
+                    values.add(id);
                 }
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
         }
         return values;

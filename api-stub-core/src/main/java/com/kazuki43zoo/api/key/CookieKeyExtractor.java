@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -30,7 +31,7 @@ public class CookieKeyExtractor implements KeyExtractor {
     @Override
     public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
         if (request.getCookies() == null) {
-            return null;
+            return Collections.emptyList();
         }
         List<String> values = new ArrayList<>();
         for (String expression : expressions) {
