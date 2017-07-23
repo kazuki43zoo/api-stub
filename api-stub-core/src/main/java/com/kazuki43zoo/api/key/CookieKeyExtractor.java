@@ -24,25 +24,25 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Order(5)
 public class CookieKeyExtractor implements KeyExtractor {
     @Override
     public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
-        if (request.getCookies() == null) {
+        if (request.getCookies() == null || expressions.length == 0) {
             return Collections.emptyList();
         }
+        Map<String, String> cookieMap = Stream.of(request.getCookies())
+            .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
         List<String> values = new ArrayList<>();
         for (String expression : expressions) {
-            for (Cookie cookie : request.getCookies()) {
-                if (!cookie.getName().equals(expression)) {
-                    continue;
-                }
-                String id = cookie.getValue();
-                if (StringUtils.hasLength(id)) {
-                    values.add(id);
-                }
+            String id = cookieMap.get(expression);
+            if (StringUtils.hasLength(id)) {
+                values.add(id);
             }
         }
         return values;
