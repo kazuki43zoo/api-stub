@@ -1,9 +1,7 @@
 package com.kazuki43zoo.api.key;
 
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -13,11 +11,8 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.xpath.XPath;
 
 public class XPathKeyExtractorTests {
 

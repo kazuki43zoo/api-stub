@@ -2,8 +2,6 @@ package com.kazuki43zoo.api.key;
 
 import java.util.List;
 
-import javax.servlet.http.Cookie;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
