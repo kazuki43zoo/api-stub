@@ -9,8 +9,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import javax.xml.bind.JAXB;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,7 +36,7 @@ public class XPathKeyExtractorTests {
 	}
 
 	@Test
-	public void testExpressionIsMatch() throws JsonProcessingException {
+	public void testExpressionIsMatch() {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
@@ -54,7 +52,7 @@ public class XPathKeyExtractorTests {
 	}
 
 	@Test
-	public void testExpressionIsMatchByMultiple() throws JsonProcessingException {
+	public void testExpressionIsMatchByMultiple() {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
@@ -73,7 +71,7 @@ public class XPathKeyExtractorTests {
 	}
 
 	@Test
-	public void testExpressionIsNoMatch() throws JsonProcessingException {
+	public void testExpressionIsNoMatch() {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
@@ -88,7 +86,7 @@ public class XPathKeyExtractorTests {
 	}
 
 	@Test
-	public void testExpressionIsEmpty() throws JsonProcessingException {
+	public void testExpressionIsEmpty() {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
