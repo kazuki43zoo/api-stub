@@ -2,12 +2,13 @@ package com.kazuki43zoo.api.key;
 
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParameterKeyExtractorTests {
 
@@ -19,7 +20,7 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -28,8 +29,8 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key");
-		Assertions.assertThat(keys).hasSize(1);
-		Assertions.assertThat(keys).containsSequence("value");
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence("value");
 	}
 
 	@Test
@@ -38,8 +39,8 @@ public class ParameterKeyExtractorTests {
 				.param("key2", "value2").param("key3", "value3").buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key1", "key2", "key4");
-		Assertions.assertThat(keys).hasSize(2);
-		Assertions.assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(2);
+		assertThat(keys).containsSequence("value1", "value2");
 	}
 
 	@Test
@@ -48,7 +49,7 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key2");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -57,7 +58,7 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null);
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 }

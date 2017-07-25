@@ -1,6 +1,5 @@
 package com.kazuki43zoo.api.key;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -9,6 +8,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import javax.servlet.http.Cookie;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CookieKeyExtractorTests {
 
@@ -20,7 +21,7 @@ public class CookieKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -29,8 +30,8 @@ public class CookieKeyExtractorTests {
 				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key");
-		Assertions.assertThat(keys).hasSize(1);
-		Assertions.assertThat(keys).containsSequence("value");
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence("value");
 	}
 
 	@Test
@@ -40,8 +41,8 @@ public class CookieKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key1", "key2", "key4");
-		Assertions.assertThat(keys).hasSize(2);
-		Assertions.assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(2);
+		assertThat(keys).containsSequence("value1", "value2");
 	}
 
 	@Test
@@ -50,7 +51,7 @@ public class CookieKeyExtractorTests {
 				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key2");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -59,7 +60,7 @@ public class CookieKeyExtractorTests {
 				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null);
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 }

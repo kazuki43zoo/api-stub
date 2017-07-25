@@ -6,12 +6,13 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonPathKeyExtractorTests {
 
@@ -24,7 +25,7 @@ public class JsonPathKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "$.key");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -33,7 +34,7 @@ public class JsonPathKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, "", "$.key");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -45,8 +46,8 @@ public class JsonPathKeyExtractorTests {
 		jsonSource.put("key", "value");
 
 		List<String> keys = extractor.extract(request, objectMapper.writeValueAsString(jsonSource), "$.key");
-		Assertions.assertThat(keys).hasSize(1);
-		Assertions.assertThat(keys).containsSequence("value");
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence("value");
 	}
 
 	@Test
@@ -61,8 +62,8 @@ public class JsonPathKeyExtractorTests {
 
 		List<String> keys = extractor.extract(request, objectMapper.writeValueAsString(jsonSource), "$.key1", "$.key2",
 				"$.key4");
-		Assertions.assertThat(keys).hasSize(2);
-		Assertions.assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(2);
+		assertThat(keys).containsSequence("value1", "value2");
 	}
 
 	@Test
@@ -74,7 +75,7 @@ public class JsonPathKeyExtractorTests {
 		jsonSource.put("key", "value");
 
 		List<String> keys = extractor.extract(request, objectMapper.writeValueAsString(jsonSource), "$.key2");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -86,7 +87,7 @@ public class JsonPathKeyExtractorTests {
 		jsonSource.put("key", "value");
 
 		List<String> keys = extractor.extract(request, objectMapper.writeValueAsString(jsonSource));
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 }

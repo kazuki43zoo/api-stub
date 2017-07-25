@@ -3,7 +3,6 @@ package com.kazuki43zoo.api.key;
 import java.io.StringWriter;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -13,6 +12,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.xml.bind.JAXB;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class XPathKeyExtractorTests {
 
@@ -24,7 +25,7 @@ public class XPathKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, null, "key");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -33,7 +34,7 @@ public class XPathKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<String> keys = extractor.extract(request, "", "//key/text()");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -47,11 +48,9 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		System.out.println(xmlWriter.toString());
-
 		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key/text()");
-		Assertions.assertThat(keys).hasSize(1);
-		Assertions.assertThat(keys).containsSequence("value");
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence("value");
 	}
 
 	@Test
@@ -69,8 +68,8 @@ public class XPathKeyExtractorTests {
 
 		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key1/text()", "//key2/text()",
 				"//key4/text()");
-		Assertions.assertThat(keys).hasSize(2);
-		Assertions.assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(2);
+		assertThat(keys).containsSequence("value1", "value2");
 	}
 
 	@Test
@@ -85,7 +84,7 @@ public class XPathKeyExtractorTests {
 		JAXB.marshal(xmlSource, xmlWriter);
 
 		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key2/text()");
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test
@@ -100,7 +99,7 @@ public class XPathKeyExtractorTests {
 		JAXB.marshal(xmlSource, xmlWriter);
 
 		List<String> keys = extractor.extract(request, xmlWriter.toString());
-		Assertions.assertThat(keys).isEmpty();
+		assertThat(keys).isEmpty();
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -108,8 +107,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, "<a></b>");
-		Assertions.assertThat(keys).isEmpty();
+		extractor.extract(request, "<a></b>");
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -117,8 +115,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, "<a></a>", "//a/foo()");
-		Assertions.assertThat(keys).isEmpty();
+		extractor.extract(request, "<a></a>", "//a/foo()");
 	}
 
 	static class OnePropertyBean {
