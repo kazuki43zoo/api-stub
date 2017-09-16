@@ -15,7 +15,6 @@
  */
 package com.kazuki43zoo.api.key;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Slf4j
 @Component
 @Order(2)
 public class XPathKeyExtractor implements KeyExtractor {
