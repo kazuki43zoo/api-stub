@@ -37,6 +37,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.WebExpressionContext;
+import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -61,7 +62,9 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -77,7 +80,9 @@ public class MockResponseHandler {
     private final ApiResponseService apiResponseService;
     private final DownloadSupport downloadSupport;
     private final ApiStubProperties properties;
+    private final Set<IDialect> dialects;
     private ITemplateEngine templateEngine;
+
 
     @PostConstruct
     public void setupTemplateEngine() {
@@ -86,6 +91,7 @@ public class MockResponseHandler {
         StringTemplateResolver templateResolver = new StringTemplateResolver();
         templateResolver.setTemplateMode(TemplateMode.TEXT);
         templateEngine.addTemplateResolver(templateResolver);
+        templateEngine.setAdditionalDialects(dialects);
         this.templateEngine = templateEngine;
     }
 
