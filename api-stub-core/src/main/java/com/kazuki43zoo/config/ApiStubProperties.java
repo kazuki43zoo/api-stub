@@ -21,6 +21,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.templatemode.TemplateMode;
 
 @Setter
 @Getter
@@ -55,10 +56,28 @@ public class ApiStubProperties {
          */
         private HttpStatus httpStatusForMockNotFound = HttpStatus.NOT_FOUND;
 
-        /**
-         * Disabled template.
-         */
-        private boolean disabledTemplate = false;
+        @NestedConfigurationProperty
+        private Template template = new Template();
+
+        @Setter
+        @Getter
+        public static class Template {
+            /**
+             * Flag for indicating to disable template feature.
+             */
+            private boolean disabled = false;
+
+            /**
+             * Template mode.
+             */
+            private TemplateMode mode = TemplateMode.TEXT;
+
+            /**
+             * Flag for indicating to enable SpEL compiler.
+             */
+            private boolean enabledSpelCompiler = true;
+        }
+
     }
 
     @Setter

@@ -62,7 +62,6 @@ import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -89,9 +88,10 @@ public class MockResponseHandler {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setMessageSource(applicationContext);
         StringTemplateResolver templateResolver = new StringTemplateResolver();
-        templateResolver.setTemplateMode(TemplateMode.TEXT);
+        templateResolver.setTemplateMode(properties.getResponse().getTemplate().getMode());
         templateEngine.addTemplateResolver(templateResolver);
         templateEngine.setAdditionalDialects(dialects);
+        templateEngine.setEnableSpringELCompiler(properties.getResponse().getTemplate().isEnabledSpelCompiler());
         this.templateEngine = templateEngine;
     }
 
@@ -160,7 +160,7 @@ public class MockResponseHandler {
     private InputStreamResource processTemplate(InputStream body, Charset responseCharset, RequestEntity<String> requestEntity, HttpServletRequest request,
                                    HttpServletResponse response) {
 
-        if (properties.getResponse().isDisabledTemplate()) {
+        if (properties.getResponse().getTemplate().isDisabled()) {
             return new InputStreamResource(body);
         }
 
