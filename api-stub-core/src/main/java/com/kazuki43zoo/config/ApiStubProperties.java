@@ -54,6 +54,11 @@ public class ApiStubProperties {
          * HTTP status to respond when a mock response not found
          */
         private HttpStatus httpStatusForMockNotFound = HttpStatus.NOT_FOUND;
+
+        /**
+         * Disabled template.
+         */
+        private boolean disabledTemplate = false;
     }
 
     @Setter

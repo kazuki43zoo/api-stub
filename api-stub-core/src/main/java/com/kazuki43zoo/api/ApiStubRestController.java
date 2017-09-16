@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ class ApiStubRestController {
     private final DataKeyExtractor dataKeyExtractor;
 
     @RequestMapping(path = "${api.root-path:/api}/**")
-    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, RequestEntity<String> requestEntity)
+    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, HttpServletResponse response, RequestEntity<String> requestEntity)
             throws IOException, ServletException, InterruptedException {
 
         final String path = request.getServletPath().replace(properties.getRootPath(), "");
@@ -78,7 +79,7 @@ class ApiStubRestController {
                 responseEntity = proxyHandler.perform(request, requestEntity, path, method, dataKey, api, evidence);
 
             } else {
-                responseEntity = mockResponseHandler.perform(path, method, dataKey, evidence);
+                responseEntity = mockResponseHandler.perform(path, method, dataKey, requestEntity, request, response, evidence);
 
             }
 
