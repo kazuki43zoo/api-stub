@@ -84,6 +84,7 @@
                             <exclude>**/.mvn/**</exclude>
                             <exclude>**/mvnw*</exclude>
                             <exclude>**/.factorypath</exclude>
+                            <exclude>evidence/**</exclude>
                         </excludes>
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
