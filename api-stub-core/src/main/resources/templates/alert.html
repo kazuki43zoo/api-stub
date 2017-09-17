@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<div id="messages">
+<div th:fragment="messages">
 
     <div class="alert alert-info alert-dismissible" role="alert" th:if="${infoMessage != null}">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span

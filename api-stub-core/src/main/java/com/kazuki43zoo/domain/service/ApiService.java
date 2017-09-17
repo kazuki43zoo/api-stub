@@ -17,11 +17,18 @@ package com.kazuki43zoo.domain.service;
 
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
+import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.repository.ApiRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.session.RowBounds;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ApiService {
-
+    private static final Pageable pageableForExport = new PageRequest(0, Integer.MAX_VALUE);
     private final ApiRepository repository;
     private final ApiStubProperties properties;
 
@@ -45,8 +52,15 @@ public class ApiService {
         return repository.findOne(id);
     }
 
-    public List<Api> findAll(String path, String method, String description) {
-        return repository.findAll(path, method, description);
+    public Page<Api> findAll(String path, String method, String description, Pageable pageable) {
+        long count = repository.count(path, method, description);
+        List<Api> content;
+        if (count != 0) {
+            content = repository.findPage(path, method, description, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+        } else {
+            content = Collections.emptyList();
+        }
+        return new PageImpl<>(content, pageable, count);
     }
 
     public void create(Api newApi) {
@@ -73,7 +87,7 @@ public class ApiService {
     }
 
     public List<Api> findAllForExport() {
-        return findAll(null, null, null).stream()
+        return findAll(null, null, null, pageableForExport).getContent().stream()
                 .map(api -> repository.findOne(api.getId()))
                 .collect(Collectors.toList());
     }

@@ -18,14 +18,19 @@ package com.kazuki43zoo.domain.repository
 import com.kazuki43zoo.domain.model.Api
 import org.apache.ibatis.annotations.*
 import org.apache.ibatis.jdbc.SQL
+import org.apache.ibatis.session.RowBounds
 import org.springframework.util.StringUtils
 
 //language=SQL
 @Mapper
 interface ApiRepository {
 
-    @SelectProvider(type = SqlProvider.class, method = "findAll")
-    List<Api> findAll(
+    @SelectProvider(type = SqlProvider.class, method = "findPage")
+    List<Api> findPage(
+            @Param("path") String path, @Param("method") String method, @Param("description") String description, RowBounds rowBounds)
+
+    @SelectProvider(type = SqlProvider.class, method = "count")
+    long count(
             @Param("path") String path, @Param("method") String method, @Param("description") String description)
 
     @Select('''
@@ -140,24 +145,37 @@ interface ApiRepository {
     void deleteProxy(int id)
 
     static class SqlProvider {
-        public String findAll(
+        public String findPage(
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
             return new SQL() {
                 {
                     SELECT("a.id", "a.path", "a.method", "a.description", "SELECT COUNT(r.id) FROM mock_api_response r WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number")
                     FROM("mock_api a")
-                    if (StringUtils.hasLength(path)) {
-                        WHERE("a.path REGEXP #{path}")
-                    }
-                    if (StringUtils.hasLength(method)) {
-                        WHERE("a.method = UPPER(#{method})")
-                    }
-                    if (StringUtils.hasLength(description)) {
-                        WHERE("a.description REGEXP #{description}")
-                    }
+                    where(this, path, method, description)
                     ORDER_BY("a.path", "a.method")
                 }
             }.toString()
+        }
+        public String count(
+                @Param("path") String path, @Param("method") String method, @Param("description") String description) {
+            return new SQL() {
+                {
+                    SELECT("COUNT(*)")
+                    FROM("mock_api a")
+                    where(this, path, method, description)
+                }
+            }.toString()
+        }
+        private static void where(SQL sql, String path, String method, String description) {
+            if (StringUtils.hasLength(path)) {
+                sql.WHERE("a.path REGEXP #{path}")
+            }
+            if (StringUtils.hasLength(method)) {
+                sql.WHERE("a.method = UPPER(#{method})")
+            }
+            if (StringUtils.hasLength(description)) {
+                sql.WHERE("a.description REGEXP #{description}")
+            }
         }
     }
 

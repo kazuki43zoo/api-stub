@@ -34,6 +34,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,16 +48,12 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.CookieGenerator;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -69,7 +69,11 @@ import java.util.List;
 @SessionAttributes(types = ApiResponseSearchForm.class)
 @RequiredArgsConstructor
 class ApiResponseController {
-
+    private static final String COOKIE_NAME_PAGE_SIZE = "apiResponse.pageSize";
+    private static final Pageable pageableForExistingCheck = new PageRequest(0, 1);
+    private static final CookieGenerator pageSizeCookieGenerator = new CookieGenerator(){{
+            setCookieName(COOKIE_NAME_PAGE_SIZE);
+        }};
     private final ApiResponseService apiResponseService;
     private final ApiService apiService;
     private final ImportHelper importHelper;
@@ -82,16 +86,25 @@ class ApiResponseController {
     }
 
     @GetMapping
-    public String list(@Validated ApiResponseSearchForm form, BindingResult result, Model model) {
+    public String list(@Validated ApiResponseSearchForm form, BindingResult result, Pageable pageable,
+                       @RequestParam(name = "size", defaultValue = "0") int paramPageSize,
+                       @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
+                       Model model, HttpServletResponse response) {
+        int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
+        pageSize = pageSize > 0 ? pageSize : pageable.getPageSize();
+        pageSizeCookieGenerator.addCookie(response, String.valueOf(pageSize));
+        model.addAttribute("pageSize", pageSize);
+
         if (result.hasErrors()) {
             return "response/list";
         }
-        List<ApiResponse> apiResponses = apiResponseService.findAll(form.getPath(), form.getMethod(), form.getDescription());
-        if (apiResponses.isEmpty()) {
+        Page<ApiResponse> page = apiResponseService.findPage(form.getPath(), form.getMethod(), form.getDescription(),
+                new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort()));
+        if (page.getContent().isEmpty()) {
             model.addAttribute(
                     InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
-        model.addAttribute(apiResponses);
+        model.addAttribute("page", page);
         return "response/list";
     }
 
@@ -201,15 +214,18 @@ class ApiResponseController {
 
 
     @GetMapping(path = "{id}/histories")
-    public String histories(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) {
+    public String histories(@PathVariable int id, Pageable pageable,
+                            @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
+                            Model model, RedirectAttributes redirectAttributes) {
         ApiResponse apiResponse = apiResponseService.findOne(id);
         if (apiResponse == null) {
             redirectAttributes.addFlashAttribute(
                     ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses";
         }
-        List<ApiResponse> apiResponses = apiResponseService.findAllHistoryById(id);
-        if (apiResponses.isEmpty()) {
+        Page<ApiResponse> page = apiResponseService.findAllHistoryById(id,
+                new PageRequest(pageable.getPageNumber(), cookiePageSize > 0 ? cookiePageSize : pageable.getPageSize(), pageable.getSort()));
+        if (page.getContent().isEmpty()) {
             redirectAttributes.addFlashAttribute(
                     ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses/{id}";
@@ -217,7 +233,7 @@ class ApiResponseController {
         Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
 
         model.addAttribute(apiResponse);
-        model.addAttribute(apiResponses);
+        model.addAttribute("page", page);
         if (api != null) {
             model.addAttribute(api);
         }
@@ -229,7 +245,7 @@ class ApiResponseController {
         apiResponseService.deleteHistories(id, subIds);
         redirectAttributes.addFlashAttribute(
                 SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
-        if (apiResponseService.findAllHistoryById(id).isEmpty()) {
+        if (apiResponseService.findAllHistoryById(id, pageableForExistingCheck).getContent().isEmpty()) {
             return "redirect:/manager/responses/{id}";
         } else {
             return "redirect:/manager/responses/{id}/histories";
@@ -272,7 +288,7 @@ class ApiResponseController {
         apiResponseService.deleteHistory(id, subId);
         redirectAttributes.addFlashAttribute(
                 SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
-        if (apiResponseService.findAllHistoryById(id).isEmpty()) {
+        if (apiResponseService.findAllHistoryById(id, pageableForExistingCheck).getContent().isEmpty()) {
             return "redirect:/manager/responses/{id}";
         } else {
             return "redirect:/manager/responses/{id}/histories";

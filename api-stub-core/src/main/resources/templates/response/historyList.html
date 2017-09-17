@@ -1,6 +1,6 @@
 <!--
 
-       Copyright 2016 the original author or authors.
+       Copyright 2016-2017 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -25,15 +25,16 @@
 </head>
 <body th:with="hasApi=${api != null}">
 
-<nav th:replace="nav :: #topNav"></nav>
+<nav th:replace="nav :: topNav"></nav>
 
 <div class="container">
 
     <h2 th:text="#{title.responseHistoryList(${apiResponse.method},${apiResponse.path})}"></h2>
 
-    <div th:replace="alert :: #messages"></div>
+    <div th:replace="alert :: messages"></div>
 
     <form method="post">
+        <div th:replace="list :: pagination"></div>
         <table class="table table-striped">
             <tr>
                 <th>
@@ -47,7 +48,7 @@
                 <th th:text="#{description}"></th>
                 <th th:text="#{createdAt}"></th>
             </tr>
-            <tr th:each="apiResponseHistory : ${apiResponseList}" th:object="${apiResponseHistory}">
+            <tr th:each="apiResponseHistory : ${page.content}" th:object="${apiResponseHistory}">
                 <td>
                     <div class="checkbox">
                         <label>
@@ -67,14 +68,15 @@
                 <td th:text="*{#temporals.format(createdAt,'uuuu/MM/dd HH:mm:ss')}"></td>
             </tr>
         </table>
+        <div th:replace="list :: pagination"></div>
         <div class="form-group">
             <button type="button" class="btn btn-default" name="delete" data-toggle="modal"
-                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponseList)}">
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(page.content)}">
                 <span class="glyphicon glyphicon-trash"></span>
                 <span th:text="#{action.delete}"></span>
             </button>
         </div>
-        <div th:replace="dialog :: #deleteModal"></div>
+        <div th:replace="dialog :: deleteModal"></div>
     </form>
     <div class="form-horizontal">
         <div class="form-group">

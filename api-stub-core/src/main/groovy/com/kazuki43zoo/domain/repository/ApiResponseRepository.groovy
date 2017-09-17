@@ -18,15 +18,19 @@ package com.kazuki43zoo.domain.repository
 import com.kazuki43zoo.domain.model.ApiResponse
 import org.apache.ibatis.annotations.*
 import org.apache.ibatis.jdbc.SQL
+import org.apache.ibatis.session.RowBounds
 import org.springframework.util.StringUtils
 
 //language=SQL
 @Mapper
 interface ApiResponseRepository {
 
-    @SelectProvider(type = SqlProvider.class, method = "findAll")
-    List<ApiResponse> findAll(
-            @Param("path") String path, @Param("method") String method, @Param("description") String description)
+    @SelectProvider(type = SqlProvider.class, method = "findPage")
+    List<ApiResponse> findPage(
+            @Param("path") String path, @Param("method") String method, @Param("description") String description, RowBounds rowBounds)
+
+    @SelectProvider(type = SqlProvider.class, method = "count")
+    long count(@Param("path") String path, @Param("method") String method, @Param("description") String description)
 
     @Select('''
         SELECT
@@ -40,7 +44,19 @@ interface ApiResponseRepository {
         ORDER BY
             h.sub_id DESC
     ''')
-    List<ApiResponse> findAllHistoryById(int id)
+    List<ApiResponse> findPageHistoryById(int id, RowBounds rowBounds)
+
+    @Select('''
+        SELECT
+            COUNT(*)
+        FROM
+            mock_api_response_history h
+        INNER JOIN
+            mock_api_response o ON o.id = h.id
+        WHERE
+            h.id = #{id}
+    ''')
+    long countHistoryById(int id)
 
     @Select('''
         SELECT
@@ -179,24 +195,38 @@ interface ApiResponseRepository {
     void deleteAllHistory(int id);
 
     static class SqlProvider {
-        public String findAll(
+        public String findPage(
                 @Param("path") String path, @Param("method") String method, @Param("description") String description) {
             return new SQL() {
                 {
                     SELECT("id", "path", "method", "data_key", "status_code", "description")
                     FROM("mock_api_response")
-                    if (StringUtils.hasLength(path)) {
-                        WHERE("path REGEXP #{path}")
-                    }
-                    if (StringUtils.hasLength(method)) {
-                        WHERE("method = UPPER(#{method})")
-                    }
-                    if (StringUtils.hasLength(description)) {
-                        WHERE("description REGEXP #{description}")
-                    }
+                    where(this, path, method, description)
                     ORDER_BY("path", "method", "data_key")
                 }
             }.toString()
+        }
+        public String count(
+                @Param("path") String path, @Param("method") String method, @Param("description") String description) {
+            return new SQL() {
+                {
+                    SELECT("COUNT(*)")
+                    FROM("mock_api_response")
+                    where(this, path, method, description)
+                }
+
+            }.toString()
+        }
+        private static void where(SQL sql,  String path, String method, String description) {
+            if (StringUtils.hasLength(path)) {
+                sql.WHERE("path REGEXP #{path}")
+            }
+            if (StringUtils.hasLength(method)) {
+                sql.WHERE("method = UPPER(#{method})")
+            }
+            if (StringUtils.hasLength(description)) {
+                sql.WHERE("description REGEXP #{description}")
+            }
         }
     }
 

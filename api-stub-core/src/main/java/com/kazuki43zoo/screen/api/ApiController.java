@@ -34,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.Conventions;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,16 +46,12 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.CookieGenerator;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -67,7 +66,10 @@ import java.util.stream.Stream;
 @SessionAttributes(types = ApiSearchForm.class)
 @RequiredArgsConstructor
 public class ApiController {
-
+    private static final String COOKIE_NAME_PAGE_SIZE = "api.pageSize";
+    private static final CookieGenerator pageSizeCookieGenerator = new CookieGenerator(){{
+        setCookieName(COOKIE_NAME_PAGE_SIZE);
+    }};
     private final ApiService service;
     private final List<KeyExtractor> keyExtractors;
     private final ImportHelper importHelper;
@@ -94,16 +96,25 @@ public class ApiController {
     }
 
     @GetMapping
-    public String list(@Validated ApiSearchForm form, BindingResult result, Model model) {
+    public String list(@Validated ApiSearchForm form, BindingResult result, Pageable pageable,
+                       @RequestParam(name = "size", defaultValue = "0") int paramPageSize,
+                       @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
+                       Model model, HttpServletResponse response) {
+        int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
+        pageSize = pageSize > 0 ? pageSize : pageable.getPageSize();
+        pageSizeCookieGenerator.addCookie(response, String.valueOf(pageSize));
+        model.addAttribute("pageSize", pageSize);
+
         if (result.hasErrors()) {
             return "api/list";
         }
-        List<Api> apis = service.findAll(form.getPath(), form.getMethod(), form.getDescription());
-        if (apis.isEmpty()) {
+        Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
+                new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort()));
+        if (page.getContent().isEmpty()) {
             model.addAttribute(
                     InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
-        model.addAttribute(apis);
+        model.addAttribute("page", page);
         return "api/list";
     }
 

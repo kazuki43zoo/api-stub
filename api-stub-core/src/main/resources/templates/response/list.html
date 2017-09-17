@@ -1,6 +1,6 @@
 <!--
 
-       Copyright 2016 the original author or authors.
+       Copyright 2016-2017 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -25,24 +25,24 @@
 </head>
 <body>
 
-<nav th:replace="nav :: #topNav"></nav>
+<nav th:replace="nav :: topNav"></nav>
 
 <div class="container">
 
     <h2 th:text="#{title.responseList}"></h2>
 
-    <div th:replace="alert :: #messages"></div>
+    <div th:replace="alert :: messages"></div>
 
     <form th:action="@{/manager/responses}"
           th:object="${apiResponseSearchForm}" method="get" class="form-horizontal">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
             <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
-                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:field="*{path}"/>
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:title="#{requestPath}" th:field="*{path}"/>
                 <span class="error" th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
-                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:title="#{httpMethod}"
                        th:field="*{method}"/>
                 <span class="error" th:errors="*{method}"></span>
             </div>
@@ -56,11 +56,15 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
+            <div class="col-sm-offset-2 col-sm-1">
                 <button type="submit" name="search" class="btn btn-default">
                     <span class="glyphicon glyphicon-search"></span>
                     <span th:text="#{action.search}"></span>
                 </button>
+            </div>
+            <div class="col-sm-1">
+                <input type="text" class="form-control" id="size" name="size" th:placeholder="#{pageSize}" th:title="#{pageSize}"
+                       th:value="${pageSize}"/>
             </div>
         </div>
     </form>
@@ -80,11 +84,12 @@
                 <span class="glyphicon glyphicon-import"></span>
                 <span th:text="#{action.import}"></span>
             </button>
-            <div th:replace="dialog :: #importModal"></div>
+            <div th:replace="dialog :: importModal"></div>
         </div>
     </form>
 
     <form method="post">
+        <div th:replace="list :: pagination"></div>
         <table class="table table-striped">
             <tr>
                 <th>
@@ -99,7 +104,7 @@
                 <th th:text="#{httpStatusCode}"></th>
                 <th th:text="#{description}"></th>
             </tr>
-            <tr th:each="apiResponse : ${apiResponseList}" th:object="${apiResponse}">
+            <tr th:each="apiResponse : ${page.content}" th:object="${apiResponse}">
                 <td>
                     <div class="checkbox">
                         <label>
@@ -120,18 +125,19 @@
                 <td th:text="*{description}"></td>
             </tr>
         </table>
+        <div th:replace="list :: pagination"></div>
         <div class="form-group">
             <button class="btn btn-default bulkButton" name="export"
-                    disabled="disabled" th:if="${not #lists.isEmpty(apiResponseList)}">
+                    disabled="disabled" th:if="${not #lists.isEmpty(page.content)}">
                 <span class="glyphicon glyphicon-export"></span>
                 <span th:text="#{action.export}"></span>
             </button>
             <button type="button" class="btn btn-default bulkButton" name="delete" data-toggle="modal"
-                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(apiResponseList)}">
+                    data-target="#deleteModal" disabled="disabled" th:if="${not #lists.isEmpty(page.content)}">
                 <span class="glyphicon glyphicon-trash"></span>
                 <span th:text="#{action.delete}"></span>
             </button>
-            <div th:replace="dialog :: #deleteModal"></div>
+            <div th:replace="dialog :: deleteModal"></div>
         </div>
     </form>
 

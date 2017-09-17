@@ -19,9 +19,14 @@ import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.session.RowBounds;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,12 +59,26 @@ public class ApiResponseService {
         return repository.findIdByUk(path, method, dataKey);
     }
 
-    public List<ApiResponse> findAll(String path, String method, String description) {
-        return repository.findAll(path, method, description);
+    public Page<ApiResponse> findPage(String path, String method, String description, Pageable pageable) {
+        long count = repository.count(path, method, description);
+        List<ApiResponse> content;
+        if (count != 0) {
+            content = repository.findPage(path, method, description, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+        } else {
+            content = Collections.emptyList();
+        }
+        return new PageImpl<>(content, pageable, count);
     }
 
-    public List<ApiResponse> findAllHistoryById(int id) {
-        return repository.findAllHistoryById(id);
+    public Page<ApiResponse> findAllHistoryById(int id, Pageable pageable) {
+        long count = repository.countHistoryById(id);
+        List<ApiResponse> content;
+        if (count != 0) {
+            content = repository.findPageHistoryById(id, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+        } else {
+            content = Collections.emptyList();
+        }
+        return new PageImpl<>(content, pageable, count);
     }
 
     public ApiResponse findHistory(int id, int subId) {

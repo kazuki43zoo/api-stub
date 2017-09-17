@@ -1,6 +1,6 @@
 <!--
 
-       Copyright 2016 the original author or authors.
+       Copyright 2016-2017 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@
 </head>
 <body th:with="isCreate=${apiResponse == null},isUpdate=${apiResponse != null},hasApi=${api != null}">
 
-<nav th:replace="nav :: #topNav"></nav>
+<nav th:replace="nav :: topNav"></nav>
 
 <div class="container">
 
     <h2 th:text="#{title.responseForm}"></h2>
 
-    <div th:replace="alert :: #messages"></div>
+    <div th:replace="alert :: messages"></div>
 
     <form th:object="${apiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
         <div class="form-group">
@@ -145,7 +145,7 @@
                 <label for="saveHistory" th:text="#{msg.saveHistory}"></label>
             </div>
         </div>
-        <div th:replace="dialog :: #deleteModal"></div>
+        <div th:replace="dialog :: deleteModal"></div>
     </form>
 
     <div class="form-horizontal">
