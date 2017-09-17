@@ -35,7 +35,6 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -71,14 +70,17 @@ import java.util.List;
 class ApiResponseController {
     private static final String COOKIE_NAME_PAGE_SIZE = "apiResponse.pageSize";
     private static final Pageable pageableForExistingCheck = new PageRequest(0, 1);
-    private static final CookieGenerator pageSizeCookieGenerator = new CookieGenerator(){{
-            setCookieName(COOKIE_NAME_PAGE_SIZE);
-        }};
+    private static final CookieGenerator pageSizeCookieGenerator;
+    static {
+        pageSizeCookieGenerator = new CookieGenerator();
+        pageSizeCookieGenerator.setCookieName(COOKIE_NAME_PAGE_SIZE);
+    }
     private final ApiResponseService apiResponseService;
     private final ApiService apiService;
     private final ImportHelper importHelper;
     private final DownloadSupport downloadSupport;
     private final ObjectMapper objectMapper;
+
 
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {

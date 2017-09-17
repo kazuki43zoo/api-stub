@@ -67,9 +67,11 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class ApiController {
     private static final String COOKIE_NAME_PAGE_SIZE = "api.pageSize";
-    private static final CookieGenerator pageSizeCookieGenerator = new CookieGenerator(){{
-        setCookieName(COOKIE_NAME_PAGE_SIZE);
-    }};
+    private static final CookieGenerator pageSizeCookieGenerator;
+    static {
+        pageSizeCookieGenerator = new CookieGenerator();
+        pageSizeCookieGenerator.setCookieName(COOKIE_NAME_PAGE_SIZE);
+    }
     private final ApiService service;
     private final List<KeyExtractor> keyExtractors;
     private final ImportHelper importHelper;
