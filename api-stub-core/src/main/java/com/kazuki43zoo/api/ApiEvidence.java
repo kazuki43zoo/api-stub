@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
@@ -35,7 +36,14 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +51,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 public class ApiEvidence {
 
@@ -62,9 +71,10 @@ public class ApiEvidence {
 
     public ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
         MDC.put(properties.getCorrelationIdKey(), correlationId);
+        Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
         this.dir = Paths.get(properties.getEvidence().getDir(),
-                path, (dataKey != null ? dataKey : ""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
-        this.logger = LoggerFactory.getLogger(method + " " + path + (dataKey != null ? (" dataKey=" + dataKey) : ""));
+                path, nullableDataKey.orElse(""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
+        this.logger = LoggerFactory.getLogger(method + " " + path +  nullableDataKey.map(key -> " dataKey=" + key).orElse(""));
         this.contentExtension = contentExtension;
         this.properties = properties;
         this.correlationId = correlationId;
@@ -85,7 +95,8 @@ public class ApiEvidence {
         final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
         info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
-            try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(dir.toFile(), "request.json")))) {
+            try (OutputStream out = new BufferedOutputStream
+                    (new FileOutputStream(new File(dir.toFile(), "request.json")))) {
                 objectMapperForFile.writeValue(out, evidenceRequest);
             }
         }
@@ -94,8 +105,12 @@ public class ApiEvidence {
             final String body = requestEntity.getBody();
             info("Request body : {}", body);
             if (!properties.getEvidence().isDisabledRequest()) {
-                try (OutputStream out = new BufferedOutputStream(new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
-                    StreamUtils.copy(body, StandardCharsets.UTF_8, out);
+                try (OutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
+                    Charset charset = Optional.ofNullable(requestEntity.getHeaders().getContentType())
+                            .map(MediaType::getCharset)
+                            .orElse(StandardCharsets.UTF_8);
+                    StreamUtils.copy(body, charset, out);
                 }
             }
         } else {
