@@ -135,8 +135,16 @@ public class ApiEvidence {
         logger.error(format, args);
     }
 
+    public void error(String format, Throwable t) {
+        logger.error(format, t);
+    }
+
     public void warn(String format, Object... args) {
         logger.warn(format, args);
+    }
+
+    public void warn(String format, Throwable t) {
+        logger.warn(format, t);
     }
 
     public void info(String format, Object... args) {

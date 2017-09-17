@@ -40,7 +40,6 @@ import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.expression.ThymeleafEvaluationContext;
-import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -51,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -140,7 +138,7 @@ public class MockResponseHandler {
                 .map(body -> {
                     Charset responseCharset = Optional.ofNullable(responseHeaders.getContentType())
                             .map(MediaType::getCharset).orElse(StandardCharsets.UTF_8);
-                    return processTemplate(body, responseCharset, requestEntity, request, response);
+                    return processTemplate(body, responseCharset, requestEntity, request, response, responseHeaders, evidence);
                 })
                 .orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
                         .map(InputStreamResource::new)
@@ -158,7 +156,7 @@ public class MockResponseHandler {
     }
 
     private InputStreamResource processTemplate(InputStream body, Charset responseCharset, RequestEntity<String> requestEntity, HttpServletRequest request,
-                                   HttpServletResponse response) {
+                                   HttpServletResponse response, HttpHeaders responseHeaders, ApiEvidence evidence) {
 
         if (properties.getResponse().getTemplate().isDisabled()) {
             return new InputStreamResource(body);
@@ -191,7 +189,15 @@ public class MockResponseHandler {
 
         WebExpressionContext context = new WebExpressionContext(templateEngine.getConfiguration(), request, response,
                 request.getServletContext(), request.getLocale(), model);
-        return new InputStreamResource(new ByteArrayInputStream(templateEngine.process(template, context).getBytes(responseCharset)));
+        String responseData;
+        try {
+            responseData = templateEngine.process(template, context);
+        } catch (Exception e) {
+            evidence.error("Return the template body(original body) because template is wrong. template = \r\n" + template , e);
+            responseHeaders.add("x-error-code", "template_parsing_error");
+            responseData = template;
+        }
+        return new InputStreamResource(new ByteArrayInputStream(responseData.getBytes(responseCharset)));
     }
 
     public static class RequestJson {
@@ -205,7 +211,7 @@ public class MockResponseHandler {
                 return documentContext;
             };
         }
-        public String read(String expression) {
+        public Object read(String expression) {
             return documentContextSupplier.get().read(expression);
         }
     }
@@ -228,9 +234,9 @@ public class MockResponseHandler {
                 return document;
             };
         }
-        public String read(String expression) throws XPathExpressionException {
+        public Object read(String expression) throws XPathExpressionException {
             XPathExpression xPathExpression = xpath.compile(expression);
-            return (String) xPathExpression.evaluate(documentSupplier.get(), XPathConstants.STRING);
+            return xPathExpression.evaluate(documentSupplier.get());
         }
     }
 
