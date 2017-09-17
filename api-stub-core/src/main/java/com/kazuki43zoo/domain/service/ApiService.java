@@ -17,7 +17,6 @@ package com.kazuki43zoo.domain.service;
 
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
-import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.repository.ApiRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.RowBounds;
