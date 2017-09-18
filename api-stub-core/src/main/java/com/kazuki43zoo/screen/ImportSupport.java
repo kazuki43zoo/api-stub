@@ -25,7 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Component
-public class ImportHelper {
+public class ImportSupport {
 
     public void storeProcessingResultMessages(RedirectAttributes redirectAttributes, List<?> newList, List<?> ignoredList) {
         if (newList.size() == ignoredList.size()) {

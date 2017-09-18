@@ -25,18 +25,18 @@ import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.pagination.Pagination;
-import com.kazuki43zoo.component.web.DownloadSupport;
+import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
-import com.kazuki43zoo.screen.ImportHelper;
+import com.kazuki43zoo.screen.ImportSupport;
+import com.kazuki43zoo.screen.PaginationSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.Conventions;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -76,7 +76,8 @@ public class ApiController {
     }
     private final ApiService service;
     private final List<KeyExtractor> keyExtractors;
-    private final ImportHelper importHelper;
+    private final ImportSupport importSupport;
+    private final PaginationSupport paginationSupport;
     private final DownloadSupport downloadSupport;
     private final ObjectMapper objectMapper;
 
@@ -100,21 +101,20 @@ public class ApiController {
     }
 
     @GetMapping
-    public String list(@Validated ApiSearchForm form, BindingResult result, Pageable pageable,
-                       @RequestParam MultiValueMap<String, String> requestParams,
+    public String list(@Validated ApiSearchForm form, BindingResult result,
+                       Pageable pageable,
                        @RequestParam(name = Pagination.PARAM_NAME_SIZE_IN_PAGE, defaultValue = "0") int paramPageSize,
                        @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
+                       @RequestParam MultiValueMap<String, String> requestParams,
                        Model model, HttpServletResponse response) {
-        int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
-        pageSize = pageSize > 0 ? pageSize : pageable.getPageSize();
-        pageSizeCookieGenerator.addCookie(response, String.valueOf(pageSize));
-        model.addAttribute(Pagination.ATTR_NAME_SIZE_IN_PAGE, pageSize);
+        int pageSize = paginationSupport.decideAndStorePageSize(
+                pageable, paramPageSize, cookiePageSize, model, response, pageSizeCookieGenerator);
 
         if (result.hasErrors()) {
             return "api/list";
         }
         Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
-                new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort()));
+                paginationSupport.decidePageable(pageable, pageSize));
         if (page.getContent().isEmpty()) {
             model.addAttribute(
                     InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
@@ -259,7 +259,7 @@ public class ApiController {
                 ignoredApis.add(newApi);
             }
         });
-        importHelper.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);
+        importSupport.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);
         return "redirect:/manager/apis";
     }
 

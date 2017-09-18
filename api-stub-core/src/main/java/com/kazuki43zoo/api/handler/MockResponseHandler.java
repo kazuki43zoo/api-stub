@@ -18,7 +18,7 @@ package com.kazuki43zoo.api.handler;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.kazuki43zoo.api.ApiEvidence;
-import com.kazuki43zoo.component.web.DownloadSupport;
+import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
