@@ -87,7 +87,7 @@
         </div>
     </form>
 
-    <form method="post">
+    <form method="post" th:width="page=${pagination.page}">
         <div th:replace="list :: pagination"></div>
         <table class="table table-striped">
             <tr>

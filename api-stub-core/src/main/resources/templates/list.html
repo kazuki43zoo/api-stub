@@ -22,23 +22,23 @@
 </head>
 <body>
 
-<div th:fragment="pagination">
+<div th:fragment="pagination" th:with="
+    page=${pagination.page}
+    ,pagenationUrl=${(pagenationPath != null ? pagenationPath : '') + pagination.query}
+    ,paginationRange=${pagination.getRange(maxDisplaySize != null ? maxDisplaySize : @environment.getProperty('screen.pagination.default-max-display-size', T(int), '10'))}">
     <ul class="pagination" th:if="${page.totalPages > 1}">
         <li th:if="${not page.first}">
-            <a th:href="@{''(page=0,size=${page.size})}">
-                &laquo;
-            </a>
+            <a th:href="@{${pagenationUrl}(page=0)}">&laquo;</a>
         </li>
-        <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}" th:class="${i == page.number} ? 'active' : ''">
-            <span th:if="${i == page.number}" th:text="${i + 1}">1</span>
-            <a th:if="${i != page.number}" th:href="@{''(page=${i},size=${page.size})}">
-                <span th:text="${i + 1}">1</span>
+        <li th:each="renderingPageIndex : ${#numbers.sequence(paginationRange.begin, paginationRange.end)}"
+            th:class="${renderingPageIndex == page.number} ? 'active' : ''">
+            <span th:if="${renderingPageIndex == page.number}" th:text="${renderingPageIndex + 1}">1</span>
+            <a th:if="${renderingPageIndex != page.number}" th:href="@{${pagenationUrl}(page=${renderingPageIndex})}">
+                <span th:text="${renderingPageIndex + 1}">1</span>
             </a>
         </li>
         <li th:if="${not page.last}">
-            <a th:href="@{''(page=(${page.totalPages} - 1),size=${page.size})}">
-                &raquo;
-            </a>
+            <a th:href="@{${pagenationUrl}(page=${page.totalPages} - 1)}">&raquo;</a>
         </li>
     </ul>
 </div>

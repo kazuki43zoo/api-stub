@@ -33,7 +33,7 @@
 
     <div th:replace="alert :: messages"></div>
 
-    <form method="post">
+    <form method="post" th:with="page=${pagination.page}">
         <div th:replace="list :: pagination"></div>
         <table class="table table-striped">
             <tr>

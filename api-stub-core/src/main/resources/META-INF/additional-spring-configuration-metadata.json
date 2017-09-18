@@ -1,0 +1,10 @@
+{
+  "properties": [
+    {
+      "name": "screen.pagination.default-max-display-size",
+      "type": "java.lang.Integer",
+      "description": "A default max display size for pagination on screen.",
+      "defaultValue": "10"
+    }
+  ]
+}

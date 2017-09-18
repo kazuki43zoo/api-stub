@@ -22,6 +22,7 @@ import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
+import com.kazuki43zoo.component.pagination.Pagination;
 import com.kazuki43zoo.component.web.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiResponse;
@@ -43,6 +44,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -81,7 +83,6 @@ class ApiResponseController {
     private final DownloadSupport downloadSupport;
     private final ObjectMapper objectMapper;
 
-
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {
         return new ApiResponseSearchForm();
@@ -89,13 +90,14 @@ class ApiResponseController {
 
     @GetMapping
     public String list(@Validated ApiResponseSearchForm form, BindingResult result, Pageable pageable,
-                       @RequestParam(name = "size", defaultValue = "0") int paramPageSize,
+                       @RequestParam MultiValueMap<String, String> requestParams,
+                       @RequestParam(name = Pagination.PARAM_NAME_SIZE_IN_PAGE, defaultValue = "0") int paramPageSize,
                        @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
                        Model model, HttpServletResponse response) {
         int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
         pageSize = pageSize > 0 ? pageSize : pageable.getPageSize();
         pageSizeCookieGenerator.addCookie(response, String.valueOf(pageSize));
-        model.addAttribute("pageSize", pageSize);
+        model.addAttribute(Pagination.ATTR_NAME_SIZE_IN_PAGE, pageSize);
 
         if (result.hasErrors()) {
             return "response/list";
@@ -106,7 +108,7 @@ class ApiResponseController {
             model.addAttribute(
                     InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
-        model.addAttribute("page", page);
+        model.addAttribute(new Pagination(page, requestParams));
         return "response/list";
     }
 
@@ -235,7 +237,7 @@ class ApiResponseController {
         Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
 
         model.addAttribute(apiResponse);
-        model.addAttribute("page", page);
+        model.addAttribute(new Pagination(page, null));
         if (api != null) {
             model.addAttribute(api);
         }
