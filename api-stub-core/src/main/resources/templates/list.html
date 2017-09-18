@@ -30,7 +30,7 @@
         <li th:if="${not page.first}">
             <a th:href="@{${pagenationUrl}(page=0)}">&lt;&lt;</a>
         </li>
-        <li th:if="${not page.first}">
+        <li th:if="${page.hasPrevious()}">
             <a th:href="@{${pagenationUrl}(page=${page.number - 1})}">&lt;</a>
         </li>
         <li th:each="renderingPageIndex : ${#numbers.sequence(paginationRange.begin, paginationRange.end)}"
@@ -40,7 +40,7 @@
                 <span th:text="${renderingPageIndex + 1}">1</span>
             </a>
         </li>
-        <li th:if="${not page.last}">
+        <li th:if="${page.hasNext()}">
             <a th:href="@{${pagenationUrl}(page=${page.number + 1})}">&gt;</a>
         </li>
         <li th:if="${not page.last}">
