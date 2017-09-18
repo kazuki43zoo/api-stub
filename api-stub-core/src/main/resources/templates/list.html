@@ -27,28 +27,27 @@
     ,pageUrl=${(pagenationPath != null ? pagenationPath : '') + pagination.query}
     ,pageRange=${pagination.getRange(maxDisplaySize != null ? maxDisplaySize : @environment.getProperty('screen.pagination.default-max-display-size', T(int), '10'))}">
     <ul class="pagination" th:if="${page.totalPages > 1}">
+        <!-- link for moving to first page -->
         <li th:class="${page.first} ? 'disabled' : ''">
-            <span th:if="${page.first}">&lt;&lt;</span>
-            <a th:if="${not page.first}" th:href="@{${pageUrl}(page=0)}">&lt;&lt;</a>
+            <a th:href="${page.first} ? 'javascript:void(0)' : @{${pageUrl}(page=0)}">&lt;&lt;</a>
         </li>
+        <!-- link for moving to previous page -->
         <li th:class="${page.hasPrevious()} ? '' : 'disabled'">
-            <span th:if="${not page.hasPrevious()}">&lt;</span>
-            <a th:if="${page.hasPrevious()}" th:href="@{${pageUrl}(page=${page.number - 1})}">&lt;</a>
+            <a th:href="${page.hasPrevious()} ? @{${pageUrl}(page=${page.number - 1})} : 'javascript:void(0)'">&lt;</a>
         </li>
-        <li th:each="pageIndex : ${#numbers.sequence(pageRange.begin, pageRange.end)}"
-            th:class="${pageIndex == page.number} ? 'active' : ''">
-            <span th:if="${pageIndex == page.number}" th:text="${pageIndex + 1}">1</span>
-            <a th:if="${pageIndex != page.number}" th:href="@{${pageUrl}(page=${pageIndex})}">
+        <!-- links for moving to specified page -->
+        <li th:each="pageIndex : ${#numbers.sequence(pageRange.begin, pageRange.end)}" th:class="${pageIndex == page.number} ? 'active' : ''">
+            <a th:href="${pageIndex == page.number} ? 'javascript:void(0)' : @{${pageUrl}(page=${pageIndex})}">
                 <span th:text="${pageIndex + 1}">1</span>
             </a>
         </li>
+        <!-- link for moving to next page -->
         <li th:class="${page.hasNext()} ? '' : 'disabled'">
-            <span th:if="${not page.hasNext()}">&gt;</span>
-            <a th:if="${page.hasNext()}" th:href="@{${pageUrl}(page=${page.number + 1})}">&gt;</a>
+            <a th:href="${page.hasNext()} ? @{${pageUrl}(page=${page.number + 1})} : 'javascript:void(0)'">&gt;</a>
         </li>
+        <!-- link for moving to last page -->
         <li th:class="${page.last} ? 'disabled' : ''">
-            <span th:if="${page.last}">&gt;&gt;</span>
-            <a th:if="${not page.last}" th:href="@{${pageUrl}(page=${page.totalPages} - 1)}">&gt;&gt;</a>
+            <a th:href="${page.last} ? 'javascript:void(0)' : @{${pageUrl}(page=${page.totalPages} - 1)}">&gt;&gt;</a>
         </li>
     </ul>
 </div>
