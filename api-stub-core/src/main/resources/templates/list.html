@@ -28,7 +28,10 @@
     ,paginationRange=${pagination.getRange(maxDisplaySize != null ? maxDisplaySize : @environment.getProperty('screen.pagination.default-max-display-size', T(int), '10'))}">
     <ul class="pagination" th:if="${page.totalPages > 1}">
         <li th:if="${not page.first}">
-            <a th:href="@{${pagenationUrl}(page=0)}">&laquo;</a>
+            <a th:href="@{${pagenationUrl}(page=0)}">&lt;&lt;</a>
+        </li>
+        <li th:if="${not page.first}">
+            <a th:href="@{${pagenationUrl}(page=${page.number - 1})}">&lt;</a>
         </li>
         <li th:each="renderingPageIndex : ${#numbers.sequence(paginationRange.begin, paginationRange.end)}"
             th:class="${renderingPageIndex == page.number} ? 'active' : ''">
@@ -38,7 +41,10 @@
             </a>
         </li>
         <li th:if="${not page.last}">
-            <a th:href="@{${pagenationUrl}(page=${page.totalPages} - 1)}">&raquo;</a>
+            <a th:href="@{${pagenationUrl}(page=${page.number + 1})}">&gt;</a>
+        </li>
+        <li th:if="${not page.last}">
+            <a th:href="@{${pagenationUrl}(page=${page.totalPages} - 1)}">&gt;&gt;</a>
         </li>
     </ul>
 </div>
