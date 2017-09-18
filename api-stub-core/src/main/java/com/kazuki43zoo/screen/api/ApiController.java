@@ -107,8 +107,8 @@ public class ApiController {
                        @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
                        @RequestParam MultiValueMap<String, String> requestParams,
                        Model model, HttpServletResponse response) {
-        int pageSize = paginationSupport.decideAndStorePageSize(
-                pageable, paramPageSize, cookiePageSize, model, response, pageSizeCookieGenerator);
+        int pageSize = paginationSupport.decidePageSize(pageable, paramPageSize, cookiePageSize);
+        paginationSupport.storePageSize(pageSize, model, response, pageSizeCookieGenerator);
 
         if (result.hasErrors()) {
             return "api/list";

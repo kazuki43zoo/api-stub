@@ -97,9 +97,8 @@ class ApiResponseController {
                        @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
                        @RequestParam MultiValueMap<String, String> requestParams,
                        Model model, HttpServletResponse response) {
-        int pageSize = paginationSupport.decideAndStorePageSize(
-                pageable, paramPageSize, cookiePageSize, model, response, pageSizeCookieGenerator);
-
+        int pageSize = paginationSupport.decidePageSize(pageable, paramPageSize, cookiePageSize);
+        paginationSupport.storePageSize(pageSize, model, response, pageSizeCookieGenerator);
         if (result.hasErrors()) {
             return "response/list";
         }
@@ -228,8 +227,8 @@ class ApiResponseController {
                     ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses";
         }
-        Page<ApiResponse> page = apiResponseService.findAllHistoryById(id,
-                new PageRequest(pageable.getPageNumber(), cookiePageSize > 0 ? cookiePageSize : pageable.getPageSize(), pageable.getSort()));
+        int pageSize = paginationSupport.decidePageSize(pageable, 0, cookiePageSize);
+        Page<ApiResponse> page = apiResponseService.findAllHistoryById(id, paginationSupport.decidePageable(pageable, pageSize));
         if (page.getContent().isEmpty()) {
             redirectAttributes.addFlashAttribute(
                     ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());

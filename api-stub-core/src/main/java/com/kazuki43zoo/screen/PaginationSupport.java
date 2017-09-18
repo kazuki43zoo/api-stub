@@ -28,14 +28,14 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class PaginationSupport {
 
-    public int decideAndStorePageSize(
-            Pageable pageable, int paramPageSize, int cookiePageSize,
-            Model model, HttpServletResponse response, CookieGenerator generator) {
+    public int decidePageSize(Pageable pageable, int paramPageSize, int cookiePageSize) {
         int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
-        pageSize = pageSize > 0 ? pageSize : pageable.getPageSize();
+        return pageSize > 0 ? pageSize : pageable.getPageSize();
+    }
+
+    public void storePageSize(int pageSize, Model model, HttpServletResponse response, CookieGenerator generator) {
         generator.addCookie(response, String.valueOf(pageSize));
         model.addAttribute(Pagination.ATTR_NAME_SIZE_IN_PAGE, pageSize);
-        return pageSize;
     }
 
     public Pageable decidePageable(Pageable pageable, int pageSize) {
