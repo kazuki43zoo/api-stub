@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Order(4)
+@Order(5)
 public class HeaderKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        List<String> values = new ArrayList<>();
+    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+        List<Object> values = new ArrayList<>();
         for (String expression : expressions) {
             String id = request.getHeader(expression);
             if (StringUtils.hasLength(id)) {

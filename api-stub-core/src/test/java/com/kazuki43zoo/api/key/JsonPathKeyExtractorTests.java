@@ -39,7 +39,7 @@ public class JsonPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "$.key");
+		List<Object> keys = extractor.extract(request, null, "$.key");
 		assertThat(keys).isEmpty();
 	}
 
@@ -48,7 +48,7 @@ public class JsonPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, new byte[0], "$.key");
+		List<Object> keys = extractor.extract(request, new byte[0], "$.key");
 		assertThat(keys).isEmpty();
 	}
 
@@ -60,7 +60,7 @@ public class JsonPathKeyExtractorTests {
 		Map<String, Object> jsonSource = new HashMap<>();
 		jsonSource.put("key", "value");
 
-		List<String> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key");
+		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key");
 		assertThat(keys).hasSize(1);
 		assertThat(keys).containsSequence("value");
 	}
@@ -75,7 +75,7 @@ public class JsonPathKeyExtractorTests {
 		jsonSource.put("key2", "value2");
 		jsonSource.put("key3", "value3");
 
-		List<String> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key1", "$.key2",
+		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key1", "$.key2",
 				"$.key4");
 		assertThat(keys).hasSize(2);
 		assertThat(keys).containsSequence("value1", "value2");
@@ -89,7 +89,7 @@ public class JsonPathKeyExtractorTests {
 		Map<String, Object> jsonSource = new HashMap<>();
 		jsonSource.put("key", "value");
 
-		List<String> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key2");
+		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key2");
 		assertThat(keys).isEmpty();
 	}
 
@@ -101,7 +101,7 @@ public class JsonPathKeyExtractorTests {
 		Map<String, Object> jsonSource = new HashMap<>();
 		jsonSource.put("key", "value");
 
-		List<String> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource));
+		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource));
 		assertThat(keys).isEmpty();
 	}
 

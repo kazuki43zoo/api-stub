@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Order(3)
+@Order(4)
 public class ParameterKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        List<String> values = new ArrayList<>();
+    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+        List<Object> values = new ArrayList<>();
         for (String expression : expressions) {
             String id = request.getParameter(expression);
             if (StringUtils.hasLength(id)) {

@@ -52,7 +52,7 @@ public class DataKeyExtractor {
                 .toArray(new String[0]);
         String key = null;
         try {
-            List<String> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
+            List<Object> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
             key = api.getKeyGeneratingStrategy().generate(keys);
         } catch (Exception e) {
             // ignore

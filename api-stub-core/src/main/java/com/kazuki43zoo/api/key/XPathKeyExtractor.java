@@ -40,7 +40,7 @@ import java.util.List;
 public class XPathKeyExtractor implements KeyExtractor {
 
     @Override
-    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
@@ -52,7 +52,7 @@ public class XPathKeyExtractor implements KeyExtractor {
             throw new IllegalStateException(e);
         }
         XPath xpath = XPathFactory.newInstance().newXPath();
-        List<String> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         for (String expression : expressions) {
             try {
                 XPathExpression xPathExpression = xpath.compile(expression);

@@ -38,7 +38,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "key");
+		List<Object> keys = extractor.extract(request, null, "key");
 		assertThat(keys).isEmpty();
 	}
 
@@ -47,7 +47,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, new byte[0], "//key/text()");
+		List<Object> keys = extractor.extract(request, new byte[0], "//key/text()");
 		assertThat(keys).isEmpty();
 	}
 
@@ -62,7 +62,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key/text()");
+		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key/text()");
 		assertThat(keys).hasSize(1);
 		assertThat(keys).containsSequence("value");
 	}
@@ -80,7 +80,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key1/text()", "//key2/text()",
+		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key1/text()", "//key2/text()",
 				"//key4/text()");
 		assertThat(keys).hasSize(2);
 		assertThat(keys).containsSequence("value1", "value2");
@@ -97,7 +97,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key2/text()");
+		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key2/text()");
 		assertThat(keys).isEmpty();
 	}
 
@@ -112,7 +112,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8));
+		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8));
 		assertThat(keys).isEmpty();
 	}
 

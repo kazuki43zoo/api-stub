@@ -34,7 +34,7 @@ public class ParameterKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "key");
+		List<Object> keys = extractor.extract(request, null, "key");
 		assertThat(keys).isEmpty();
 	}
 
@@ -43,7 +43,7 @@ public class ParameterKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test").param("key", "value")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "key");
+		List<Object> keys = extractor.extract(request, null, "key");
 		assertThat(keys).hasSize(1);
 		assertThat(keys).containsSequence("value");
 	}
@@ -53,7 +53,7 @@ public class ParameterKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test").param("key1", "value1")
 				.param("key2", "value2").param("key3", "value3").buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "key1", "key2", "key4");
+		List<Object> keys = extractor.extract(request, null, "key1", "key2", "key4");
 		assertThat(keys).hasSize(2);
 		assertThat(keys).containsSequence("value1", "value2");
 	}
@@ -63,7 +63,7 @@ public class ParameterKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test").param("key", "value")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null, "key2");
+		List<Object> keys = extractor.extract(request, null, "key2");
 		assertThat(keys).isEmpty();
 	}
 
@@ -72,7 +72,7 @@ public class ParameterKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test").param("key", "value")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, null);
+		List<Object> keys = extractor.extract(request, null);
 		assertThat(keys).isEmpty();
 	}
 

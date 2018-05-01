@@ -33,16 +33,20 @@ import java.util.List;
 @Order(1)
 public class JsonPathKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
-        List<String> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         ReadContext context = JsonPath.parse(new ByteArrayInputStream(requestBody));
         for (String expression : expressions) {
             try {
-                String id = context.read(expression);
-                if (StringUtils.hasLength(id)) {
+                Object id = context.read(expression);
+                if (id instanceof CharSequence) {
+                    if (StringUtils.hasLength((CharSequence) id)) {
+                        values.add(id);
+                    }
+                } else {
                     values.add(id);
                 }
             } catch (Exception e) {

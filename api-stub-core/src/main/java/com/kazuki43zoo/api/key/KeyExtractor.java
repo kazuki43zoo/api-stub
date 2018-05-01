@@ -20,5 +20,5 @@ import java.util.List;
 
 @FunctionalInterface
 public interface KeyExtractor {
-    List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions);
+    List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions);
 }

@@ -23,7 +23,6 @@ import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.javassist.bytecode.ByteArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.InputStreamResource;

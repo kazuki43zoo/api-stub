@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-@Order(5)
+@Order(6)
 public class CookieKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         if (request.getCookies() == null || expressions.length == 0) {
             return Collections.emptyList();
         }
         Map<String, String> cookieMap = Stream.of(request.getCookies())
             .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-        List<String> values = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
         for (String expression : expressions) {
             String id = cookieMap.get(expression);
             if (StringUtils.hasLength(id)) {
