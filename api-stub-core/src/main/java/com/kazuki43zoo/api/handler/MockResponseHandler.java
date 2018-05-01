@@ -23,6 +23,7 @@ import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.javassist.bytecode.ByteArray;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.InputStreamResource;
@@ -98,7 +99,7 @@ public class MockResponseHandler {
             String path,
             String method,
             String dataKey,
-            RequestEntity<String> requestEntity,
+            RequestEntity<byte[]> requestEntity,
             HttpServletRequest request,
             HttpServletResponse response,
             ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
@@ -188,7 +189,7 @@ public class MockResponseHandler {
         return result;
     }
 
-    private IWebContext createTemplateWebContext(RequestEntity<String> requestEntity, HttpServletRequest request, HttpServletResponse response) {
+    private IWebContext createTemplateWebContext(RequestEntity<byte[]> requestEntity, HttpServletRequest request, HttpServletResponse response) {
         ModelMap model = new ModelMap();
         model.addAttribute(requestEntity);
         Optional.ofNullable(requestEntity.getHeaders().getContentType())
@@ -197,7 +198,7 @@ public class MockResponseHandler {
                     if (contentType.contains("json")) {
                         model.addAttribute(new RequestJson(requestEntity.getBody()));
                     } else if (contentType.contains("xml")){
-                        model.addAttribute(new RequestXml(requestEntity.getBody(), requestEntity.getHeaders().getContentType().getCharset()));
+                        model.addAttribute(new RequestXml(requestEntity.getBody()));
                     }
                 });
 
@@ -216,10 +217,10 @@ public class MockResponseHandler {
     public static class RequestJson {
         private final Supplier<DocumentContext> documentContextSupplier;
         private DocumentContext documentContext;
-        RequestJson(String body) {
+        RequestJson(byte[] body) {
             this.documentContextSupplier = () -> {
                 if (documentContext == null) {
-                    this.documentContext = JsonPath.parse(body);
+                    this.documentContext = JsonPath.parse(new ByteArrayInputStream(body));
                 }
                 return documentContext;
             };
@@ -233,13 +234,13 @@ public class MockResponseHandler {
         private final XPath xpath;
         private final Supplier<Document> documentSupplier;
         private Document document;
-        RequestXml(String body, Charset charset) {
+        RequestXml(byte[] body) {
             this.xpath = XPathFactory.newInstance().newXPath();
             this.documentSupplier = () -> {
                 if (document == null) {
                     try {
                         this.document = DocumentBuilderFactory.newInstance()
-                                .newDocumentBuilder().parse(new ByteArrayInputStream(body.getBytes(Optional.ofNullable(charset).orElse(StandardCharsets.UTF_8))));
+                                .newDocumentBuilder().parse(new ByteArrayInputStream(body));
                     } catch (SAXException | IOException | ParserConfigurationException e) {
                         throw new IllegalStateException(e);
                     }

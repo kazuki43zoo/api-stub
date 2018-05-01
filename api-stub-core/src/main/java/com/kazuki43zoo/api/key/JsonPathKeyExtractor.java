@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,12 +33,12 @@ import java.util.List;
 @Order(1)
 public class JsonPathKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
-        if (StringUtils.isEmpty(requestBody)) {
+    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+        if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
         List<String> values = new ArrayList<>();
-        ReadContext context = JsonPath.parse(requestBody);
+        ReadContext context = JsonPath.parse(new ByteArrayInputStream(requestBody));
         for (String expression : expressions) {
             try {
                 String id = context.read(expression);

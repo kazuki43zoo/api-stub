@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 @Order(5)
 public class CookieKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
+    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         if (request.getCookies() == null || expressions.length == 0) {
             return Collections.emptyList();
         }

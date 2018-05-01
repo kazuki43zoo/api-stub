@@ -24,6 +24,7 @@ import com.kazuki43zoo.domain.model.ApiProxy;
 import com.kazuki43zoo.domain.service.ApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -48,23 +50,27 @@ class ApiStubRestController {
     private final DataKeyExtractor dataKeyExtractor;
 
     @RequestMapping(path = "${api.root-path:/api}/**")
-    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, HttpServletResponse response, RequestEntity<String> requestEntity)
+    public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, HttpServletResponse response, RequestEntity<byte[]> requestEntity)
             throws IOException, ServletException, InterruptedException {
 
-        final String path = request.getServletPath().replace(properties.getRootPath(), "");
-        final String method = request.getMethod();
-
-        final Api api = apiService.findOne(path, method);
-
-        if (api == null) {
-            log.debug("Not found the API registration that match this request. Path:{} Method:{}", path, method);
-        }
-        
-        final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);
-
-        final ApiEvidence evidence = apiEvidenceFactory.create(request, dataKey);
-
+        ApiEvidence evidence = null;
         try {
+            final String correlationId = Optional.ofNullable(request.getHeader(properties.getCorrelationIdKey()))
+                    .orElse(UUID.randomUUID().toString());
+            MDC.put(properties.getCorrelationIdKey(), correlationId);
+
+            final String path = request.getServletPath().replace(properties.getRootPath(), "");
+            final String method = request.getMethod();
+
+            final Api api = apiService.findOne(path, method);
+
+            if (api == null) {
+                log.debug("Not found the API registration that match this request. Path:{} Method:{}", path, method);
+            }
+
+            final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);
+
+            evidence = apiEvidenceFactory.create(request, dataKey, correlationId);
 
             evidence.start();
             evidence.request(request, requestEntity);
@@ -88,7 +94,7 @@ class ApiStubRestController {
             return responseEntity;
 
         } finally {
-            evidence.end();
+            Optional.ofNullable(evidence).ifPresent(ApiEvidence::end);
         }
 
     }

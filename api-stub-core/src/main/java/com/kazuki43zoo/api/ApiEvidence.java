@@ -70,7 +70,6 @@ public class ApiEvidence {
     private final String correlationId;
 
     public ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
-        MDC.put(properties.getCorrelationIdKey(), correlationId);
         Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
         this.dir = Paths.get(properties.getEvidence().getDir(),
                 path, nullableDataKey.orElse(""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
@@ -91,7 +90,7 @@ public class ApiEvidence {
         info("Evidence Dir : {}", dir.toAbsolutePath().toString());
     }
 
-    public void request(HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException, ServletException {
+    public void request(HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException, ServletException {
         final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
         info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
@@ -102,15 +101,15 @@ public class ApiEvidence {
         }
 
         if (requestEntity.getBody() != null) {
-            final String body = requestEntity.getBody();
+            Charset charset = Optional.ofNullable(requestEntity.getHeaders().getContentType())
+                    .map(MediaType::getCharset)
+                    .orElse(StandardCharsets.UTF_8);
+            final String body = new String(requestEntity.getBody(), charset);
             info("Request body : {}", body);
             if (!properties.getEvidence().isDisabledRequest()) {
                 try (OutputStream out = new BufferedOutputStream(
                         new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
-                    Charset charset = Optional.ofNullable(requestEntity.getHeaders().getContentType())
-                            .map(MediaType::getCharset)
-                            .orElse(StandardCharsets.UTF_8);
-                    StreamUtils.copy(body, charset, out);
+                    StreamUtils.copy(requestEntity.getBody(), out);
                 }
             }
         } else {

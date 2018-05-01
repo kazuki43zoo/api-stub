@@ -38,7 +38,7 @@ public class DataKeyExtractor {
     private final Map<String, KeyExtractor> keyExtractorMap;
     private final ObjectMapper jsonObjectMapper;
 
-    public String extract(Api api, HttpServletRequest request, RequestEntity<String> requestEntity) throws IOException {
+    public String extract(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
         if (api == null) {
             return null;
         }

@@ -35,10 +35,7 @@ public class ApiEvidenceFactory {
     private final ApiStubProperties properties;
     private final ContentNegotiationManager contentNegotiationManager;
 
-    public ApiEvidence create(HttpServletRequest request, String dataKey) {
-
-        final String correlationId = Optional.ofNullable(request.getHeader(properties.getCorrelationIdKey()))
-                .orElse(UUID.randomUUID().toString());
+    public ApiEvidence create(HttpServletRequest request, String dataKey, String correlationId) {
 
         final String contentExtension = Optional.ofNullable(request.getContentType())
                 .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))

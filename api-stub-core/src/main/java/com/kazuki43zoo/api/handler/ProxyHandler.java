@@ -61,7 +61,7 @@ public class ProxyHandler {
         this.properties = properties;
     }
 
-    public ResponseEntity<Object> perform(HttpServletRequest request, RequestEntity<String> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
+    public ResponseEntity<Object> perform(HttpServletRequest request, RequestEntity<byte[]> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
 
         final String baseUrl = Optional.ofNullable(api)
                 .map(Api::getProxy)

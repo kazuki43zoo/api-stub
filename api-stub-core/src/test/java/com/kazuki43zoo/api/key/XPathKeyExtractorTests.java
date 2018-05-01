@@ -16,6 +16,7 @@
 package com.kazuki43zoo.api.key;
 
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.Test;
@@ -46,7 +47,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		List<String> keys = extractor.extract(request, "", "//key/text()");
+		List<String> keys = extractor.extract(request, new byte[0], "//key/text()");
 		assertThat(keys).isEmpty();
 	}
 
@@ -61,7 +62,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key/text()");
+		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key/text()");
 		assertThat(keys).hasSize(1);
 		assertThat(keys).containsSequence("value");
 	}
@@ -79,7 +80,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key1/text()", "//key2/text()",
+		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key1/text()", "//key2/text()",
 				"//key4/text()");
 		assertThat(keys).hasSize(2);
 		assertThat(keys).containsSequence("value1", "value2");
@@ -96,7 +97,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString(), "//key2/text()");
+		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key2/text()");
 		assertThat(keys).isEmpty();
 	}
 
@@ -111,7 +112,7 @@ public class XPathKeyExtractorTests {
 		StringWriter xmlWriter = new StringWriter();
 		JAXB.marshal(xmlSource, xmlWriter);
 
-		List<String> keys = extractor.extract(request, xmlWriter.toString());
+		List<String> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8));
 		assertThat(keys).isEmpty();
 	}
 
@@ -120,7 +121,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		extractor.extract(request, "<a></b>");
+		extractor.extract(request, "<a></b>".getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -128,7 +129,7 @@ public class XPathKeyExtractorTests {
 		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
 				.buildRequest(new MockServletContext());
 
-		extractor.extract(request, "<a></a>", "//a/foo()");
+		extractor.extract(request, "<a></a>".getBytes(StandardCharsets.UTF_8), "//a/foo()");
 	}
 
 	static class OnePropertyBean {

@@ -40,14 +40,14 @@ import java.util.List;
 public class XPathKeyExtractor implements KeyExtractor {
 
     @Override
-    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
-        if (StringUtils.isEmpty(requestBody)) {
+    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+        if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
         Document document;
         try {
             document = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody.getBytes(StandardCharsets.UTF_8)));
+                    .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody));
         } catch (SAXException | IOException | ParserConfigurationException e) {
             throw new IllegalStateException(e);
         }

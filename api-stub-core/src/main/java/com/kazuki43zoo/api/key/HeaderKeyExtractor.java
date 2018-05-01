@@ -27,7 +27,7 @@ import java.util.List;
 @Order(4)
 public class HeaderKeyExtractor implements KeyExtractor {
     @Override
-    public List<String> extract(HttpServletRequest request, String requestBody, String... expressions) {
+    public List<String> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         List<String> values = new ArrayList<>();
         for (String expression : expressions) {
             String id = request.getHeader(expression);
