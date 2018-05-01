@@ -25,7 +25,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.UUID;
 
 @Slf4j
 @Component
