@@ -21,7 +21,6 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +35,11 @@ public class CookieKeyExtractor implements KeyExtractor {
         if (request.getCookies() == null || expressions.length == 0) {
             return Collections.emptyList();
         }
+
         Map<String, String> cookieMap = Stream.of(request.getCookies())
-            .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-        List<Object> values = new ArrayList<>();
-        for (String expression : expressions) {
-            String id = cookieMap.get(expression);
-            if (StringUtils.hasLength(id)) {
-                values.add(id);
-            }
-        }
-        return values;
+                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+        return Stream.of(expressions).map(cookieMap::get)
+                .filter(StringUtils::hasLength)
+                .collect(Collectors.toList());
     }
 }

@@ -24,9 +24,11 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -37,25 +39,19 @@ public class JsonPathKeyExtractor implements KeyExtractor {
         if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
-        List<Object> values = new ArrayList<>();
+
         ReadContext context = JsonPath.parse(new ByteArrayInputStream(requestBody));
-        for (String expression : expressions) {
+        return Stream.of(expressions).map(expression -> {
             try {
-                Object id = context.read(expression);
-                if (id instanceof CharSequence) {
-                    if (StringUtils.hasLength((CharSequence) id)) {
-                        values.add(id);
-                    }
-                } else {
-                    values.add(id);
-                }
+                return context.read(expression);
             } catch (Exception e) {
                 // ignore
                 if (log.isDebugEnabled()) {
                     log.debug(e.getMessage(), e);
                 }
+                return null;
             }
-        }
-        return values;
+        }).filter(Objects::nonNull).filter(id -> !(id instanceof CharSequence) || StringUtils.hasLength((CharSequence) id))
+                .collect(Collectors.toList());
     }
 }

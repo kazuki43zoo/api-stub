@@ -48,8 +48,7 @@ public class DataKeyExtractor {
         }
         String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
                 .filter(StringUtils::hasLength)
-                .collect(Collectors.toList())
-                .toArray(new String[0]);
+                .toArray(String[]::new);
         String key = null;
         try {
             List<Object> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);

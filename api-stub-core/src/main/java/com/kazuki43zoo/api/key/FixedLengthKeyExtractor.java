@@ -25,14 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -64,11 +60,10 @@ public class FixedLengthKeyExtractor implements KeyExtractor {
                 .map(MediaType::getCharset)
                 .orElse(StandardCharsets.UTF_8);
 
-        List<Object> values = new ArrayList<>();
-        for (String expression : expressions) {
+        return Stream.of(expressions).map(expression -> {
             String[] extractionDefine = expression.split(",");
             if (extractionDefine.length <= 2) {
-                break;
+                return null;
             }
             int offset = Integer.parseInt(extractionDefine[0].trim());
             int length = Integer.parseInt(extractionDefine[1].trim());
@@ -80,15 +75,13 @@ public class FixedLengthKeyExtractor implements KeyExtractor {
                 charset = defaultCharset;
             }
             if (!(requestBody.length >= offset && requestBody.length >= offset + length)) {
-                continue;
+                return null;
             }
-            Object id = Optional.ofNullable(BYTES_TO_OBJECT_FUNCTIONS.get(type))
+            return Optional.ofNullable(BYTES_TO_OBJECT_FUNCTIONS.get(type))
                     .orElseThrow(() -> new IllegalArgumentException("A bad expression is detected. The specified type does not support. expression: '"
                             + expression + "', specified type: '" + type + "', allowing types: " + BYTES_TO_OBJECT_FUNCTIONS.keySet()))
                     .apply(Arrays.copyOfRange(requestBody, offset, offset + length), charset);
-            values.add(id);
-        }
-        return values;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
 }

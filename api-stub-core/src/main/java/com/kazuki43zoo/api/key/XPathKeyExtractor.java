@@ -30,9 +30,10 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Order(2)
@@ -43,6 +44,7 @@ public class XPathKeyExtractor implements KeyExtractor {
         if (requestBody == null || requestBody.length == 0) {
             return Collections.emptyList();
         }
+
         Document document;
         try {
             document = DocumentBuilderFactory.newInstance()
@@ -51,19 +53,15 @@ public class XPathKeyExtractor implements KeyExtractor {
             throw new IllegalStateException(e);
         }
         XPath xpath = XPathFactory.newInstance().newXPath();
-        List<Object> values = new ArrayList<>();
-        for (String expression : expressions) {
+
+        return Stream.of(expressions).map(expression -> {
             try {
                 XPathExpression xPathExpression = xpath.compile(expression);
-                String id = (String) xPathExpression.evaluate(document, XPathConstants.STRING);
-                if (StringUtils.hasLength(id)) {
-                    values.add(id);
-                }
+                return (String) xPathExpression.evaluate(document, XPathConstants.STRING);
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
-        }
-        return values;
+        }).filter(StringUtils::hasLength).collect(Collectors.toList());
     }
 
 }

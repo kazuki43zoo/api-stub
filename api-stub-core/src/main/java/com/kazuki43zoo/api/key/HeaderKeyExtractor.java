@@ -20,21 +20,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Order(5)
 public class HeaderKeyExtractor implements KeyExtractor {
     @Override
     public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        List<Object> values = new ArrayList<>();
-        for (String expression : expressions) {
-            String id = request.getHeader(expression);
-            if (StringUtils.hasLength(id)) {
-                values.add(id);
-            }
-        }
-        return values;
+        return Stream.of(expressions).map(request::getHeader)
+                .filter(StringUtils::hasLength)
+                .collect(Collectors.toList());
     }
 }
