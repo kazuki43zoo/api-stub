@@ -39,9 +39,10 @@ import java.util.function.BiFunction;
 @Order(3)
 public class FixedLengthKeyExtractor implements KeyExtractor {
 
-    private final Map<String, BiFunction<byte[], Charset, Object>> bytesToObjectFunctions = new HashMap<>();
+    private static final Map<String, BiFunction<byte[], Charset, Object>> BYTES_TO_OBJECT_FUNCTIONS;
 
-    {
+    static {
+        Map<String, BiFunction<byte[], Charset, Object>> bytesToObjectFunctions = new HashMap<>();
         bytesToObjectFunctions.put("string", String::new);
         bytesToObjectFunctions.put("short", (bytes, charset) -> ByteBuffer.wrap(bytes).getShort());
         bytesToObjectFunctions.put("int", (bytes, charset) -> ByteBuffer.wrap(bytes).getInt());
@@ -49,6 +50,7 @@ public class FixedLengthKeyExtractor implements KeyExtractor {
         bytesToObjectFunctions.put("char", (bytes, charset) -> ByteBuffer.wrap(bytes).getChar());
         bytesToObjectFunctions.put("float", (bytes, charset) -> ByteBuffer.wrap(bytes).getFloat());
         bytesToObjectFunctions.put("double", (bytes, charset) -> ByteBuffer.wrap(bytes).getDouble());
+        BYTES_TO_OBJECT_FUNCTIONS = Collections.unmodifiableMap(bytesToObjectFunctions);
     }
 
     @Override
@@ -80,8 +82,9 @@ public class FixedLengthKeyExtractor implements KeyExtractor {
             if (!(requestBody.length >= offset && requestBody.length >= offset + length)) {
                 continue;
             }
-            Object id = Optional.ofNullable(bytesToObjectFunctions.get(type))
-                    .orElseThrow(() -> new IllegalArgumentException("A bad expression is detected. The specified type does not support. expression: '" + expression + "', specified type: '" + type + "', allowing types: " + bytesToObjectFunctions.keySet()))
+            Object id = Optional.ofNullable(BYTES_TO_OBJECT_FUNCTIONS.get(type))
+                    .orElseThrow(() -> new IllegalArgumentException("A bad expression is detected. The specified type does not support. expression: '"
+                            + expression + "', specified type: '" + type + "', allowing types: " + BYTES_TO_OBJECT_FUNCTIONS.keySet()))
                     .apply(Arrays.copyOfRange(requestBody, offset, offset + length), charset);
             values.add(id);
         }
