@@ -63,7 +63,7 @@ public class ApiResponseService {
         long count = repository.count(path, method, description);
         List<ApiResponse> content;
         if (count != 0) {
-            content = repository.findPage(path, method, description, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+            content = repository.findPage(path, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
         } else {
             content = Collections.emptyList();
         }
@@ -74,7 +74,7 @@ public class ApiResponseService {
         long count = repository.countHistoryById(id);
         List<ApiResponse> content;
         if (count != 0) {
-            content = repository.findPageHistoryById(id, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+            content = repository.findPageHistoryById(id, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
         } else {
             content = Collections.emptyList();
         }

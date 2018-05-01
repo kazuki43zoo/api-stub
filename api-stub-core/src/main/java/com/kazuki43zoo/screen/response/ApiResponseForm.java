@@ -17,11 +17,11 @@ package com.kazuki43zoo.screen.response;
 
 import com.kazuki43zoo.component.validation.HttpMethod;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 

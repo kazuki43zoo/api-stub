@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ApiService {
-    private static final Pageable pageableForExport = new PageRequest(0, Integer.MAX_VALUE);
+    private static final Pageable pageableForExport = PageRequest.of(0, Integer.MAX_VALUE);
     private final ApiRepository repository;
     private final ApiStubProperties properties;
 
@@ -55,7 +55,7 @@ public class ApiService {
         long count = repository.count(path, method, description);
         List<Api> content;
         if (count != 0) {
-            content = repository.findPage(path, method, description, new RowBounds(pageable.getOffset(), pageable.getPageSize()));
+            content = repository.findPage(path, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
         } else {
             content = Collections.emptyList();
         }

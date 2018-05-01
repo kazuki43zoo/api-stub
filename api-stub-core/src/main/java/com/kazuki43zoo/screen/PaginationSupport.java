@@ -42,7 +42,7 @@ public class PaginationSupport {
         if (pageable.getPageSize() == pageSize) {
             return pageable;
         }
-        return new PageRequest(pageable.getPageNumber(), pageSize, pageable.getSort());
+        return PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
     }
 
 }

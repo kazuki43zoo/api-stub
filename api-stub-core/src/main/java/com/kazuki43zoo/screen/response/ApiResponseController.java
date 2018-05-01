@@ -72,7 +72,7 @@ import java.util.List;
 @RequiredArgsConstructor
 class ApiResponseController {
     private static final String COOKIE_NAME_PAGE_SIZE = "apiResponse.pageSize";
-    private static final Pageable pageableForExistingCheck = new PageRequest(0, 1);
+    private static final Pageable pageableForExistingCheck = PageRequest.of(0, 1);
     private static final CookieGenerator pageSizeCookieGenerator;
     static {
         pageSizeCookieGenerator = new CookieGenerator();
