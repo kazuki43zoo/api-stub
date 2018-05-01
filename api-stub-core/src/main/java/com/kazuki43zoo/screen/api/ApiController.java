@@ -216,7 +216,7 @@ public class ApiController {
         downloadSupport.addContentDisposition(headers, "exportApis.json");
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .headers(headers)
                 .body(apis);
     }
