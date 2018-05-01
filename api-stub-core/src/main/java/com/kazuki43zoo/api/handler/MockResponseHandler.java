@@ -36,6 +36,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.ITemplateEngine;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.WebExpressionContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -115,10 +116,13 @@ public class MockResponseHandler {
                          .orElse(HttpStatus.OK.value());
         }
 
+        final IWebContext templateContext = createTemplateWebContext(requestEntity, request, response);
+
         // Response Headers
         final HttpHeaders responseHeaders = new HttpHeaders();
         if (StringUtils.hasLength(apiResponse.getHeader())) {
-            Stream.of(apiResponse.getHeader().split(HEADER_SEPARATOR)).forEach(e -> {
+            String header = processTemplate(apiResponse.getHeader(), templateContext, responseHeaders, evidence);
+            Stream.of(header.split(HEADER_SEPARATOR)).filter(e -> e.contains(HEADER_KEY_VALUE_SEPARATOR)).forEach(e -> {
                 String[] headerElements = e.split(HEADER_KEY_VALUE_SEPARATOR);
                 responseHeaders.add(headerElements[0].trim(), headerElements[1].trim());
             });
@@ -138,7 +142,7 @@ public class MockResponseHandler {
                 .map(body -> {
                     Charset responseCharset = Optional.ofNullable(responseHeaders.getContentType())
                             .map(MediaType::getCharset).orElse(StandardCharsets.UTF_8);
-                    return processTemplate(body, responseCharset, requestEntity, request, response, responseHeaders, evidence);
+                    return processTemplate(body, responseCharset, templateContext, responseHeaders, evidence);
                 })
                 .orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
                         .map(InputStreamResource::new)
@@ -155,8 +159,7 @@ public class MockResponseHandler {
                 .body(responseBody);
     }
 
-    private InputStreamResource processTemplate(InputStream body, Charset responseCharset, RequestEntity<String> requestEntity, HttpServletRequest request,
-                                   HttpServletResponse response, HttpHeaders responseHeaders, ApiEvidence evidence) {
+    private InputStreamResource processTemplate(InputStream body, Charset responseCharset, IWebContext context, HttpHeaders responseHeaders, ApiEvidence evidence) {
 
         if (properties.getResponse().getTemplate().isDisabled()) {
             return new InputStreamResource(body);
@@ -169,6 +172,23 @@ public class MockResponseHandler {
             throw new UncheckedIOException(e);
         }
 
+        String result = processTemplate(template, context, responseHeaders, evidence);
+        return new InputStreamResource(new ByteArrayInputStream(result.getBytes(responseCharset)));
+    }
+
+    private String processTemplate(String template, IWebContext templateContext, HttpHeaders responseHeaders, ApiEvidence evidence) {
+        String result;
+        try {
+            result = templateEngine.process(template, templateContext);
+        } catch (Exception e) {
+            evidence.error("Return the template body(original body) because template is wrong. template = \r\n" + template , e);
+            responseHeaders.add("x-error-code", "template_parsing_error");
+            result = template;
+        }
+        return result;
+    }
+
+    private IWebContext createTemplateWebContext(RequestEntity<String> requestEntity, HttpServletRequest request, HttpServletResponse response) {
         ModelMap model = new ModelMap();
         model.addAttribute(requestEntity);
         Optional.ofNullable(requestEntity.getHeaders().getContentType())
@@ -187,18 +207,11 @@ public class MockResponseHandler {
                 conversionService);
         model.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
-        WebExpressionContext context = new WebExpressionContext(templateEngine.getConfiguration(), request, response,
+        return new WebExpressionContext(templateEngine.getConfiguration(), request, response,
                 request.getServletContext(), request.getLocale(), model);
-        String responseData;
-        try {
-            responseData = templateEngine.process(template, context);
-        } catch (Exception e) {
-            evidence.error("Return the template body(original body) because template is wrong. template = \r\n" + template , e);
-            responseHeaders.add("x-error-code", "template_parsing_error");
-            responseData = template;
-        }
-        return new InputStreamResource(new ByteArrayInputStream(responseData.getBytes(responseCharset)));
     }
+
+
 
     public static class RequestJson {
         private final Supplier<DocumentContext> documentContextSupplier;
