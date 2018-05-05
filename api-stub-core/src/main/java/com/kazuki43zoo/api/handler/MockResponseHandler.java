@@ -20,6 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.kazuki43zoo.api.ApiEvidence;
 import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
+import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import lombok.RequiredArgsConstructor;
@@ -101,9 +102,11 @@ public class MockResponseHandler {
             RequestEntity<byte[]> requestEntity,
             HttpServletRequest request,
             HttpServletResponse response,
+            Api api,
             ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
 
-        final ApiResponse apiResponse = apiResponseService.findOne(path, method, dataKey);
+        final ApiResponse apiResponse = apiResponseService.findOne(
+            path, Optional.ofNullable(api).map(Api::getPath).orElse(null), method, dataKey);
 
         final Integer statusCode;
         if (apiResponse.getId() == 0) {

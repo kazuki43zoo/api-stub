@@ -32,12 +32,12 @@ import java.util.stream.Stream;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DataKeyExtractor {
+public class DataKeySupport {
 
     private final Map<String, KeyExtractor> keyExtractorMap;
     private final ObjectMapper jsonObjectMapper;
 
-    public String extract(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
+    public String extractDataKey(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
         if (api == null) {
             return null;
         }
@@ -59,6 +59,17 @@ public class DataKeyExtractor {
             }
         }
         return key;
+    }
+
+    public boolean isPathVariableDataKey(Api api) {
+        if (api == null) {
+            return false;
+        }
+        KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
+        if (keyExtractor == null) {
+            return false;
+        }
+        return PathVariableKeyExtractor.class == keyExtractor.getClass();
     }
 
 }

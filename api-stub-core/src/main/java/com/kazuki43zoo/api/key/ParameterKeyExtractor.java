@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-@Order(4)
+@Order(5)
 public class ParameterKeyExtractor implements KeyExtractor {
     @Override
     public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {

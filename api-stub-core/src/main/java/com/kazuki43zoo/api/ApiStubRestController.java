@@ -17,7 +17,8 @@ package com.kazuki43zoo.api;
 
 import com.kazuki43zoo.api.handler.MockResponseHandler;
 import com.kazuki43zoo.api.handler.ProxyHandler;
-import com.kazuki43zoo.api.key.DataKeyExtractor;
+import com.kazuki43zoo.api.key.DataKeySupport;
+import com.kazuki43zoo.component.url.PathVariableSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiProxy;
@@ -47,7 +48,8 @@ class ApiStubRestController {
     private final ApiEvidenceFactory apiEvidenceFactory;
     private final MockResponseHandler mockResponseHandler;
     private final ProxyHandler proxyHandler;
-    private final DataKeyExtractor dataKeyExtractor;
+    private final DataKeySupport dataKeySupport;
+    private final PathVariableSupport pathVariableSupport;
 
     @RequestMapping(path = "${api.root-path:/api}/**")
     public ResponseEntity<Object> handleApiRequest(HttpServletRequest request, HttpServletResponse response, RequestEntity<byte[]> requestEntity)
@@ -66,11 +68,13 @@ class ApiStubRestController {
 
             if (api == null) {
                 log.debug("Not found the API registration that match this request. Path:{} Method:{}", path, method);
+            } else {
+                pathVariableSupport.storePathVariables(api.getPath(), path, request);
             }
 
-            final String dataKey = dataKeyExtractor.extract(api, request, requestEntity);
+            final String dataKey = dataKeySupport.extractDataKey(api, request, requestEntity);
 
-            evidence = apiEvidenceFactory.create(request, dataKey, correlationId);
+            evidence = apiEvidenceFactory.create(request, method, path, dataKey, correlationId, api);
 
             evidence.start();
             evidence.request(request, requestEntity);
@@ -85,7 +89,7 @@ class ApiStubRestController {
                 responseEntity = proxyHandler.perform(request, requestEntity, path, method, dataKey, api, evidence);
 
             } else {
-                responseEntity = mockResponseHandler.perform(path, method, dataKey, requestEntity, request, response, evidence);
+                responseEntity = mockResponseHandler.perform(path, method, dataKey, requestEntity, request, response, api, evidence);
 
             }
 

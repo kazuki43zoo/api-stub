@@ -15,31 +15,31 @@
  */
 package com.kazuki43zoo.api.key;
 
+import com.kazuki43zoo.component.url.PathVariableSupport;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@RequiredArgsConstructor
 @Component
-@Order(7)
-public class CookieKeyExtractor implements KeyExtractor {
+@Order(4)
+public class PathVariableKeyExtractor implements KeyExtractor {
+
+    private final PathVariableSupport pathVariableSupport;
+
     @Override
     public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        if (request.getCookies() == null || expressions.length == 0) {
-            return Collections.emptyList();
-        }
-
-        Map<String, String> cookieMap = Stream.of(request.getCookies())
-                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-        return Stream.of(expressions).map(cookieMap::get)
+        Map<String, String> pathVariable = pathVariableSupport.getPathVariables(request);
+        return Stream.of(expressions).map(pathVariable::get)
                 .filter(StringUtils::hasLength)
                 .collect(Collectors.toList());
     }
+
 }

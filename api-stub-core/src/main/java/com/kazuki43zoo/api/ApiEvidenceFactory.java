@@ -15,7 +15,9 @@
  */
 package com.kazuki43zoo.api;
 
+import com.kazuki43zoo.api.key.DataKeySupport;
 import com.kazuki43zoo.config.ApiStubProperties;
+import com.kazuki43zoo.domain.model.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -33,17 +35,18 @@ public class ApiEvidenceFactory {
 
     private final ApiStubProperties properties;
     private final ContentNegotiationManager contentNegotiationManager;
+    private final DataKeySupport dataKeySupport;
 
-    public ApiEvidence create(HttpServletRequest request, String dataKey, String correlationId) {
+    public ApiEvidence create(HttpServletRequest request, String method, String path, String dataKey, String correlationId, Api api) {
 
         final String contentExtension = Optional.ofNullable(request.getContentType())
-                .map(contentType -> contentNegotiationManager.resolveFileExtensions(MediaType.parseMediaType(contentType)))
-                .orElseGet(ArrayList::new)
-                .stream()
-                .findFirst()
-                .orElse("txt");
+            .map(MediaType::parseMediaType)
+            .map(contentNegotiationManager::resolveFileExtensions)
+            .orElseGet(ArrayList::new).stream()
+            .findFirst()
+            .orElse("txt");
 
-        return new ApiEvidence(properties, request.getMethod(), request.getServletPath(), dataKey, correlationId, contentExtension);
+        return new ApiEvidence(properties, dataKeySupport, method, path, dataKey, correlationId, contentExtension, api);
     }
 
 }

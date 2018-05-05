@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -36,13 +37,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApiResponseService {
 
+    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+\\}");
+
     private final ApiResponseRepository repository;
     private final ApiStubProperties properties;
 
-    public ApiResponse findOne(String path, String method, String dataKey) {
-        ApiResponse mockResponse = repository.findOneByUk(path, method, dataKey);
+    public ApiResponse findOne(String path, String apiPath, String method, String dataKey) {
+        ApiResponse mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, dataKey))
+            .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, dataKey) : null);
         if (mockResponse == null) {
-            mockResponse = repository.findOneByUk(path, method, "default");
+            mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, "default"))
+                .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, "default") : null);
         }
         if (mockResponse == null) {
             mockResponse = new ApiResponse();
@@ -61,8 +66,9 @@ public class ApiResponseService {
     }
 
     public Page<ApiResponse> findPage(String path, String method, String description, Pageable pageable) {
-        String searchingPath = Optional.ofNullable(pageable)
-            .map(e -> path.replaceAll("\\{.+\\}", ".+")).orElse(null);
+        String searchingPath = Optional.ofNullable(path)
+            .map(e -> PATH_VARIABLE_PATTERN.matcher(e).replaceAll(".+"))
+            .orElse(null);
         long count = repository.count(searchingPath, method, description);
         List<ApiResponse> content;
         if (count != 0) {

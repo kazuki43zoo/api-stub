@@ -17,7 +17,9 @@ package com.kazuki43zoo.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazuki43zoo.api.key.DataKeySupport;
 import com.kazuki43zoo.config.ApiStubProperties;
+import com.kazuki43zoo.domain.model.Api;
 import lombok.Data;
 import lombok.Getter;
 import org.slf4j.Logger;
@@ -66,13 +68,15 @@ public class ApiEvidence {
     private final Logger logger;
     private final String contentExtension;
     private final ApiStubProperties properties;
+
     @Getter
     private final String correlationId;
 
-    public ApiEvidence(ApiStubProperties properties, String method, String path, String dataKey, String correlationId, String contentExtension) {
+    public ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
         Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
-        this.dir = Paths.get(properties.getEvidence().getDir(),
-                path, nullableDataKey.orElse(""), method, LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
+        this.dir = Paths.get(properties.getEvidence().getDir(), path,
+            dataKeySupport.isPathVariableDataKey(api) ? "" : nullableDataKey.orElse(""), method,
+            LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
         this.logger = LoggerFactory.getLogger(method + " " + path +  nullableDataKey.map(key -> " dataKey=" + key).orElse(""));
         this.contentExtension = contentExtension;
         this.properties = properties;
