@@ -148,9 +148,6 @@ public class ApiController {
         try {
             service.create(api);
         } catch (DuplicateKeyException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
-            }
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "api/form";
         }

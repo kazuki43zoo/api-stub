@@ -141,9 +141,6 @@ class ApiResponseController {
         try {
             apiResponseService.create(apiResponse);
         } catch (DuplicateKeyException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
-            }
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "response/form";
         }
@@ -192,9 +189,6 @@ class ApiResponseController {
         try {
             apiResponseService.update(id, apiResponse, keepAttachmentFile, form.isSaveHistory());
         } catch (DuplicateKeyException e) {
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
-            }
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             model.addAttribute(apiResponseService.findOne(id));
             Optional.ofNullable(apiService.findOne(apiResponse.getPath(), apiResponse.getMethod())).ifPresent(model::addAttribute);
