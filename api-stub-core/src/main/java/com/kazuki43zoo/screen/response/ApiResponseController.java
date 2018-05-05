@@ -24,7 +24,6 @@ import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.pagination.Pagination;
 import com.kazuki43zoo.component.download.DownloadSupport;
-import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
@@ -64,6 +63,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequestMapping("/manager/responses")
@@ -169,13 +169,9 @@ class ApiResponseController {
         if (apiResponse.getBody() != null && apiResponse.getFileName() == null) {
             form.setBody(StreamUtils.copyToString(apiResponse.getBody(), StandardCharsets.UTF_8));
         }
-        Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
-
         model.addAttribute(apiResponse);
         model.addAttribute(form);
-        if (api != null) {
-            model.addAttribute(api);
-        }
+        Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(model::addAttribute);
         return "response/form";
     }
 
@@ -183,6 +179,7 @@ class ApiResponseController {
     public String edit(@PathVariable int id, @Validated ApiResponseForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws IOException {
         if (result.hasErrors()) {
             model.addAttribute(apiResponseService.findOne(id));
+            Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(model::addAttribute);
             return "response/form";
         }
         ApiResponse apiResponse = new ApiResponse();
@@ -196,7 +193,18 @@ class ApiResponseController {
         } else if (!form.isDeleteFile()) {
             keepAttachmentFile = true;
         }
-        apiResponseService.update(id, apiResponse, keepAttachmentFile, form.isSaveHistory());
+        try {
+            apiResponseService.update(id, apiResponse, keepAttachmentFile, form.isSaveHistory());
+        } catch (DuplicateKeyException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage(), e);
+            }
+            model.addAttribute(
+                ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
+            model.addAttribute(apiResponseService.findOne(id));
+            Optional.ofNullable(apiService.findOne(apiResponse.getPath(), apiResponse.getMethod())).ifPresent(model::addAttribute);
+            return "response/form";
+        }
         redirectAttributes.addFlashAttribute(
                 SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/responses/{id}";
@@ -234,13 +242,9 @@ class ApiResponseController {
                     ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses/{id}";
         }
-        Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
-
         model.addAttribute(apiResponse);
         model.addAttribute(new Pagination(page, null));
-        if (api != null) {
-            model.addAttribute(api);
-        }
+        Optional.ofNullable(apiService.findOne(apiResponse.getPath(), apiResponse.getMethod())).ifPresent(model::addAttribute);
         return "response/historyList";
     }
 
@@ -269,12 +273,9 @@ class ApiResponseController {
         if (apiResponse.getBody() != null && apiResponse.getFileName() == null) {
             form.setBody(StreamUtils.copyToString(apiResponse.getBody(), StandardCharsets.UTF_8));
         }
-        Api api = apiService.findOne(apiResponse.getPath(), apiResponse.getMethod());
         model.addAttribute(apiResponse);
         model.addAttribute(form);
-        if (api != null) {
-            model.addAttribute(api);
-        }
+        Optional.ofNullable(apiService.findOne(apiResponse.getPath(), apiResponse.getMethod())).ifPresent(model::addAttribute);
         return "response/history";
     }
 
