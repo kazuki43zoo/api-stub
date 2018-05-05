@@ -23,13 +23,28 @@ import org.springframework.util.StringUtils
 
 //language=SQL
 @Mapper
+@CacheNamespace
 interface ApiRepository {
 
     @SelectProvider(type = SqlProvider.class, method = "findPage")
+    @Options(useCache = false)
     List<Api> findPage(
             @Param("path") String path, @Param("method") String method, @Param("description") String description, RowBounds rowBounds)
 
+    @Select('''
+        SELECT
+            id, path
+        FROM
+            mock_api
+        WHERE
+            method = #{method}
+        ORDER BY
+            path
+    ''')
+    List<Api> findAllByMethod(@Param("method") String method)
+
     @SelectProvider(type = SqlProvider.class, method = "count")
+    @Options(useCache = false)
     long count(
             @Param("path") String path, @Param("method") String method, @Param("description") String description)
 
@@ -83,6 +98,7 @@ interface ApiRepository {
         AND
             method = UPPER(#{method})
     ''')
+    @Options(useCache = false)
     Integer findIdByUk(@Param("path") String path, @Param("method") String method)
 
     @Insert('''

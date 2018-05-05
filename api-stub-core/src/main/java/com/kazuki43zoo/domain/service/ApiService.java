@@ -26,6 +26,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.PathMatcher;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +39,18 @@ public class ApiService {
     private static final Pageable pageableForExport = PageRequest.of(0, Integer.MAX_VALUE);
     private final ApiRepository repository;
     private final ApiStubProperties properties;
+    private final PathMatcher pathMatcher;
 
     public Api findOne(String path, String method) {
-        return repository.findOneByUk(path, method);
+        Api api = repository.findOneByUk(path, method);
+        if (api == null) {
+            api = repository.findAllByMethod(method).stream()
+                .filter(e -> pathMatcher.match(e.getPath(), path))
+                .findFirst()
+                .map(e -> repository.findOne(e.getId()))
+                .orElse(null);
+        }
+        return api;
     }
 
     public Integer findIdByUk(String path, String method) {

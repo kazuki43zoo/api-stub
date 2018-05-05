@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -60,10 +61,12 @@ public class ApiResponseService {
     }
 
     public Page<ApiResponse> findPage(String path, String method, String description, Pageable pageable) {
-        long count = repository.count(path, method, description);
+        String searchingPath = Optional.ofNullable(pageable)
+            .map(e -> path.replaceAll("\\{.+\\}", ".+")).orElse(null);
+        long count = repository.count(searchingPath, method, description);
         List<ApiResponse> content;
         if (count != 0) {
-            content = repository.findPage(path, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
+            content = repository.findPage(searchingPath, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
         } else {
             content = Collections.emptyList();
         }
