@@ -116,8 +116,7 @@ public class ApiController {
         Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
                 paginationSupport.decidePageable(pageable, pageSize));
         if (page.getContent().isEmpty()) {
-            model.addAttribute(
-                    InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(new Pagination(page, requestParams));
         return "api/list";
@@ -126,8 +125,7 @@ public class ApiController {
     @PostMapping(params = "delete")
     public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
         service.delete(ids);
-        redirectAttributes.addFlashAttribute(
-                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/apis";
     }
 
@@ -153,13 +151,11 @@ public class ApiController {
             if (log.isDebugEnabled()) {
                 log.debug(e.getMessage(), e);
             }
-            model.addAttribute(
-                    ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
+            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
             return "api/form";
         }
         redirectAttributes.addAttribute("id", api.getId());
-        redirectAttributes.addFlashAttribute(
-                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
         return "redirect:/manager/apis/{id}";
     }
 
@@ -168,8 +164,7 @@ public class ApiController {
     public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
         Api api = service.findOne(id);
         if (api == null) {
-            redirectAttributes.addFlashAttribute(
-                    ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/apis";
         }
         if (api.getKeyedResponseNumber() != 0) {
@@ -196,16 +191,14 @@ public class ApiController {
         BeanUtils.copyProperties(form.getProxy(), api.getProxy());
         api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
         service.update(id, api);
-        redirectAttributes.addFlashAttribute(
-                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/apis/{id}";
     }
 
     @PostMapping(path = "{id}", params = "delete")
     public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
         service.delete(id);
-        redirectAttributes.addFlashAttribute(
-                SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
         return "redirect:/manager/apis";
     }
 
@@ -224,13 +217,11 @@ public class ApiController {
     @PostMapping(params = "import")
     public String importApis(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
         if (!StringUtils.hasLength(file.getOriginalFilename())) {
-            redirectAttributes.addFlashAttribute(
-                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
             return "redirect:/manager/apis";
         }
         if (file.getSize() == 0) {
-            redirectAttributes.addFlashAttribute(
-                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/apis";
         }
         List<Api> newApis;
@@ -238,13 +229,11 @@ public class ApiController {
             newApis = Arrays.asList(objectMapper.readValue(file.getInputStream(), Api[].class));
         } catch (JsonParseException | JsonMappingException e) {
             log.warn(e.getMessage(), e);
-            redirectAttributes.addFlashAttribute(
-                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/apis";
         }
         if (newApis.isEmpty()) {
-            redirectAttributes.addFlashAttribute(
-                    ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
             return "redirect:/manager/apis";
         }
 
