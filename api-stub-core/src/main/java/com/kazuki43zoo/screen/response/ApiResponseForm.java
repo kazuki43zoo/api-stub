@@ -19,11 +19,10 @@ import com.kazuki43zoo.component.validation.HttpMethod;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 class ApiResponseForm implements Serializable {
@@ -34,9 +33,10 @@ class ApiResponseForm implements Serializable {
     @NotEmpty
     @HttpMethod
     private String method;
-    private String dataKey;
-    @Min(100)
-    @Max(599)
+    private List<@Size(max = 350) String> dataKeys = new ArrayList<>();
+    @NotNull
+    @Min(0)
+    @Max(999)
     private Integer statusCode = 200;
     private String header = "Content-Type: application/json";
     private String body;

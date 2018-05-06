@@ -35,7 +35,8 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<Object> keys = extractor.extract(request, null, "key");
-		assertThat(keys).isEmpty();
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence((String) null);
 	}
 
 	@Test
@@ -54,8 +55,8 @@ public class ParameterKeyExtractorTests {
 				.param("key2", "value2").param("key3", "value3").buildRequest(new MockServletContext());
 
 		List<Object> keys = extractor.extract(request, null, "key1", "key2", "key4");
-		assertThat(keys).hasSize(2);
-		assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(3);
+		assertThat(keys).containsSequence("value1", "value2", null);
 	}
 
 	@Test
@@ -64,7 +65,8 @@ public class ParameterKeyExtractorTests {
 				.buildRequest(new MockServletContext());
 
 		List<Object> keys = extractor.extract(request, null, "key2");
-		assertThat(keys).isEmpty();
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence((String) null);
 	}
 
 	@Test

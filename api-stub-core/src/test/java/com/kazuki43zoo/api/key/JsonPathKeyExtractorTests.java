@@ -77,8 +77,8 @@ public class JsonPathKeyExtractorTests {
 
 		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key1", "$.key2",
 				"$.key4");
-		assertThat(keys).hasSize(2);
-		assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(3);
+		assertThat(keys).containsSequence("value1", "value2", null);
 	}
 
 	@Test
@@ -90,7 +90,8 @@ public class JsonPathKeyExtractorTests {
 		jsonSource.put("key", "value");
 
 		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key2");
-		assertThat(keys).isEmpty();
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence((String) null);
 	}
 
 	@Test

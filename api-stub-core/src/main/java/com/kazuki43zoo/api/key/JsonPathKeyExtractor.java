@@ -20,13 +20,11 @@ import com.jayway.jsonpath.ReadContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,7 +49,6 @@ public class JsonPathKeyExtractor implements KeyExtractor {
                 }
                 return null;
             }
-        }).filter(Objects::nonNull).filter(id -> !(id instanceof CharSequence) || StringUtils.hasLength((CharSequence) id))
-                .collect(Collectors.toList());
+        }).collect(Collectors.toList());
     }
 }

@@ -52,7 +52,7 @@ interface ApiRepository {
         SELECT
             a.id, a.path, a.method, a.key_extractor, a.key_generating_strategy, a.expressions, a.description
             , SELECT COUNT(r.id) FROM mock_api_response r
-                  WHERE r.path = a.path AND r.method = a.method AND r.data_key NOT IN ('', 'default') AS keyed_response_number
+                  WHERE r.path = a.path AND r.method = a.method AS keyed_response_number
             , p.enabled, p.url, p.capturing
         FROM
             mock_api a

@@ -17,6 +17,7 @@ package com.kazuki43zoo.domain.service;
 
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.ApiResponse;
+import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.repository.ApiResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.RowBounds;
@@ -25,19 +26,21 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Transactional
 @Service
 @RequiredArgsConstructor
 public class ApiResponseService {
 
-    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+\\}");
+    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+}");
 
     private final ApiResponseRepository repository;
     private final ApiStubProperties properties;
@@ -45,9 +48,12 @@ public class ApiResponseService {
     public ApiResponse findOne(String path, String apiPath, String method, String dataKey) {
         ApiResponse mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, dataKey))
             .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, dataKey) : null);
-        if (mockResponse == null) {
-            mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, "default"))
-                .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, "default") : null);
+        if (mockResponse == null && StringUtils.hasLength(dataKey)) {
+            String defaultDataKey = KeyGeneratingStrategy.split(dataKey).stream()
+                    .map(e -> "")
+                    .collect(Collectors.joining(KeyGeneratingStrategy.KEY_DELIMITER));
+            mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, defaultDataKey))
+                    .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, defaultDataKey) : null);
         }
         if (mockResponse == null) {
             mockResponse = new ApiResponse();
@@ -95,7 +101,7 @@ public class ApiResponseService {
     }
 
     public void create(ApiResponse newMockResponse) {
-        newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
+            newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
         repository.create(newMockResponse);
         repository.createHistory(newMockResponse.getId());
     }

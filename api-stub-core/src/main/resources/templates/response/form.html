@@ -54,10 +54,16 @@
         </div>
         <div class="form-group"
              th:if="${hasApi and not #strings.isEmpty(api.keyExtractor) and api.keyGeneratingStrategy != null}">
-            <label for="dataKey" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
-            <div class="col-sm-7" th:classappend="${#fields.hasErrors('dataKey') ? 'has-error' : ''}">
-                <input type="text" class="form-control" id="dataKey" th:placeholder="#{dataKey}" th:field="*{dataKey}"/>
-                <span th:errors="*{dataKey}"></span>
+            <label for="dataKeys[0]" class="col-sm-2 control-label" th:text="#{dataKey}"></label>
+            <div class="col-sm-2" th:each="expression : ${@jsonSupport.jsonToList(api.expressions)}"
+                 th:if="${not #strings.isEmpty(expression)} "
+                 th:with="dataKeyElementPath=${'dataKeys[' + expressionStat.index + ']'}"
+                 th:classappend="${#fields.hasErrors(dataKeyElementPath) ? 'has-error' : ''}">
+                <sapn class="control-label" th:text="${expression}"></sapn>
+                <input type="text" class="form-control" id="dataKeys[0]"
+                       th:id="${dataKeyElementPath}"
+                       th:field="*{dataKeys[__${expressionStat.index}__]}"/>
+                <span th:errors="*{dataKeys[__${expressionStat.index}__]}"></span>
             </div>
         </div>
         <div class="form-group">

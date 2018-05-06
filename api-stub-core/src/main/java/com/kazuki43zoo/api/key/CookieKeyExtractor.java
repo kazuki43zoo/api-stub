@@ -17,7 +17,6 @@ package com.kazuki43zoo.api.key;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +38,6 @@ public class CookieKeyExtractor implements KeyExtractor {
         Map<String, String> cookieMap = Stream.of(request.getCookies())
                 .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
         return Stream.of(expressions).map(cookieMap::get)
-                .filter(StringUtils::hasLength)
                 .collect(Collectors.toList());
     }
 }

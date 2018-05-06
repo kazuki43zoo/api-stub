@@ -17,7 +17,6 @@ package com.kazuki43zoo.api.key;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -30,7 +29,6 @@ public class HeaderKeyExtractor implements KeyExtractor {
     @Override
     public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         return Stream.of(expressions).map(request::getHeader)
-                .filter(StringUtils::hasLength)
                 .collect(Collectors.toList());
     }
 }

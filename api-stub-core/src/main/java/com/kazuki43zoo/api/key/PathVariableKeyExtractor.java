@@ -19,7 +19,6 @@ import com.kazuki43zoo.component.url.PathVariableSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -38,7 +37,6 @@ public class PathVariableKeyExtractor implements KeyExtractor {
     public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
         Map<String, String> pathVariable = pathVariableSupport.getPathVariables(request);
         return Stream.of(expressions).map(pathVariable::get)
-                .filter(StringUtils::hasLength)
                 .collect(Collectors.toList());
     }
 

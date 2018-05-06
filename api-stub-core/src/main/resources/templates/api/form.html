@@ -64,46 +64,13 @@
         </div>
         <div class="form-group">
             <label for="keyExtractor" class="col-sm-2 control-label" th:text="#{keyExtractor}"></label>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <select class="form-control" id="keyExtractor" th:field="*{keyExtractor}">
                     <option value="" th:text="#{KeyExtractor.NONE}"></option>
                     <option th:each="keyExtractor : ${keyExtractors}" th:value="${keyExtractor}"
                             th:text="#{'KeyExtractor.' + ${keyExtractor}}"></option>
                 </select>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="expressions0" class="col-sm-2 control-label" th:text="#{keyExtractRule}"></label>
-            <div class="col-sm-6">
-                <input type="text" id="expressions0" class="form-control" th:field="*{expressions[0]}"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-6">
-                <input type="text" id="expressions1" class="form-control" th:field="*{expressions[1]}"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-6">
-                <input type="text" id="expressions2" class="form-control" th:field="*{expressions[2]}"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-6">
-                <input type="text" id="expressions3" class="form-control" th:field="*{expressions[3]}"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-6">
-                <input type="text" id="expressions4" class="form-control" th:field="*{expressions[4]}"/>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10"
-                 th:utext="#{guidance.expressions('https://github.com/jayway/JsonPath')}">
-            </div>
-        </div>
-        <div class="form-group">
             <label for="keyGeneratingStrategy" class="col-sm-2 control-label"
                    th:text="#{keyGeneratingStrategy}"></label>
             <div class="col-sm-4">
@@ -113,6 +80,30 @@
                             th:value="${keyGeneratingStrategy}"
                             th:text="#{'KeyGeneratingStrategy.' + ${keyGeneratingStrategy}}"></option>
                 </select>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <label for="expressions0" class="col-sm-2 control-label" th:text="#{keyExtractRule}"></label>
+            <div class="col-sm-2">
+                <input type="text" id="expressions0" class="form-control" th:field="*{expressions[0]}"/>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" id="expressions1" class="form-control" th:field="*{expressions[1]}"/>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" id="expressions2" class="form-control" th:field="*{expressions[2]}"/>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" id="expressions3" class="form-control" th:field="*{expressions[3]}"/>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" id="expressions4" class="form-control" th:field="*{expressions[4]}"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10"
+                 th:utext="#{guidance.expressions('https://github.com/jayway/JsonPath')}">
             </div>
         </div>
         <div class="form-group">

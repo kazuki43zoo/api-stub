@@ -15,35 +15,37 @@
  */
 package com.kazuki43zoo.domain.model;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 public enum KeyGeneratingStrategy {
 
-    FIRST {
-        @Override
-        public String generate(List<Object> keys) {
-            if (keys == null || keys.isEmpty()) {
-                return null;
-            }
-            return keys.stream().filter(Objects::nonNull).map(Objects::toString).filter(StringUtils::hasLength).findFirst().orElse(null);
-        }
-    },
     ALL {
         @Override
+
         public String generate(List<Object> keys) {
             if (keys == null || keys.isEmpty()) {
                 return null;
             }
-            StringJoiner stringJoiner = new StringJoiner("/");
-            keys.stream().map(Objects::toString).forEach(stringJoiner::add);
-            return stringJoiner.toString();
+            return join(keys);
         }
     };
 
+    public static final String KEY_DELIMITER = "/";
+
     public abstract String generate(List<Object> values);
+
+    public static List<String> split(String keys) {
+        return Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(keys, KEY_DELIMITER));
+    }
+
+    public static <T> String join(List<T> keys) {
+        return keys.stream()
+                .map(e -> e == null ? "" : e.toString())
+                .collect(Collectors.joining(KEY_DELIMITER));
+    }
 
 }

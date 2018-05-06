@@ -17,7 +17,6 @@ package com.kazuki43zoo.api.key;
 
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -61,7 +60,7 @@ public class XPathKeyExtractor implements KeyExtractor {
             } catch (Exception e) {
                 throw new IllegalStateException(e);
             }
-        }).filter(StringUtils::hasLength).collect(Collectors.toList());
+        }).collect(Collectors.toList());
     }
 
 }

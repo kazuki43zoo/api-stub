@@ -18,8 +18,8 @@ package com.kazuki43zoo.screen.api;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.api.key.KeyExtractor;
+import com.kazuki43zoo.component.json.JsonSupport;
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
@@ -48,7 +48,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.CookieGenerator;
@@ -57,7 +64,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,7 +85,7 @@ public class ApiController {
     private final ImportSupport importSupport;
     private final PaginationSupport paginationSupport;
     private final DownloadSupport downloadSupport;
-    private final ObjectMapper objectMapper;
+    private final JsonSupport jsonSupport;
 
     @ModelAttribute("apiSearchForm")
     public ApiSearchForm setUpSearchForm() {
@@ -144,7 +150,7 @@ public class ApiController {
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
         BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-        api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
+        api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
         try {
             service.create(api);
         } catch (DuplicateKeyException e) {
@@ -170,7 +176,7 @@ public class ApiController {
         ApiForm form = new ApiForm();
         BeanUtils.copyProperties(api, form);
         BeanUtils.copyProperties(api.getProxy(), form.getProxy());
-        form.setExpressions(Arrays.asList(objectMapper.readValue(api.getExpressions(), String[].class)));
+        form.setExpressions(jsonSupport.jsonToList(api.getExpressions()));
         model.addAttribute(api);
         model.addAttribute(form);
         return "api/form";
@@ -186,7 +192,7 @@ public class ApiController {
         Api api = new Api();
         BeanUtils.copyProperties(form, api);
         BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-        api.setExpressions(objectMapper.writeValueAsString(form.getExpressions()));
+        api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
         service.update(id, api);
         redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
         return "redirect:/manager/apis/{id}";
@@ -223,14 +229,14 @@ public class ApiController {
         }
         List<Api> newApis;
         try {
-            newApis = Arrays.asList(objectMapper.readValue(file.getInputStream(), Api[].class));
+            newApis = jsonSupport.jsonToApiList(file.getInputStream());
         } catch (JsonParseException | JsonMappingException e) {
             log.warn(e.getMessage(), e);
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());
             return "redirect:/manager/apis";
         }
         if (newApis.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_DATA_EMPTY).build());
             return "redirect:/manager/apis";
         }
 

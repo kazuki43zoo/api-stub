@@ -17,7 +17,7 @@ package com.kazuki43zoo.screen.response;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kazuki43zoo.component.json.JsonSupport;
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
@@ -25,6 +25,7 @@ import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.pagination.Pagination;
 import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.domain.model.ApiResponse;
+import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import com.kazuki43zoo.domain.service.ApiService;
 import com.kazuki43zoo.screen.ImportSupport;
@@ -44,12 +45,20 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.CookieGenerator;
@@ -61,9 +70,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequestMapping("/manager/responses")
@@ -83,7 +93,7 @@ class ApiResponseController {
     private final PaginationSupport paginationSupport;
     private final ImportSupport importHelper;
     private final DownloadSupport downloadSupport;
-    private final ObjectMapper objectMapper;
+    private final JsonSupport jsonSupport;
 
     @ModelAttribute("apiResponseSearchForm")
     public ApiResponseSearchForm setUpSearchForm() {
@@ -127,11 +137,23 @@ class ApiResponseController {
     @PostMapping(path = "create")
     public String create(@Validated ApiResponseForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws IOException {
         if (result.hasErrors()) {
+            Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(model::addAttribute);
             return "response/form";
         }
 
         ApiResponse apiResponse = new ApiResponse();
         BeanUtils.copyProperties(form, apiResponse, "body");
+        if (CollectionUtils.isEmpty(form.getDataKeys())) {
+            Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(api -> {
+                apiResponse.setDataKey(jsonSupport.jsonToList(api.getExpressions()).stream()
+                        .map(Objects::toString)
+                        .filter(StringUtils::hasLength)
+                        .map(e -> "")
+                        .collect(Collectors.joining(KeyGeneratingStrategy.KEY_DELIMITER)));
+            });
+        } else {
+            apiResponse.setDataKey(KeyGeneratingStrategy.join(form.getDataKeys()));
+        }
         if (form.getFile() != null && StringUtils.hasLength(form.getFile().getOriginalFilename())) {
             apiResponse.setAttachmentFile(form.getFile().getInputStream());
             apiResponse.setFileName(Paths.get(form.getFile().getOriginalFilename()).getFileName().toString());
@@ -142,6 +164,7 @@ class ApiResponseController {
             apiResponseService.create(apiResponse);
         } catch (DuplicateKeyException e) {
             model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
+            Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(model::addAttribute);
             return "response/form";
         }
         redirectAttributes.addAttribute("id", apiResponse.getId());
@@ -159,6 +182,7 @@ class ApiResponseController {
         }
         ApiResponseForm form = new ApiResponseForm();
         BeanUtils.copyProperties(apiResponse, form, "body");
+        Optional.ofNullable(apiResponse.getDataKey()).ifPresent(e -> form.setDataKeys(KeyGeneratingStrategy.split(e)));
         if (apiResponse.getBody() != null && apiResponse.getFileName() == null) {
             form.setBody(StreamUtils.copyToString(apiResponse.getBody(), StandardCharsets.UTF_8));
         }
@@ -177,6 +201,7 @@ class ApiResponseController {
         }
         ApiResponse apiResponse = new ApiResponse();
         BeanUtils.copyProperties(form, apiResponse, "body");
+        Optional.ofNullable(form.getDataKeys()).ifPresent(e -> apiResponse.setDataKey(KeyGeneratingStrategy.join(e)));
         boolean keepAttachmentFile = false;
         if (form.getFile() != null && StringUtils.hasLength(form.getFile().getOriginalFilename())) {
             apiResponse.setAttachmentFile(form.getFile().getInputStream());
@@ -310,14 +335,14 @@ class ApiResponseController {
         }
         List<ApiResponse> newApiResponses;
         try {
-            newApiResponses = Arrays.asList(objectMapper.readValue(file.getInputStream(), ApiResponse[].class));
+            newApiResponses = jsonSupport.jsonToApiResponseList(file.getInputStream());
         } catch (JsonParseException | JsonMappingException e) {
             log.warn(e.getMessage(), e);
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());
             return "redirect:/manager/responses";
         }
         if (newApiResponses.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_DATA_EMPTY).build());
             return "redirect:/manager/responses";
         }
 
