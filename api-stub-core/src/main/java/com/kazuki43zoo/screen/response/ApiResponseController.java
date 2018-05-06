@@ -104,7 +104,7 @@ class ApiResponseController {
         }
         Page<ApiResponse> page = apiResponseService.findPage(form.getPath(), form.getMethod(), form.getDescription(),
                 paginationSupport.decidePageable(pageable, pageSize));
-        if (page.getContent().isEmpty()) {
+        if (!page.hasContent()) {
             model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(new Pagination(page, requestParams));
@@ -223,7 +223,7 @@ class ApiResponseController {
         }
         int pageSize = paginationSupport.decidePageSize(pageable, 0, cookiePageSize);
         Page<ApiResponse> page = apiResponseService.findAllHistoryById(id, paginationSupport.decidePageable(pageable, pageSize));
-        if (page.getContent().isEmpty()) {
+        if (!page.hasContent()) {
             redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
             return "redirect:/manager/responses/{id}";
         }

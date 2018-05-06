@@ -115,7 +115,7 @@ public class ApiController {
         }
         Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
                 paginationSupport.decidePageable(pageable, pageSize));
-        if (page.getContent().isEmpty()) {
+        if (!page.hasContent()) {
             model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
         }
         model.addAttribute(new Pagination(page, requestParams));
