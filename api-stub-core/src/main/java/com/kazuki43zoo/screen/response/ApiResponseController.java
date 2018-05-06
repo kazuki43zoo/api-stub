@@ -122,7 +122,10 @@ class ApiResponseController {
     }
 
     @RequestMapping(path = "create", method = {RequestMethod.GET, RequestMethod.POST}, params = "loadingApi")
-    public String createForm(ApiResponseForm form, RedirectAttributes redirectAttributes) {
+    public String createForm(@Validated ApiResponseForm form, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "response/form";
+        }
         Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(redirectAttributes::addFlashAttribute);
         redirectAttributes.addFlashAttribute(form);
         return "redirect:/manager/responses/create";
