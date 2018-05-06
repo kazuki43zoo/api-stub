@@ -82,8 +82,8 @@ public class XPathKeyExtractorTests {
 
 		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key1/text()", "//key2/text()",
 				"//key4/text()");
-		assertThat(keys).hasSize(2);
-		assertThat(keys).containsSequence("value1", "value2");
+		assertThat(keys).hasSize(3);
+		assertThat(keys).containsSequence("value1", "value2", "");
 	}
 
 	@Test
@@ -98,7 +98,8 @@ public class XPathKeyExtractorTests {
 		JAXB.marshal(xmlSource, xmlWriter);
 
 		List<Object> keys = extractor.extract(request, xmlWriter.toString().getBytes(StandardCharsets.UTF_8), "//key2/text()");
-		assertThat(keys).isEmpty();
+		assertThat(keys).hasSize(1);
+		assertThat(keys).containsSequence("");
 	}
 
 	@Test

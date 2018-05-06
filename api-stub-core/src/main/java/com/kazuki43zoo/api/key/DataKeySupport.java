@@ -17,7 +17,6 @@ package com.kazuki43zoo.api.key;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.domain.model.Api;
-import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.RequestEntity;
@@ -28,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
