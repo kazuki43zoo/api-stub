@@ -100,6 +100,7 @@
                 <th th:text="#{requestPath}"></th>
                 <th th:text="#{httpMethod}"></th>
                 <th th:text="#{description}"></th>
+                <th></th>
             </tr>
             <tr th:each="api : ${page.content}" th:object="${api}">
                 <td>
@@ -118,6 +119,12 @@
                 <td th:text="*{path}"></td>
                 <td th:text="*{method}"></td>
                 <td th:text="*{description}"></td>
+                <td>
+                    <a class="btn btn-default" th:href="@{/manager/responses/create?loadingApi=&amp;path={path}&amp;method={method}(path=${api.path},method=${api.method})}">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        <span th:utext="|#{data}#{wordSeparator}#{action.add}|"></span>
+                    </a>
+                </td>
             </tr>
         </table>
         <div th:replace="list :: pagination"></div>

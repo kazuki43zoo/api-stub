@@ -51,14 +51,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.CookieGenerator;
@@ -128,9 +121,16 @@ class ApiResponseController {
         return "redirect:/manager/responses";
     }
 
+    @RequestMapping(path = "create", method = {RequestMethod.GET, RequestMethod.POST}, params = "loadingApi")
+    public String createForm(ApiResponseForm form, RedirectAttributes redirectAttributes) {
+        Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(redirectAttributes::addFlashAttribute);
+        redirectAttributes.addFlashAttribute(form);
+        return "redirect:/manager/responses/create";
+    }
+
     @GetMapping(path = "create")
-    public String createForm(Model model) {
-        model.addAttribute(new ApiResponseForm());
+    public String createForm(ApiResponseForm form, Model model) {
+        model.addAttribute(form);
         return "response/form";
     }
 

@@ -33,7 +33,7 @@
 
     <div th:replace="alert :: messages"></div>
 
-    <form th:object="${apiResponseForm}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <form method="post" class="form-horizontal" enctype="multipart/form-data" th:object="${apiResponseForm}" th:form="@{''}">
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"
                    th:classappend="${isCreate ? 'required' : ''}"></label>
@@ -47,6 +47,10 @@
                        th:readonly="${isUpdate}"/>
                 <span th:errors="*{method}"></span>
             </div>
+            <button type="submit" id="apiLoadingButton" name="loadingApi" class="btn btn-default" th:id="apiLoadingButton" th:if="${isCreate}">
+                <span class="glyphicon glyphicon-refresh"></span>
+                <span th:utext="|#{api}#{wordSeparator}#{action.load}|"></span>
+            </button>
             <a class="btn btn-default" th:href="@{/manager/apis/{id}(id=${api.id})}" th:if="${hasApi}">
                 <span class="glyphicon glyphicon-share-alt"></span>
                 <span th:text="#{title.apiForm}"></span>

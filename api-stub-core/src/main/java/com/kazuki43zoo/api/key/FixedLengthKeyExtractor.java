@@ -16,6 +16,7 @@
 package com.kazuki43zoo.api.key;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,7 @@ public class FixedLengthKeyExtractor implements KeyExtractor {
                 .orElse(StandardCharsets.UTF_8);
 
         return Stream.of(expressions).map(expression -> {
-            String[] extractionDefine = expression.split(",");
+            String[] extractionDefine = StringUtils.splitByWholeSeparatorPreserveAllTokens(expression, ",");
             if (extractionDefine.length <= 2) {
                 return null;
             }
