@@ -15,8 +15,8 @@
  */
 package com.kazuki43zoo.api.handler;
 
-import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
 import com.kazuki43zoo.api.ApiEvidence;
 import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
@@ -86,6 +86,9 @@ public class MockResponseHandler {
 
   @PostConstruct
   public void setupTemplateEngine() {
+    if (properties.getResponse().getTemplate().isDisabled()) {
+      return;
+    }
     SpringTemplateEngine templateEngine = new SpringTemplateEngine();
     templateEngine.setMessageSource(applicationContext);
     StringTemplateResolver templateResolver = new StringTemplateResolver();
@@ -167,9 +170,9 @@ public class MockResponseHandler {
         .body(responseBody);
   }
 
-  private InputStreamResource processTemplate(InputStream body, Charset responseCharset, IWebContext context, HttpHeaders responseHeaders, ApiEvidence evidence) {
+  private InputStreamResource processTemplate(InputStream body, Charset responseCharset, IWebContext templateContext, HttpHeaders responseHeaders, ApiEvidence evidence) {
 
-    if (properties.getResponse().getTemplate().isDisabled()) {
+    if (templateContext == null) {
       return new InputStreamResource(body);
     }
 
@@ -180,11 +183,14 @@ public class MockResponseHandler {
       throw new UncheckedIOException(e);
     }
 
-    String result = processTemplate(template, context, responseHeaders, evidence);
+    String result = processTemplate(template, templateContext, responseHeaders, evidence);
     return new InputStreamResource(new ByteArrayInputStream(result.getBytes(responseCharset)));
   }
 
   private String processTemplate(String template, IWebContext templateContext, HttpHeaders responseHeaders, ApiEvidence evidence) {
+    if (templateContext == null || templateEngine == null) {
+      return template;
+    }
     String result;
     try {
       result = templateEngine.process(template, templateContext);
@@ -197,6 +203,9 @@ public class MockResponseHandler {
   }
 
   private IWebContext createTemplateWebContext(RequestEntity<byte[]> requestEntity, HttpServletRequest request, HttpServletResponse response) {
+    if (templateEngine == null) {
+      return null;
+    }
     ModelMap model = new ModelMap();
     model.addAttribute(requestEntity);
     Optional.ofNullable(requestEntity.getHeaders().getContentType())
@@ -221,32 +230,32 @@ public class MockResponseHandler {
 
 
   public static class RequestJson {
-    private final Supplier<DocumentContext> documentContextSupplier;
-    private DocumentContext documentContext;
+    private final Supplier<ReadContext> readContextSupplier;
+    private ReadContext readContext;
 
     RequestJson(byte[] body) {
-      this.documentContextSupplier = () -> {
-        if (documentContext == null) {
-          this.documentContext = JsonPath.parse(new ByteArrayInputStream(body));
+      this.readContextSupplier = () -> {
+        if (readContext == null) {
+          this.readContext = JsonPath.parse(new ByteArrayInputStream(body));
         }
-        return documentContext;
+        return readContext;
       };
     }
 
     public Object read(String expression) {
-      return documentContextSupplier.get().read(expression);
+      return readContextSupplier.get().read(expression);
     }
   }
 
   public static class RequestXml {
-    private final XPath xpath;
     private final Supplier<Document> documentSupplier;
+    private XPath xpath;
     private Document document;
 
     RequestXml(byte[] body) {
-      this.xpath = XPathFactory.newInstance().newXPath();
       this.documentSupplier = () -> {
         if (document == null) {
+          this.xpath = XPathFactory.newInstance().newXPath();
           try {
             this.document = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder().parse(new ByteArrayInputStream(body));
