@@ -152,7 +152,7 @@ public class ApiController {
     Api api = new Api();
     BeanUtils.copyProperties(form, api);
     BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-    api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
+    api.setExpressions(jsonSupport.toJson(form.getExpressions()));
     try {
       service.create(api);
     } catch (DuplicateKeyException e) {
@@ -178,7 +178,7 @@ public class ApiController {
     ApiForm form = new ApiForm();
     BeanUtils.copyProperties(api, form);
     BeanUtils.copyProperties(api.getProxy(), form.getProxy());
-    form.setExpressions(jsonSupport.jsonToList(api.getExpressions()));
+    form.setExpressions(jsonSupport.toList(api.getExpressions()));
     model.addAttribute(api);
     model.addAttribute(form);
     return "api/form";
@@ -194,7 +194,7 @@ public class ApiController {
     Api api = new Api();
     BeanUtils.copyProperties(form, api);
     BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-    api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
+    api.setExpressions(jsonSupport.toJson(form.getExpressions()));
     service.update(id, api);
     redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
     return "redirect:/manager/apis/{id}";
@@ -231,7 +231,7 @@ public class ApiController {
     }
     List<Api> newApis;
     try {
-      newApis = jsonSupport.jsonToApiList(file.getInputStream());
+      newApis = jsonSupport.toApiList(file.getInputStream());
     } catch (JsonParseException | JsonMappingException e) {
       log.warn(e.getMessage(), e);
       redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());

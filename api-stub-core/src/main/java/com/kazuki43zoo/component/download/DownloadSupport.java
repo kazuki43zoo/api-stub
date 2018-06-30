@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +34,7 @@ public class DownloadSupport {
   private static final String CONTENT_DISPOSITION_FORMAT_ASCII_ONLY = "attachment; filename=\"%s\";";
   private static final String CONTENT_DISPOSITION_FORMAT_NOT_ASCII = "attachment; filename*=UTF-8''%s";
 
-  public void addContentDisposition(HttpHeaders headers, String fileName) throws UnsupportedEncodingException {
+  public void addContentDisposition(HttpHeaders headers, String fileName) {
     String headerValue;
     if (PATTERN_ASCII_ONLY.matcher(fileName).matches()) {
       headerValue = String.format(CONTENT_DISPOSITION_FORMAT_ASCII_ONLY, fileName);
@@ -45,7 +44,7 @@ public class DownloadSupport {
     headers.add(HttpHeaders.CONTENT_DISPOSITION, headerValue);
   }
 
-  public String extractDownloadFileName(HttpHeaders httpHeaders) throws UnsupportedEncodingException {
+  public String extractDownloadFileName(HttpHeaders httpHeaders) {
     final String contentDisposition = httpHeaders.getFirst(HttpHeaders.CONTENT_DISPOSITION);
     if (!StringUtils.hasLength(contentDisposition)) {
       return null;

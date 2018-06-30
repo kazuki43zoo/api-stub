@@ -54,8 +54,8 @@ public class DataKeySupport {
       key = api.getKeyGeneratingStrategy().generate(keys);
     } catch (Exception e) {
       // ignore
-      if (log.isDebugEnabled()) {
-        log.debug(e.getMessage(), e);
+      if (log.isWarnEnabled()) {
+        log.warn(e.getMessage(), e);
       }
     }
     return key;

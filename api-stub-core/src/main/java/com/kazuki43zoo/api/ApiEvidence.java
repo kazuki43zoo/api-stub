@@ -54,6 +54,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class ApiEvidence {
 
@@ -68,37 +69,40 @@ public class ApiEvidence {
   private final Logger logger;
   private final String contentExtension;
   private final ApiStubProperties properties;
+  private final String dataKey;
 
   @Getter
   private final String correlationId;
 
   public ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
     Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
+    this.dataKey = nullableDataKey.orElse("-");
     this.dir = Paths.get(properties.getEvidence().getDir(), path,
         dataKeySupport.isPathVariableDataKey(api) ? "" : nullableDataKey.orElse(""), method,
         LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
-    this.logger = LoggerFactory.getLogger(method + " " + path + nullableDataKey.map(key -> " dataKey=" + key).orElse(""));
+    String loggerName = (api != null) ? (api.getMethod() + " " + api.getPath()) : (method + " " + path);
+    this.logger = LoggerFactory.getLogger(loggerName);
     this.contentExtension = contentExtension;
     this.properties = properties;
     this.correlationId = correlationId;
   }
 
   public void start() {
-    info("Start.");
+    info("Start. key={}", () -> toArray(dataKey));
     if (properties.getEvidence().isDisabledRequest() && properties.getEvidence().isDisabledUpload()) {
       return;
     }
     if (!dir.toFile().exists() && !this.dir.toFile().mkdirs()) {
       error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
     }
-    info("Evidence Dir : {}", dir.toAbsolutePath().toString());
+    info("Evidence Dir : {}", () -> toArray(dir.toAbsolutePath().toString()));
   }
 
   public void request(HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException, ServletException {
     final EvidenceRequest evidenceRequest =
         new EvidenceRequest(request.getRequestURI(), request.getMethod(), request.getQueryString(),
             request.getParameterMap(), requestEntity.getHeaders());
-    info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
+    info("Request      : {}", () -> toArray(toJson(evidenceRequest)));
     if (!properties.getEvidence().isDisabledRequest()) {
       try (OutputStream out = new BufferedOutputStream
           (new FileOutputStream(new File(dir.toFile(), "request.json")))) {
@@ -111,7 +115,7 @@ public class ApiEvidence {
           .map(MediaType::getCharset)
           .orElse(StandardCharsets.UTF_8);
       final String body = new String(requestEntity.getBody(), charset);
-      info("Request body : {}", body);
+      info("Request body : {}", () -> toArray(body));
       if (!properties.getEvidence().isDisabledRequest()) {
         try (OutputStream out = new BufferedOutputStream(
             new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
@@ -129,7 +133,7 @@ public class ApiEvidence {
         String saveFileName = String.format("uploadFile_%02d_%s", index, fileName);
         File saveFile = new File(dir.toFile(), saveFileName);
         UploadFile uploadFile = new UploadFile(part, saveFileName);
-        info("Upload file  : {}", objectMapperForLog.writeValueAsString(uploadFile));
+        info("Upload file  : {}", () -> toArray(toJson(uploadFile)));
         if (!properties.getEvidence().isDisabledUpload()) {
           try (InputStream in = part.getInputStream();
                OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
@@ -141,13 +145,25 @@ public class ApiEvidence {
     }
   }
 
-  public void response(ResponseEntity<?> responseEntity) throws JsonProcessingException {
+  public void response(ResponseEntity<?> responseEntity) {
     EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
-    info("Response     : {}", objectMapperForLog.writeValueAsString(evidenceResponse));
+    info("Response     : {}", () -> toArray(toJson(evidenceResponse)));
+  }
+
+  private String toJson(Object object) {
+    try {
+      return objectMapperForLog.writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  public Object[] toArray(Object... args) {
+    return args;
   }
 
   public void end() {
-    info("End.");
+    info("End. key={}", () -> toArray(dataKey));
     MDC.clear();
   }
 
@@ -159,16 +175,24 @@ public class ApiEvidence {
     logger.error(format, t);
   }
 
-  public void warn(String format, Object... args) {
-    logger.warn(format, args);
+  public void warn(String msg) {
+    logger.warn(msg);
   }
 
-  public void warn(String format, Throwable t) {
-    logger.warn(format, t);
+  public void warn(String format, Supplier<Object[]> argsSupplier) {
+    if (logger.isWarnEnabled()) {
+      logger.warn(format, argsSupplier.get());
+    }
   }
 
-  public void info(String format, Object... args) {
-    logger.info(format, args);
+  public void info(String msg) {
+    logger.info(msg);
+  }
+
+  public void info(String format, Supplier<Object[]> argsSupplier) {
+    if (logger.isInfoEnabled()) {
+      logger.info(format, argsSupplier.get());
+    }
   }
 
   @Data

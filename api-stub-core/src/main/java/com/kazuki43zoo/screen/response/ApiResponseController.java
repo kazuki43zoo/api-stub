@@ -158,7 +158,7 @@ class ApiResponseController {
     BeanUtils.copyProperties(form, apiResponse, "body");
     if (CollectionUtils.isEmpty(form.getDataKeys())) {
       Optional.ofNullable(apiService.findOne(form.getPath(), form.getMethod())).ifPresent(api -> {
-        apiResponse.setDataKey(jsonSupport.jsonToList(api.getExpressions()).stream()
+        apiResponse.setDataKey(jsonSupport.toList(api.getExpressions()).stream()
             .map(Objects::toString)
             .filter(StringUtils::hasLength)
             .map(e -> "")
@@ -348,7 +348,7 @@ class ApiResponseController {
     }
     List<ApiResponse> newApiResponses;
     try {
-      newApiResponses = jsonSupport.jsonToApiResponseList(file.getInputStream());
+      newApiResponses = jsonSupport.toApiResponseList(file.getInputStream());
     } catch (JsonParseException | JsonMappingException e) {
       log.warn(e.getMessage(), e);
       redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());

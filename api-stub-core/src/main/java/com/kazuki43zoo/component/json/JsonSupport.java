@@ -35,7 +35,7 @@ public class JsonSupport {
   private final ObjectMapper objectMapper;
 
   @SuppressWarnings("unchecked")
-  public <T> List<T> jsonToList(String json) {
+  public <T> List<T> toList(String json) {
     try {
       return (List<T>) objectMapper.readValue(json, List.class);
     } catch (IOException e) {
@@ -43,15 +43,15 @@ public class JsonSupport {
     }
   }
 
-  public String listToJson(List<?> list) throws JsonProcessingException {
+  public String toJson(List<?> list) throws JsonProcessingException {
     return objectMapper.writeValueAsString(list);
   }
 
-  public List<Api> jsonToApiList(InputStream json) throws IOException {
+  public List<Api> toApiList(InputStream json) throws IOException {
     return Arrays.asList(objectMapper.readValue(json, Api[].class));
   }
 
-  public List<ApiResponse> jsonToApiResponseList(InputStream json) throws IOException {
+  public List<ApiResponse> toApiResponseList(InputStream json) throws IOException {
     return Arrays.asList(objectMapper.readValue(json, ApiResponse[].class));
   }
 

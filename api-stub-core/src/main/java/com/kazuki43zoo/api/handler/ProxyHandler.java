@@ -78,7 +78,7 @@ public class ProxyHandler {
     Collections.list(request.getHeaderNames())
         .forEach(name -> requestBodyBuilder.header(name, Collections.list(request.getHeaders(name)).toArray(new String[0])));
 
-    evidence.info("Proxy to {}", url);
+    evidence.info("Proxy to {}", () -> evidence.toArray(url));
 
     final ResponseEntity<byte[]> proxyResponseEntity =
         restOperations.exchange(requestBodyBuilder.body(requestEntity.getBody()), byte[].class);
@@ -112,7 +112,7 @@ public class ProxyHandler {
     apiResponse.setDataKey(dataKey);
     apiResponse.setStatusCode(proxyResponseEntity.getStatusCodeValue());
     final StringJoiner headersJoiner = new StringJoiner(HEADER_SEPARATOR);
-    responseHeaders.entrySet().forEach(e -> e.getValue().forEach(value -> headersJoiner.add(e.getKey() + HEADER_KEY_VALUE_SEPARATOR + " " + value)));
+    responseHeaders.forEach((name, values) -> values.forEach(value -> headersJoiner.add(name + HEADER_KEY_VALUE_SEPARATOR + " " + value)));
     apiResponse.setHeader(headersJoiner.toString());
     apiResponse.setFileName(downloadSupport.extractDownloadFileName(responseHeaders));
     if (apiResponse.getFileName() != null) {
@@ -122,7 +122,7 @@ public class ProxyHandler {
     }
     apiResponseService.createProxyResponse(apiResponse);
 
-    evidence.info("Saved a proxy response into api_proxy_response. id = {}", apiResponse.getId());
+    evidence.info("Saved a proxy response into api_proxy_response. id = {}", () -> evidence.toArray(apiResponse.getId()));
 
   }
 

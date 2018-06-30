@@ -118,9 +118,8 @@ public class MockResponseHandler {
       statusCode = Optional.ofNullable(properties.getResponse().getHttpStatusForMockNotFound())
           .orElse(HttpStatus.OK).value();
     } else {
-      evidence.info("Mock Response is {}.", apiResponse.getId());
-      statusCode = Optional.ofNullable(apiResponse.getStatusCode())
-          .orElse(HttpStatus.OK.value());
+      evidence.info("Mock Response is {}.", () -> evidence.toArray(apiResponse.getId()));
+      statusCode = Optional.ofNullable(apiResponse.getStatusCode()).orElse(HttpStatus.OK.value());
     }
 
     final IWebContext templateContext = createTemplateWebContext(requestEntity, request, response);
@@ -157,7 +156,7 @@ public class MockResponseHandler {
 
     // Wait processing
     if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
-      evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
+      evidence.info("Waiting {} msec.", () -> evidence.toArray(apiResponse.getWaitingMsec()));
       try {
         TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
       } catch (InterruptedException e) {
@@ -218,10 +217,8 @@ public class MockResponseHandler {
           }
         });
 
-    final ConversionService conversionService = (ConversionService) request
-        .getAttribute(ConversionService.class.getName());
-    final ThymeleafEvaluationContext evaluationContext = new ThymeleafEvaluationContext(applicationContext,
-        conversionService);
+    ConversionService conversionService = (ConversionService) request.getAttribute(ConversionService.class.getName());
+    ThymeleafEvaluationContext evaluationContext = new ThymeleafEvaluationContext(applicationContext, conversionService);
     model.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
     return new WebExpressionContext(templateEngine.getConfiguration(), request, response,
