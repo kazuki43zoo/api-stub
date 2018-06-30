@@ -20,6 +20,7 @@ body {
 .has-error span {
     color: #a94442;
 }
+
 label.required:before {
     content: "※ ";
     color: #a94442;
