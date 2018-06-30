@@ -34,42 +34,42 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class DataKeySupport {
 
-    private final Map<String, KeyExtractor> keyExtractorMap;
-    private final ObjectMapper jsonObjectMapper;
+  private final Map<String, KeyExtractor> keyExtractorMap;
+  private final ObjectMapper jsonObjectMapper;
 
-    public String extractDataKey(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
-        if (api == null) {
-            return null;
-        }
-        KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
-        if (keyExtractor == null || api.getExpressions() == null || api.getKeyGeneratingStrategy() == null) {
-            return null;
-        }
-        String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
-                .filter(StringUtils::hasLength)
-                .toArray(String[]::new);
-        String key = null;
-        try {
-            List<Object> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
-            key = api.getKeyGeneratingStrategy().generate(keys);
-        } catch (Exception e) {
-            // ignore
-            if (log.isDebugEnabled()) {
-                log.debug(e.getMessage(), e);
-            }
-        }
-        return key;
+  public String extractDataKey(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
+    if (api == null) {
+      return null;
     }
+    KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
+    if (keyExtractor == null || api.getExpressions() == null || api.getKeyGeneratingStrategy() == null) {
+      return null;
+    }
+    String[] expressions = Stream.of(jsonObjectMapper.readValue(api.getExpressions(), String[].class))
+        .filter(StringUtils::hasLength)
+        .toArray(String[]::new);
+    String key = null;
+    try {
+      List<Object> keys = keyExtractor.extract(request, requestEntity.getBody(), expressions);
+      key = api.getKeyGeneratingStrategy().generate(keys);
+    } catch (Exception e) {
+      // ignore
+      if (log.isDebugEnabled()) {
+        log.debug(e.getMessage(), e);
+      }
+    }
+    return key;
+  }
 
-    public boolean isPathVariableDataKey(Api api) {
-        if (api == null) {
-            return false;
-        }
-        KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
-        if (keyExtractor == null) {
-            return false;
-        }
-        return PathVariableKeyExtractor.class == keyExtractor.getClass();
+  public boolean isPathVariableDataKey(Api api) {
+    if (api == null) {
+      return false;
     }
+    KeyExtractor keyExtractor = keyExtractorMap.get(api.getKeyExtractor());
+    if (keyExtractor == null) {
+      return false;
+    }
+    return PathVariableKeyExtractor.class == keyExtractor.getClass();
+  }
 
 }

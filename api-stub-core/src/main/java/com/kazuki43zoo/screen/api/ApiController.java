@@ -19,13 +19,13 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.kazuki43zoo.api.key.KeyExtractor;
+import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.component.json.JsonSupport;
 import com.kazuki43zoo.component.message.ErrorMessage;
 import com.kazuki43zoo.component.message.InfoMessage;
 import com.kazuki43zoo.component.message.MessageCode;
 import com.kazuki43zoo.component.message.SuccessMessage;
 import com.kazuki43zoo.component.pagination.Pagination;
-import com.kazuki43zoo.component.download.DownloadSupport;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.domain.service.ApiService;
@@ -74,185 +74,187 @@ import java.util.stream.Stream;
 @SessionAttributes(types = ApiSearchForm.class)
 @RequiredArgsConstructor
 public class ApiController {
-    private static final String COOKIE_NAME_PAGE_SIZE = "api.pageSize";
-    private static final CookieGenerator pageSizeCookieGenerator;
-    static {
-        pageSizeCookieGenerator = new CookieGenerator();
-        pageSizeCookieGenerator.setCookieName(COOKIE_NAME_PAGE_SIZE);
+  private static final String COOKIE_NAME_PAGE_SIZE = "api.pageSize";
+  private static final CookieGenerator pageSizeCookieGenerator;
+
+  static {
+    pageSizeCookieGenerator = new CookieGenerator();
+    pageSizeCookieGenerator.setCookieName(COOKIE_NAME_PAGE_SIZE);
+  }
+
+  private final ApiService service;
+  private final List<KeyExtractor> keyExtractors;
+  private final ImportSupport importSupport;
+  private final PaginationSupport paginationSupport;
+  private final DownloadSupport downloadSupport;
+  private final JsonSupport jsonSupport;
+
+  @ModelAttribute("apiSearchForm")
+  public ApiSearchForm setUpSearchForm() {
+    return new ApiSearchForm();
+  }
+
+  @ModelAttribute("keyExtractors")
+  public List<String> keyExtractors() {
+    return keyExtractors.stream()
+        .map(Conventions::getVariableName)
+        .collect(Collectors.toList());
+  }
+
+  @ModelAttribute("keyGeneratingStrategies")
+  public List<String> keyGeneratingStrategies() {
+    return Stream.of(KeyGeneratingStrategy.values())
+        .map(KeyGeneratingStrategy::name)
+        .collect(Collectors.toList());
+  }
+
+  @GetMapping
+  public String list(@Validated ApiSearchForm form, BindingResult result,
+                     Pageable pageable,
+                     @RequestParam(name = Pagination.PARAM_NAME_SIZE_IN_PAGE, defaultValue = "0") int paramPageSize,
+                     @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
+                     @RequestParam MultiValueMap<String, String> requestParams,
+                     Model model, HttpServletResponse response) {
+    int pageSize = paginationSupport.decidePageSize(pageable, paramPageSize, cookiePageSize);
+    paginationSupport.storePageSize(pageSize, model, response, pageSizeCookieGenerator);
+
+    if (result.hasErrors()) {
+      return "api/list";
     }
-    private final ApiService service;
-    private final List<KeyExtractor> keyExtractors;
-    private final ImportSupport importSupport;
-    private final PaginationSupport paginationSupport;
-    private final DownloadSupport downloadSupport;
-    private final JsonSupport jsonSupport;
+    Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
+        paginationSupport.decidePageable(pageable, pageSize));
+    if (!page.hasContent()) {
+      model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+    }
+    model.addAttribute(new Pagination(page, requestParams));
+    return "api/list";
+  }
 
-    @ModelAttribute("apiSearchForm")
-    public ApiSearchForm setUpSearchForm() {
-        return new ApiSearchForm();
+  @PostMapping(params = "delete")
+  public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
+    service.delete(ids);
+    redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+    return "redirect:/manager/apis";
+  }
+
+  @GetMapping(path = "create")
+  public String createForm(Model model) {
+    model.addAttribute(new ApiForm());
+    return "api/form";
+  }
+
+
+  @PostMapping(path = "create")
+  public String create(@Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    if (result.hasErrors()) {
+      return "api/form";
+    }
+    Api api = new Api();
+    BeanUtils.copyProperties(form, api);
+    BeanUtils.copyProperties(form.getProxy(), api.getProxy());
+    api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
+    try {
+      service.create(api);
+    } catch (DuplicateKeyException e) {
+      model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
+      return "api/form";
+    }
+    redirectAttributes.addAttribute("id", api.getId());
+    redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
+    return "redirect:/manager/apis/{id}";
+  }
+
+
+  @GetMapping(path = "{id}")
+  public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
+    Api api = service.findOne(id);
+    if (api == null) {
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
+      return "redirect:/manager/apis";
+    }
+    if (api.getKeyedResponseNumber() != 0) {
+      model.addAttribute(InfoMessage.builder().code(MessageCode.KEYED_RESPONSE_EXISTS).build());
+    }
+    ApiForm form = new ApiForm();
+    BeanUtils.copyProperties(api, form);
+    BeanUtils.copyProperties(api.getProxy(), form.getProxy());
+    form.setExpressions(jsonSupport.jsonToList(api.getExpressions()));
+    model.addAttribute(api);
+    model.addAttribute(form);
+    return "api/form";
+  }
+
+
+  @PostMapping(path = "{id}", params = "update")
+  public String edit(@PathVariable int id, @Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    if (result.hasErrors()) {
+      model.addAttribute(service.findOne(id));
+      return "api/form";
+    }
+    Api api = new Api();
+    BeanUtils.copyProperties(form, api);
+    BeanUtils.copyProperties(form.getProxy(), api.getProxy());
+    api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
+    service.update(id, api);
+    redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
+    return "redirect:/manager/apis/{id}";
+  }
+
+  @PostMapping(path = "{id}", params = "delete")
+  public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
+    service.delete(id);
+    redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
+    return "redirect:/manager/apis";
+  }
+
+  @PostMapping(params = "export")
+  public ResponseEntity<List<Api>> exportApis() throws UnsupportedEncodingException {
+    List<Api> apis = service.findAllForExport();
+    HttpHeaders headers = new HttpHeaders();
+    downloadSupport.addContentDisposition(headers, "exportApis.json");
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .contentType(MediaType.APPLICATION_JSON_UTF8)
+        .headers(headers)
+        .body(apis);
+  }
+
+  @PostMapping(params = "import")
+  public String importApis(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
+    if (!StringUtils.hasLength(file.getOriginalFilename())) {
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
+      return "redirect:/manager/apis";
+    }
+    if (file.getSize() == 0) {
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
+      return "redirect:/manager/apis";
+    }
+    List<Api> newApis;
+    try {
+      newApis = jsonSupport.jsonToApiList(file.getInputStream());
+    } catch (JsonParseException | JsonMappingException e) {
+      log.warn(e.getMessage(), e);
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());
+      return "redirect:/manager/apis";
+    }
+    if (newApis.isEmpty()) {
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_DATA_EMPTY).build());
+      return "redirect:/manager/apis";
     }
 
-    @ModelAttribute("keyExtractors")
-    public List<String> keyExtractors() {
-        return keyExtractors.stream()
-                .map(Conventions::getVariableName)
-                .collect(Collectors.toList());
-    }
-
-    @ModelAttribute("keyGeneratingStrategies")
-    public List<String> keyGeneratingStrategies() {
-        return Stream.of(KeyGeneratingStrategy.values())
-                .map(KeyGeneratingStrategy::name)
-                .collect(Collectors.toList());
-    }
-
-    @GetMapping
-    public String list(@Validated ApiSearchForm form, BindingResult result,
-                       Pageable pageable,
-                       @RequestParam(name = Pagination.PARAM_NAME_SIZE_IN_PAGE, defaultValue = "0") int paramPageSize,
-                       @CookieValue(name = COOKIE_NAME_PAGE_SIZE, defaultValue = "0") int cookiePageSize,
-                       @RequestParam MultiValueMap<String, String> requestParams,
-                       Model model, HttpServletResponse response) {
-        int pageSize = paginationSupport.decidePageSize(pageable, paramPageSize, cookiePageSize);
-        paginationSupport.storePageSize(pageSize, model, response, pageSizeCookieGenerator);
-
-        if (result.hasErrors()) {
-            return "api/list";
-        }
-        Page<Api> page = service.findAll(form.getPath(), form.getMethod(), form.getDescription(),
-                paginationSupport.decidePageable(pageable, pageSize));
-        if (!page.hasContent()) {
-            model.addAttribute(InfoMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
-        }
-        model.addAttribute(new Pagination(page, requestParams));
-        return "api/list";
-    }
-
-    @PostMapping(params = "delete")
-    public String delete(@RequestParam List<Integer> ids, RedirectAttributes redirectAttributes) {
-        service.delete(ids);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
-        return "redirect:/manager/apis";
-    }
-
-    @GetMapping(path = "create")
-    public String createForm(Model model) {
-        model.addAttribute(new ApiForm());
-        return "api/form";
-    }
-
-
-    @PostMapping(path = "create")
-    public String create(@Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
-        if (result.hasErrors()) {
-            return "api/form";
-        }
-        Api api = new Api();
-        BeanUtils.copyProperties(form, api);
-        BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-        api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
-        try {
-            service.create(api);
-        } catch (DuplicateKeyException e) {
-            model.addAttribute(ErrorMessage.builder().code(MessageCode.DATA_ALREADY_EXISTS).build());
-            return "api/form";
-        }
-        redirectAttributes.addAttribute("id", api.getId());
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_CREATED).build());
-        return "redirect:/manager/apis/{id}";
-    }
-
-
-    @GetMapping(path = "{id}")
-    public String editForm(@PathVariable int id, Model model, RedirectAttributes redirectAttributes) throws IOException {
-        Api api = service.findOne(id);
-        if (api == null) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.DATA_NOT_FOUND).build());
-            return "redirect:/manager/apis";
-        }
-        if (api.getKeyedResponseNumber() != 0) {
-            model.addAttribute(InfoMessage.builder().code(MessageCode.KEYED_RESPONSE_EXISTS).build());
-        }
-        ApiForm form = new ApiForm();
-        BeanUtils.copyProperties(api, form);
-        BeanUtils.copyProperties(api.getProxy(), form.getProxy());
-        form.setExpressions(jsonSupport.jsonToList(api.getExpressions()));
-        model.addAttribute(api);
-        model.addAttribute(form);
-        return "api/form";
-    }
-
-
-    @PostMapping(path = "{id}", params = "update")
-    public String edit(@PathVariable int id, @Validated ApiForm form, BindingResult result, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
-        if (result.hasErrors()) {
-            model.addAttribute(service.findOne(id));
-            return "api/form";
-        }
-        Api api = new Api();
-        BeanUtils.copyProperties(form, api);
-        BeanUtils.copyProperties(form.getProxy(), api.getProxy());
-        api.setExpressions(jsonSupport.listToJson(form.getExpressions()));
-        service.update(id, api);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_UPDATED).build());
-        return "redirect:/manager/apis/{id}";
-    }
-
-    @PostMapping(path = "{id}", params = "delete")
-    public String delete(@PathVariable int id, RedirectAttributes redirectAttributes) {
-        service.delete(id);
-        redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_DELETED).build());
-        return "redirect:/manager/apis";
-    }
-
-    @PostMapping(params = "export")
-    public ResponseEntity<List<Api>> exportApis() throws UnsupportedEncodingException {
-        List<Api> apis = service.findAllForExport();
-        HttpHeaders headers = new HttpHeaders();
-        downloadSupport.addContentDisposition(headers, "exportApis.json");
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .headers(headers)
-                .body(apis);
-    }
-
-    @PostMapping(params = "import")
-    public String importApis(@RequestParam MultipartFile file, @RequestParam(defaultValue = "false") boolean override, RedirectAttributes redirectAttributes) throws IOException {
-        if (!StringUtils.hasLength(file.getOriginalFilename())) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_NOT_SELECTED).build());
-            return "redirect:/manager/apis";
-        }
-        if (file.getSize() == 0) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_FILE_EMPTY).build());
-            return "redirect:/manager/apis";
-        }
-        List<Api> newApis;
-        try {
-            newApis = jsonSupport.jsonToApiList(file.getInputStream());
-        } catch (JsonParseException | JsonMappingException e) {
-            log.warn(e.getMessage(), e);
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.INVALID_JSON).build());
-            return "redirect:/manager/apis";
-        }
-        if (newApis.isEmpty()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.IMPORT_DATA_EMPTY).build());
-            return "redirect:/manager/apis";
-        }
-
-        List<Api> ignoredApis = new ArrayList<>();
-        newApis.forEach(newApi -> {
-            Integer id = service.findIdByUk(newApi.getPath(), newApi.getMethod());
-            if (id == null) {
-                service.create(newApi);
-            } else if (override) {
-                service.update(id, newApi);
-            } else {
-                ignoredApis.add(newApi);
-            }
-        });
-        importSupport.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);
-        return "redirect:/manager/apis";
-    }
+    List<Api> ignoredApis = new ArrayList<>();
+    newApis.forEach(newApi -> {
+      Integer id = service.findIdByUk(newApi.getPath(), newApi.getMethod());
+      if (id == null) {
+        service.create(newApi);
+      } else if (override) {
+        service.update(id, newApi);
+      } else {
+        ignoredApis.add(newApi);
+      }
+    });
+    importSupport.storeProcessingResultMessages(redirectAttributes, newApis, ignoredApis);
+    return "redirect:/manager/apis";
+  }
 
 }

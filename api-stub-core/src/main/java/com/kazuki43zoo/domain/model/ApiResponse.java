@@ -36,60 +36,60 @@ import java.time.LocalDateTime;
 
 @Data
 public class ApiResponse implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private int id;
-    private int subId;
-    private String path;
-    private String method;
-    private String dataKey;
-    private Integer statusCode;
-    private String header;
-    @JsonDeserialize(using = TextJsonDeserializer.class)
-    @JsonSerialize(using = TextJsonSerializer.class)
-    private transient InputStream body;
-    private String bodyEditorMode;
-    @JsonDeserialize(using = Base64JsonDeserializer.class)
-    @JsonSerialize(using = Base64JsonSerializer.class)
-    private transient InputStream attachmentFile;
-    private String fileName;
-    private Long waitingMsec;
-    private String description;
-    @JsonIgnore
-    private LocalDateTime createdAt;
-    @JsonIgnore
-    private int historyNumber;
+  private static final long serialVersionUID = 1L;
+  private int id;
+  private int subId;
+  private String path;
+  private String method;
+  private String dataKey;
+  private Integer statusCode;
+  private String header;
+  @JsonDeserialize(using = TextJsonDeserializer.class)
+  @JsonSerialize(using = TextJsonSerializer.class)
+  private transient InputStream body;
+  private String bodyEditorMode;
+  @JsonDeserialize(using = Base64JsonDeserializer.class)
+  @JsonSerialize(using = Base64JsonSerializer.class)
+  private transient InputStream attachmentFile;
+  private String fileName;
+  private Long waitingMsec;
+  private String description;
+  @JsonIgnore
+  private LocalDateTime createdAt;
+  @JsonIgnore
+  private int historyNumber;
 
-    private static class Base64JsonSerializer extends JsonSerializer<InputStream> {
-        @Override
-        public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeBinary(StreamUtils.copyToByteArray(value));
-        }
+  private static class Base64JsonSerializer extends JsonSerializer<InputStream> {
+    @Override
+    public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+      gen.writeBinary(StreamUtils.copyToByteArray(value));
     }
+  }
 
-    private static class Base64JsonDeserializer extends JsonDeserializer<InputStream> {
-        @Override
-        public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return new ByteArrayInputStream(p.getBinaryValue());
-        }
+  private static class Base64JsonDeserializer extends JsonDeserializer<InputStream> {
+    @Override
+    public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+      return new ByteArrayInputStream(p.getBinaryValue());
     }
+  }
 
-    private static class TextJsonSerializer extends JsonSerializer<InputStream> {
-        @Override
-        public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            gen.writeString(StreamUtils.copyToString(value, StandardCharsets.UTF_8));
-        }
+  private static class TextJsonSerializer extends JsonSerializer<InputStream> {
+    @Override
+    public void serialize(InputStream value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+      gen.writeString(StreamUtils.copyToString(value, StandardCharsets.UTF_8));
     }
+  }
 
-    private static class TextJsonDeserializer extends JsonDeserializer<InputStream> {
-        @Override
-        public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            String value = p.getValueAsString();
-            if (value != null) {
-                return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
-            } else {
-                return null;
-            }
-        }
+  private static class TextJsonDeserializer extends JsonDeserializer<InputStream> {
+    @Override
+    public InputStream deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+      String value = p.getValueAsString();
+      if (value != null) {
+        return new ByteArrayInputStream(value.getBytes(StandardCharsets.UTF_8));
+      } else {
+        return null;
+      }
     }
+  }
 
 }

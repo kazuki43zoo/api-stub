@@ -35,16 +35,16 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @ReportAsSingleViolation
 public @interface HttpMethod {
 
-    String message() default "{com.kazuki43zoo.component.validation.HttpMethod.message}";
+  String message() default "{com.kazuki43zoo.component.validation.HttpMethod.message}";
 
-    Class<?>[] groups() default {};
+  Class<?>[] groups() default {};
 
-    Class<? extends Payload>[] payload() default {};
+  Class<? extends Payload>[] payload() default {};
 
-    @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
-    @Retention(RUNTIME)
-    @Documented
-    @interface List {
-        HttpMethod[] value();
-    }
+  @Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
+  @Retention(RUNTIME)
+  @Documented
+  @interface List {
+    HttpMethod[] value();
+  }
 }

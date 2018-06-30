@@ -73,192 +73,195 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 public class MockResponseHandler {
 
-    private static final String HEADER_SEPARATOR = "\r\n";
-    private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
+  private static final String HEADER_SEPARATOR = "\r\n";
+  private static final String HEADER_KEY_VALUE_SEPARATOR = ":";
 
-    private final ApplicationContext applicationContext;
-    private final ApiResponseService apiResponseService;
-    private final DownloadSupport downloadSupport;
-    private final ApiStubProperties properties;
-    private final Set<IDialect> dialects;
-    private ITemplateEngine templateEngine;
+  private final ApplicationContext applicationContext;
+  private final ApiResponseService apiResponseService;
+  private final DownloadSupport downloadSupport;
+  private final ApiStubProperties properties;
+  private final Set<IDialect> dialects;
+  private ITemplateEngine templateEngine;
 
 
-    @PostConstruct
-    public void setupTemplateEngine() {
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.setMessageSource(applicationContext);
-        StringTemplateResolver templateResolver = new StringTemplateResolver();
-        templateResolver.setTemplateMode(properties.getResponse().getTemplate().getMode());
-        templateEngine.addTemplateResolver(templateResolver);
-        templateEngine.setAdditionalDialects(dialects);
-        templateEngine.setEnableSpringELCompiler(properties.getResponse().getTemplate().isEnabledSpelCompiler());
-        this.templateEngine = templateEngine;
+  @PostConstruct
+  public void setupTemplateEngine() {
+    SpringTemplateEngine templateEngine = new SpringTemplateEngine();
+    templateEngine.setMessageSource(applicationContext);
+    StringTemplateResolver templateResolver = new StringTemplateResolver();
+    templateResolver.setTemplateMode(properties.getResponse().getTemplate().getMode());
+    templateEngine.addTemplateResolver(templateResolver);
+    templateEngine.setAdditionalDialects(dialects);
+    templateEngine.setEnableSpringELCompiler(properties.getResponse().getTemplate().isEnabledSpelCompiler());
+    this.templateEngine = templateEngine;
+  }
+
+  public ResponseEntity<Resource> perform(
+      String path,
+      String method,
+      String dataKey,
+      RequestEntity<byte[]> requestEntity,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      Api api,
+      ApiEvidence evidence) throws UnsupportedEncodingException {
+
+    final ApiResponse apiResponse = apiResponseService.findOne(
+        path, Optional.ofNullable(api).map(Api::getPath).orElse(null), method, dataKey);
+
+    final Integer statusCode;
+    if (apiResponse.getId() == 0) {
+      evidence.warn("Mock Response is not found.");
+      statusCode = Optional.ofNullable(properties.getResponse().getHttpStatusForMockNotFound())
+          .orElse(HttpStatus.OK).value();
+    } else {
+      evidence.info("Mock Response is {}.", apiResponse.getId());
+      statusCode = Optional.ofNullable(apiResponse.getStatusCode())
+          .orElse(HttpStatus.OK.value());
     }
 
-    public ResponseEntity<Resource> perform(
-            String path,
-            String method,
-            String dataKey,
-            RequestEntity<byte[]> requestEntity,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Api api,
-            ApiEvidence evidence) throws UnsupportedEncodingException {
+    final IWebContext templateContext = createTemplateWebContext(requestEntity, request, response);
 
-        final ApiResponse apiResponse = apiResponseService.findOne(
-            path, Optional.ofNullable(api).map(Api::getPath).orElse(null), method, dataKey);
+    // Response Headers
+    final HttpHeaders responseHeaders = new HttpHeaders();
+    if (StringUtils.hasLength(apiResponse.getHeader())) {
+      String header = processTemplate(apiResponse.getHeader(), templateContext, responseHeaders, evidence);
+      Stream.of(header.split(HEADER_SEPARATOR)).filter(e -> e.contains(HEADER_KEY_VALUE_SEPARATOR)).forEach(e -> {
+        String[] headerElements = e.split(HEADER_KEY_VALUE_SEPARATOR);
+        responseHeaders.add(headerElements[0].trim(), headerElements[1].trim());
+      });
+    }
+    if (StringUtils.hasLength(apiResponse.getFileName())) {
+      if (!responseHeaders.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
+        downloadSupport.addContentDisposition(responseHeaders, apiResponse.getFileName());
+      }
+      if (!responseHeaders.containsKey(HttpHeaders.CONTENT_TYPE)) {
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+      }
+    }
+    responseHeaders.add(properties.getCorrelationIdKey(), evidence.getCorrelationId());
 
-        final Integer statusCode;
-        if (apiResponse.getId() == 0) {
-            evidence.warn("Mock Response is not found.");
-            statusCode = Optional.ofNullable(properties.getResponse().getHttpStatusForMockNotFound())
-                        .orElse(HttpStatus.OK).value();
-        } else {
-            evidence.info("Mock Response is {}.", apiResponse.getId());
-            statusCode = Optional.ofNullable(apiResponse.getStatusCode())
-                         .orElse(HttpStatus.OK.value());
-        }
+    // Response Body
+    final InputStreamResource responseBody = Optional.ofNullable(apiResponse.getBody())
+        .map(body -> {
+          Charset responseCharset = Optional.ofNullable(responseHeaders.getContentType())
+              .map(MediaType::getCharset).orElse(StandardCharsets.UTF_8);
+          return processTemplate(body, responseCharset, templateContext, responseHeaders, evidence);
+        })
+        .orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
+            .map(InputStreamResource::new)
+            .orElse(null));
 
-        final IWebContext templateContext = createTemplateWebContext(requestEntity, request, response);
-
-        // Response Headers
-        final HttpHeaders responseHeaders = new HttpHeaders();
-        if (StringUtils.hasLength(apiResponse.getHeader())) {
-            String header = processTemplate(apiResponse.getHeader(), templateContext, responseHeaders, evidence);
-            Stream.of(header.split(HEADER_SEPARATOR)).filter(e -> e.contains(HEADER_KEY_VALUE_SEPARATOR)).forEach(e -> {
-                String[] headerElements = e.split(HEADER_KEY_VALUE_SEPARATOR);
-                responseHeaders.add(headerElements[0].trim(), headerElements[1].trim());
-            });
-        }
-        if (StringUtils.hasLength(apiResponse.getFileName())) {
-            if (!responseHeaders.containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
-                downloadSupport.addContentDisposition(responseHeaders, apiResponse.getFileName());
-            }
-            if (!responseHeaders.containsKey(HttpHeaders.CONTENT_TYPE)) {
-                responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            }
-        }
-        responseHeaders.add(properties.getCorrelationIdKey(), evidence.getCorrelationId());
-
-        // Response Body
-        final InputStreamResource responseBody = Optional.ofNullable(apiResponse.getBody())
-                .map(body -> {
-                    Charset responseCharset = Optional.ofNullable(responseHeaders.getContentType())
-                            .map(MediaType::getCharset).orElse(StandardCharsets.UTF_8);
-                    return processTemplate(body, responseCharset, templateContext, responseHeaders, evidence);
-                })
-                .orElse(Optional.ofNullable(apiResponse.getAttachmentFile())
-                        .map(InputStreamResource::new)
-                        .orElse(null));
-
-        // Wait processing
-        if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
-            evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
-            try {
-                TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        return ResponseEntity.status(statusCode)
-                .headers(responseHeaders)
-                .body(responseBody);
+    // Wait processing
+    if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
+      evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
+      try {
+        TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
     }
 
-    private InputStreamResource processTemplate(InputStream body, Charset responseCharset, IWebContext context, HttpHeaders responseHeaders, ApiEvidence evidence) {
+    return ResponseEntity.status(statusCode)
+        .headers(responseHeaders)
+        .body(responseBody);
+  }
 
-        if (properties.getResponse().getTemplate().isDisabled()) {
-            return new InputStreamResource(body);
-        }
+  private InputStreamResource processTemplate(InputStream body, Charset responseCharset, IWebContext context, HttpHeaders responseHeaders, ApiEvidence evidence) {
 
-        String template;
-        try {
-            template = StreamUtils.copyToString(body, responseCharset);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
-        String result = processTemplate(template, context, responseHeaders, evidence);
-        return new InputStreamResource(new ByteArrayInputStream(result.getBytes(responseCharset)));
+    if (properties.getResponse().getTemplate().isDisabled()) {
+      return new InputStreamResource(body);
     }
 
-    private String processTemplate(String template, IWebContext templateContext, HttpHeaders responseHeaders, ApiEvidence evidence) {
-        String result;
-        try {
-            result = templateEngine.process(template, templateContext);
-        } catch (Exception e) {
-            evidence.error("Return the template body(original body) because template is wrong. template = \r\n" + template , e);
-            responseHeaders.add("x-error-code", "template_parsing_error");
-            result = template;
-        }
-        return result;
+    String template;
+    try {
+      template = StreamUtils.copyToString(body, responseCharset);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
 
-    private IWebContext createTemplateWebContext(RequestEntity<byte[]> requestEntity, HttpServletRequest request, HttpServletResponse response) {
-        ModelMap model = new ModelMap();
-        model.addAttribute(requestEntity);
-        Optional.ofNullable(requestEntity.getHeaders().getContentType())
-                .map(MediaType::toString).map(String::toLowerCase)
-                .ifPresent(contentType -> {
-                    if (contentType.contains("json")) {
-                        model.addAttribute(new RequestJson(requestEntity.getBody()));
-                    } else if (contentType.contains("xml")){
-                        model.addAttribute(new RequestXml(requestEntity.getBody()));
-                    }
-                });
+    String result = processTemplate(template, context, responseHeaders, evidence);
+    return new InputStreamResource(new ByteArrayInputStream(result.getBytes(responseCharset)));
+  }
 
-        final ConversionService conversionService = (ConversionService) request
-                .getAttribute(ConversionService.class.getName());
-        final ThymeleafEvaluationContext evaluationContext = new ThymeleafEvaluationContext(applicationContext,
-                conversionService);
-        model.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+  private String processTemplate(String template, IWebContext templateContext, HttpHeaders responseHeaders, ApiEvidence evidence) {
+    String result;
+    try {
+      result = templateEngine.process(template, templateContext);
+    } catch (Exception e) {
+      evidence.error("Return the template body(original body) because template is wrong. template = \r\n" + template, e);
+      responseHeaders.add("x-error-code", "template_parsing_error");
+      result = template;
+    }
+    return result;
+  }
 
-        return new WebExpressionContext(templateEngine.getConfiguration(), request, response,
-                request.getServletContext(), request.getLocale(), model);
+  private IWebContext createTemplateWebContext(RequestEntity<byte[]> requestEntity, HttpServletRequest request, HttpServletResponse response) {
+    ModelMap model = new ModelMap();
+    model.addAttribute(requestEntity);
+    Optional.ofNullable(requestEntity.getHeaders().getContentType())
+        .map(MediaType::toString).map(String::toLowerCase)
+        .ifPresent(contentType -> {
+          if (contentType.contains("json")) {
+            model.addAttribute(new RequestJson(requestEntity.getBody()));
+          } else if (contentType.contains("xml")) {
+            model.addAttribute(new RequestXml(requestEntity.getBody()));
+          }
+        });
+
+    final ConversionService conversionService = (ConversionService) request
+        .getAttribute(ConversionService.class.getName());
+    final ThymeleafEvaluationContext evaluationContext = new ThymeleafEvaluationContext(applicationContext,
+        conversionService);
+    model.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+
+    return new WebExpressionContext(templateEngine.getConfiguration(), request, response,
+        request.getServletContext(), request.getLocale(), model);
+  }
+
+
+  public static class RequestJson {
+    private final Supplier<DocumentContext> documentContextSupplier;
+    private DocumentContext documentContext;
+
+    RequestJson(byte[] body) {
+      this.documentContextSupplier = () -> {
+        if (documentContext == null) {
+          this.documentContext = JsonPath.parse(new ByteArrayInputStream(body));
+        }
+        return documentContext;
+      };
     }
 
+    public Object read(String expression) {
+      return documentContextSupplier.get().read(expression);
+    }
+  }
 
+  public static class RequestXml {
+    private final XPath xpath;
+    private final Supplier<Document> documentSupplier;
+    private Document document;
 
-    public static class RequestJson {
-        private final Supplier<DocumentContext> documentContextSupplier;
-        private DocumentContext documentContext;
-        RequestJson(byte[] body) {
-            this.documentContextSupplier = () -> {
-                if (documentContext == null) {
-                    this.documentContext = JsonPath.parse(new ByteArrayInputStream(body));
-                }
-                return documentContext;
-            };
+    RequestXml(byte[] body) {
+      this.xpath = XPathFactory.newInstance().newXPath();
+      this.documentSupplier = () -> {
+        if (document == null) {
+          try {
+            this.document = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder().parse(new ByteArrayInputStream(body));
+          } catch (SAXException | IOException | ParserConfigurationException e) {
+            throw new IllegalStateException(e);
+          }
         }
-        public Object read(String expression) {
-            return documentContextSupplier.get().read(expression);
-        }
+        return document;
+      };
     }
 
-    public static class RequestXml {
-        private final XPath xpath;
-        private final Supplier<Document> documentSupplier;
-        private Document document;
-        RequestXml(byte[] body) {
-            this.xpath = XPathFactory.newInstance().newXPath();
-            this.documentSupplier = () -> {
-                if (document == null) {
-                    try {
-                        this.document = DocumentBuilderFactory.newInstance()
-                                .newDocumentBuilder().parse(new ByteArrayInputStream(body));
-                    } catch (SAXException | IOException | ParserConfigurationException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-                return document;
-            };
-        }
-        public Object read(String expression) throws XPathExpressionException {
-            XPathExpression xPathExpression = xpath.compile(expression);
-            return xPathExpression.evaluate(documentSupplier.get());
-        }
+    public Object read(String expression) throws XPathExpressionException {
+      XPathExpression xPathExpression = xpath.compile(expression);
+      return xPathExpression.evaluate(documentSupplier.get());
     }
+  }
 
 }

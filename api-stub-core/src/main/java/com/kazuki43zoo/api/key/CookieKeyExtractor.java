@@ -29,15 +29,15 @@ import java.util.stream.Stream;
 @Component
 @Order(7)
 public class CookieKeyExtractor implements KeyExtractor {
-    @Override
-    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        if (request.getCookies() == null || expressions.length == 0) {
-            return Collections.emptyList();
-        }
-
-        Map<String, String> cookieMap = Stream.of(request.getCookies())
-                .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
-        return Stream.of(expressions).map(cookieMap::get)
-                .collect(Collectors.toList());
+  @Override
+  public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    if (request.getCookies() == null || expressions.length == 0) {
+      return Collections.emptyList();
     }
+
+    Map<String, String> cookieMap = Stream.of(request.getCookies())
+        .collect(Collectors.toMap(Cookie::getName, Cookie::getValue));
+    return Stream.of(expressions).map(cookieMap::get)
+        .collect(Collectors.toList());
+  }
 }

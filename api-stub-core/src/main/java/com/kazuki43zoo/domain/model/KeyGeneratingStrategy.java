@@ -23,29 +23,29 @@ import java.util.stream.Collectors;
 
 public enum KeyGeneratingStrategy {
 
-    ALL {
-        @Override
+  ALL {
+    @Override
 
-        public String generate(List<Object> keys) {
-            if (keys == null || keys.isEmpty()) {
-                return null;
-            }
-            return join(keys);
-        }
-    };
-
-    public static final String KEY_DELIMITER = "/";
-
-    public abstract String generate(List<Object> values);
-
-    public static List<String> split(String keys) {
-        return Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(keys, KEY_DELIMITER));
+    public String generate(List<Object> keys) {
+      if (keys == null || keys.isEmpty()) {
+        return null;
+      }
+      return join(keys);
     }
+  };
 
-    public static <T> String join(List<T> keys) {
-        return keys.stream()
-                .map(e -> e == null ? "" : e.toString())
-                .collect(Collectors.joining(KEY_DELIMITER));
-    }
+  public static final String KEY_DELIMITER = "/";
+
+  public static List<String> split(String keys) {
+    return Arrays.asList(StringUtils.splitByWholeSeparatorPreserveAllTokens(keys, KEY_DELIMITER));
+  }
+
+  public static <T> String join(List<T> keys) {
+    return keys.stream()
+        .map(e -> e == null ? "" : e.toString())
+        .collect(Collectors.joining(KEY_DELIMITER));
+  }
+
+  public abstract String generate(List<Object> values);
 
 }

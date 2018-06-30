@@ -27,15 +27,15 @@ import java.util.List;
 @Component
 public class ImportSupport {
 
-    public void storeProcessingResultMessages(RedirectAttributes redirectAttributes, List<?> newList, List<?> ignoredList) {
-        if (newList.size() == ignoredList.size()) {
-            redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
-        } else {
-            redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
-            if (!ignoredList.isEmpty()) {
-                redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
-            }
-        }
+  public void storeProcessingResultMessages(RedirectAttributes redirectAttributes, List<?> newList, List<?> ignoredList) {
+    if (newList.size() == ignoredList.size()) {
+      redirectAttributes.addFlashAttribute(ErrorMessage.builder().code(MessageCode.ALL_DATA_HAS_NOT_BEEN_IMPORTED).build());
+    } else {
+      redirectAttributes.addFlashAttribute(SuccessMessage.builder().code(MessageCode.DATA_HAS_BEEN_IMPORTED).build());
+      if (!ignoredList.isEmpty()) {
+        redirectAttributes.addFlashAttribute(InfoMessage.builder().code(MessageCode.PARTIALLY_DATA_HAS_NOT_BEEN_IMPORTED).build());
+      }
     }
+  }
 
 }

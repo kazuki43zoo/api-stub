@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
-
 import org.springframework.web.util.CookieGenerator;
 
 import javax.servlet.http.HttpServletResponse;
@@ -28,21 +27,21 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class PaginationSupport {
 
-    public int decidePageSize(Pageable pageable, int paramPageSize, int cookiePageSize) {
-        int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
-        return pageSize > 0 ? pageSize : pageable.getPageSize();
-    }
+  public int decidePageSize(Pageable pageable, int paramPageSize, int cookiePageSize) {
+    int pageSize = paramPageSize > 0 ? paramPageSize : cookiePageSize;
+    return pageSize > 0 ? pageSize : pageable.getPageSize();
+  }
 
-    public void storePageSize(int pageSize, Model model, HttpServletResponse response, CookieGenerator generator) {
-        generator.addCookie(response, String.valueOf(pageSize));
-        model.addAttribute(Pagination.ATTR_NAME_SIZE_IN_PAGE, pageSize);
-    }
+  public void storePageSize(int pageSize, Model model, HttpServletResponse response, CookieGenerator generator) {
+    generator.addCookie(response, String.valueOf(pageSize));
+    model.addAttribute(Pagination.ATTR_NAME_SIZE_IN_PAGE, pageSize);
+  }
 
-    public Pageable decidePageable(Pageable pageable, int pageSize) {
-        if (pageable.getPageSize() == pageSize) {
-            return pageable;
-        }
-        return PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
+  public Pageable decidePageable(Pageable pageable, int pageSize) {
+    if (pageable.getPageSize() == pageSize) {
+      return pageable;
     }
+    return PageRequest.of(pageable.getPageNumber(), pageSize, pageable.getSort());
+  }
 
 }

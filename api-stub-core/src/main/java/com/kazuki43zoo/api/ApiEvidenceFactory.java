@@ -33,20 +33,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApiEvidenceFactory {
 
-    private final ApiStubProperties properties;
-    private final ContentNegotiationManager contentNegotiationManager;
-    private final DataKeySupport dataKeySupport;
+  private final ApiStubProperties properties;
+  private final ContentNegotiationManager contentNegotiationManager;
+  private final DataKeySupport dataKeySupport;
 
-    public ApiEvidence create(HttpServletRequest request, String method, String path, String dataKey, String correlationId, Api api) {
+  public ApiEvidence create(HttpServletRequest request, String method, String path, String dataKey, String correlationId, Api api) {
 
-        final String contentExtension = Optional.ofNullable(request.getContentType())
-            .map(MediaType::parseMediaType)
-            .map(contentNegotiationManager::resolveFileExtensions)
-            .orElseGet(ArrayList::new).stream()
-            .findFirst()
-            .orElse("txt");
+    final String contentExtension = Optional.ofNullable(request.getContentType())
+        .map(MediaType::parseMediaType)
+        .map(contentNegotiationManager::resolveFileExtensions)
+        .orElseGet(ArrayList::new).stream()
+        .findFirst()
+        .orElse("txt");
 
-        return new ApiEvidence(properties, dataKeySupport, method, path, dataKey, correlationId, contentExtension, api);
-    }
+    return new ApiEvidence(properties, dataKeySupport, method, path, dataKey, correlationId, contentExtension, api);
+  }
 
 }

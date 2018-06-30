@@ -26,24 +26,24 @@ import java.util.List;
 
 @Data
 class ApiResponseForm implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @NotEmpty
-    @Size(max = 256)
-    private String path;
-    @NotEmpty
-    @HttpMethod
-    private String method;
-    private List<@Size(max = 350) String> dataKeys = new ArrayList<>();
-    @NotNull
-    @Min(0)
-    @Max(999)
-    private Integer statusCode = 200;
-    private String header = "Content-Type: application/json";
-    private String body;
-    private String bodyEditorMode;
-    private transient MultipartFile file;
-    private boolean deleteFile;
-    private Long waitingMsec;
-    private String description;
-    private boolean saveHistory;
+  private static final long serialVersionUID = 1L;
+  @NotEmpty
+  @Size(max = 256)
+  private String path;
+  @NotEmpty
+  @HttpMethod
+  private String method;
+  private List<@Size(max = 350) String> dataKeys = new ArrayList<>();
+  @NotNull
+  @Min(0)
+  @Max(999)
+  private Integer statusCode = 200;
+  private String header = "Content-Type: application/json";
+  private String body;
+  private String bodyEditorMode;
+  private transient MultipartFile file;
+  private boolean deleteFile;
+  private Long waitingMsec;
+  private String description;
+  private boolean saveHistory;
 }

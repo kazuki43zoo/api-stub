@@ -21,8 +21,8 @@ import java.io.Serializable;
 
 @Data
 public class ApiProxy implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private Boolean enabled;
-    private String url;
-    private Boolean capturing;
+  private static final long serialVersionUID = 1L;
+  private Boolean enabled;
+  private String url;
+  private Boolean capturing;
 }

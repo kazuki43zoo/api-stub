@@ -36,69 +36,69 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ApiService {
-    private static final Pageable pageableForExport = PageRequest.of(0, Integer.MAX_VALUE);
-    private final ApiRepository repository;
-    private final ApiStubProperties properties;
-    private final PathMatcher pathMatcher;
+  private static final Pageable pageableForExport = PageRequest.of(0, Integer.MAX_VALUE);
+  private final ApiRepository repository;
+  private final ApiStubProperties properties;
+  private final PathMatcher pathMatcher;
 
-    public Api findOne(String path, String method) {
-        Api api = repository.findOneByUk(path, method);
-        if (api == null) {
-            api = repository.findAllByMethod(method).stream()
-                .filter(e -> pathMatcher.match(e.getPath(), path))
-                .findFirst()
-                .map(e -> repository.findOne(e.getId()))
-                .orElse(null);
-        }
-        return api;
+  public Api findOne(String path, String method) {
+    Api api = repository.findOneByUk(path, method);
+    if (api == null) {
+      api = repository.findAllByMethod(method).stream()
+          .filter(e -> pathMatcher.match(e.getPath(), path))
+          .findFirst()
+          .map(e -> repository.findOne(e.getId()))
+          .orElse(null);
     }
+    return api;
+  }
 
-    public Integer findIdByUk(String path, String method) {
-        return repository.findIdByUk(path, method);
-    }
+  public Integer findIdByUk(String path, String method) {
+    return repository.findIdByUk(path, method);
+  }
 
-    public Api findOne(int id) {
-        return repository.findOne(id);
-    }
+  public Api findOne(int id) {
+    return repository.findOne(id);
+  }
 
-    public Page<Api> findAll(String path, String method, String description, Pageable pageable) {
-        long count = repository.count(path, method, description);
-        List<Api> content;
-        if (count != 0) {
-            content = repository.findPage(path, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
-        } else {
-            content = Collections.emptyList();
-        }
-        return new PageImpl<>(content, pageable, count);
+  public Page<Api> findAll(String path, String method, String description, Pageable pageable) {
+    long count = repository.count(path, method, description);
+    List<Api> content;
+    if (count != 0) {
+      content = repository.findPage(path, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
+    } else {
+      content = Collections.emptyList();
     }
+    return new PageImpl<>(content, pageable, count);
+  }
 
-    public void create(Api newApi) {
-        newApi.setPath(newApi.getPath().replace(properties.getRootPath(), ""));
-        repository.create(newApi);
-        repository.createProxy(newApi);
-    }
+  public void create(Api newApi) {
+    newApi.setPath(newApi.getPath().replace(properties.getRootPath(), ""));
+    repository.create(newApi);
+    repository.createProxy(newApi);
+  }
 
-    public void update(int id, Api newApi) {
-        newApi.setId(id);
-        repository.update(newApi);
-        if (!repository.updateProxy(newApi)) {
-            repository.createProxy(newApi);
-        }
+  public void update(int id, Api newApi) {
+    newApi.setId(id);
+    repository.update(newApi);
+    if (!repository.updateProxy(newApi)) {
+      repository.createProxy(newApi);
     }
+  }
 
-    public void delete(List<Integer> ids) {
-        ids.forEach(this::delete);
-    }
+  public void delete(List<Integer> ids) {
+    ids.forEach(this::delete);
+  }
 
-    public void delete(int id) {
-        repository.delete(id);
-        repository.deleteProxy(id);
-    }
+  public void delete(int id) {
+    repository.delete(id);
+    repository.deleteProxy(id);
+  }
 
-    public List<Api> findAllForExport() {
-        return findAll(null, null, null, pageableForExport).getContent().stream()
-                .map(api -> repository.findOne(api.getId()))
-                .collect(Collectors.toList());
-    }
+  public List<Api> findAllForExport() {
+    return findAll(null, null, null, pageableForExport).getContent().stream()
+        .map(api -> repository.findOne(api.getId()))
+        .collect(Collectors.toList());
+  }
 
 }

@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class MessageArgs {
-    static final MessageArgs EMPTY = create();
-    private final Object[] values;
-    public static MessageArgs create(Object... values){
-        return new MessageArgs(values);
-    }
+  static final MessageArgs EMPTY = create();
+  private final Object[] values;
+
+  public static MessageArgs create(Object... values) {
+    return new MessageArgs(values);
+  }
 }

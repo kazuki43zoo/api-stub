@@ -39,123 +39,123 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApiResponseService {
 
-    private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+}");
+  private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+}");
 
-    private final ApiResponseRepository repository;
-    private final ApiStubProperties properties;
+  private final ApiResponseRepository repository;
+  private final ApiStubProperties properties;
 
-    public ApiResponse findOne(String path, String apiPath, String method, String dataKey) {
-        ApiResponse mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, dataKey))
-            .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, dataKey) : null);
-        if (mockResponse == null && StringUtils.hasLength(dataKey)) {
-            String defaultDataKey = KeyGeneratingStrategy.split(dataKey).stream()
-                    .map(e -> "")
-                    .collect(Collectors.joining(KeyGeneratingStrategy.KEY_DELIMITER));
-            mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, defaultDataKey))
-                    .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, defaultDataKey) : null);
-        }
-        if (mockResponse == null) {
-            mockResponse = new ApiResponse();
-            mockResponse.setPath(path);
-            mockResponse.setMethod(method);
-        }
-        return mockResponse;
+  public ApiResponse findOne(String path, String apiPath, String method, String dataKey) {
+    ApiResponse mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, dataKey))
+        .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, dataKey) : null);
+    if (mockResponse == null && StringUtils.hasLength(dataKey)) {
+      String defaultDataKey = KeyGeneratingStrategy.split(dataKey).stream()
+          .map(e -> "")
+          .collect(Collectors.joining(KeyGeneratingStrategy.KEY_DELIMITER));
+      mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, defaultDataKey))
+          .orElseGet(() -> apiPath != null ? repository.findOneByUk(apiPath, method, defaultDataKey) : null);
     }
-
-    public ApiResponse findOne(int id) {
-        return repository.findOne(id);
+    if (mockResponse == null) {
+      mockResponse = new ApiResponse();
+      mockResponse.setPath(path);
+      mockResponse.setMethod(method);
     }
+    return mockResponse;
+  }
 
-    public Integer findIdByUk(String path, String method, String dataKey) {
-        return repository.findIdByUk(path, method, dataKey);
-    }
+  public ApiResponse findOne(int id) {
+    return repository.findOne(id);
+  }
 
-    public Page<ApiResponse> findPage(String path, String method, String description, Pageable pageable) {
-        String searchingPath = Optional.ofNullable(path)
-            .map(e -> PATH_VARIABLE_PATTERN.matcher(e).replaceAll(".+"))
-            .orElse(null);
-        long count = repository.count(searchingPath, method, description);
-        List<ApiResponse> content;
-        if (count != 0) {
-            content = repository.findPage(searchingPath, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
-        } else {
-            content = Collections.emptyList();
-        }
-        return new PageImpl<>(content, pageable, count);
-    }
+  public Integer findIdByUk(String path, String method, String dataKey) {
+    return repository.findIdByUk(path, method, dataKey);
+  }
 
-    public Page<ApiResponse> findAllHistoryById(int id, Pageable pageable) {
-        long count = repository.countHistoryById(id);
-        List<ApiResponse> content;
-        if (count != 0) {
-            content = repository.findPageHistoryById(id, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
-        } else {
-            content = Collections.emptyList();
-        }
-        return new PageImpl<>(content, pageable, count);
+  public Page<ApiResponse> findPage(String path, String method, String description, Pageable pageable) {
+    String searchingPath = Optional.ofNullable(path)
+        .map(e -> PATH_VARIABLE_PATTERN.matcher(e).replaceAll(".+"))
+        .orElse(null);
+    long count = repository.count(searchingPath, method, description);
+    List<ApiResponse> content;
+    if (count != 0) {
+      content = repository.findPage(searchingPath, method, description, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
+    } else {
+      content = Collections.emptyList();
     }
+    return new PageImpl<>(content, pageable, count);
+  }
 
-    public ApiResponse findHistory(int id, int subId) {
-        return repository.findHistory(id, subId);
+  public Page<ApiResponse> findAllHistoryById(int id, Pageable pageable) {
+    long count = repository.countHistoryById(id);
+    List<ApiResponse> content;
+    if (count != 0) {
+      content = repository.findPageHistoryById(id, new RowBounds(Long.valueOf(pageable.getOffset()).intValue(), Long.valueOf(pageable.getPageSize()).intValue()));
+    } else {
+      content = Collections.emptyList();
     }
+    return new PageImpl<>(content, pageable, count);
+  }
 
-    public void create(ApiResponse newMockResponse) {
-            newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
-        repository.create(newMockResponse);
-        repository.createHistory(newMockResponse.getId());
-    }
+  public ApiResponse findHistory(int id, int subId) {
+    return repository.findHistory(id, subId);
+  }
 
-    public void createProxyResponse(ApiResponse newMockResponse) {
-        newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
-        repository.createProxyResponse(newMockResponse);
-    }
+  public void create(ApiResponse newMockResponse) {
+    newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
+    repository.create(newMockResponse);
+    repository.createHistory(newMockResponse.getId());
+  }
 
-    public void update(int id, ApiResponse newMockResponse, boolean keepAttachmentFile, boolean saveHistory) {
-        newMockResponse.setId(id);
-        if (keepAttachmentFile) {
-            ApiResponse mockResponse = findOne(id);
-            newMockResponse.setAttachmentFile(mockResponse.getAttachmentFile());
-            newMockResponse.setFileName(mockResponse.getFileName());
-        }
-        repository.update(newMockResponse);
-        if (saveHistory) {
-            repository.createHistory(id);
-        }
-    }
+  public void createProxyResponse(ApiResponse newMockResponse) {
+    newMockResponse.setPath(newMockResponse.getPath().replace(properties.getRootPath(), ""));
+    repository.createProxyResponse(newMockResponse);
+  }
 
-    public void restoreHistory(int id, int subId) {
-        ApiResponse history = repository.findHistory(id, subId);
-        ApiResponse target = repository.findOne(id);
-        target.setStatusCode(history.getStatusCode());
-        target.setHeader(history.getHeader());
-        target.setBody(history.getBody());
-        target.setAttachmentFile(history.getAttachmentFile());
-        target.setFileName(history.getFileName());
-        target.setDescription(history.getDescription());
-        repository.update(target);
+  public void update(int id, ApiResponse newMockResponse, boolean keepAttachmentFile, boolean saveHistory) {
+    newMockResponse.setId(id);
+    if (keepAttachmentFile) {
+      ApiResponse mockResponse = findOne(id);
+      newMockResponse.setAttachmentFile(mockResponse.getAttachmentFile());
+      newMockResponse.setFileName(mockResponse.getFileName());
     }
+    repository.update(newMockResponse);
+    if (saveHistory) {
+      repository.createHistory(id);
+    }
+  }
 
-    public void delete(int id) {
-        repository.delete(id);
-        repository.deleteAllHistory(id);
-    }
+  public void restoreHistory(int id, int subId) {
+    ApiResponse history = repository.findHistory(id, subId);
+    ApiResponse target = repository.findOne(id);
+    target.setStatusCode(history.getStatusCode());
+    target.setHeader(history.getHeader());
+    target.setBody(history.getBody());
+    target.setAttachmentFile(history.getAttachmentFile());
+    target.setFileName(history.getFileName());
+    target.setDescription(history.getDescription());
+    repository.update(target);
+  }
 
-    public void delete(List<Integer> ids) {
-        ids.forEach(this::delete);
-    }
+  public void delete(int id) {
+    repository.delete(id);
+    repository.deleteAllHistory(id);
+  }
 
-    public void deleteHistory(int id, int subId) {
-        repository.deleteHistory(id, subId);
-    }
+  public void delete(List<Integer> ids) {
+    ids.forEach(this::delete);
+  }
 
-    public void deleteHistories(int id, List<Integer> subIds) {
-        subIds.forEach(subId -> deleteHistory(id, subId));
-    }
+  public void deleteHistory(int id, int subId) {
+    repository.deleteHistory(id, subId);
+  }
 
-    public List<ApiResponse> findAllForExport(List<Integer> ids) {
-        return ids.stream()
-                .map(repository::findOne)
-                .collect(Collectors.toList());
-    }
+  public void deleteHistories(int id, List<Integer> subIds) {
+    subIds.forEach(subId -> deleteHistory(id, subId));
+  }
+
+  public List<ApiResponse> findAllForExport(List<Integer> ids) {
+    return ids.stream()
+        .map(repository::findOne)
+        .collect(Collectors.toList());
+  }
 
 }

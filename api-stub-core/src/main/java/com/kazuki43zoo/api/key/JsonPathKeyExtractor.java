@@ -32,23 +32,23 @@ import java.util.stream.Stream;
 @Component
 @Order(1)
 public class JsonPathKeyExtractor implements KeyExtractor {
-    @Override
-    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        if (requestBody == null || requestBody.length == 0) {
-            return Collections.emptyList();
-        }
-
-        ReadContext context = JsonPath.parse(new ByteArrayInputStream(requestBody));
-        return Stream.of(expressions).map(expression -> {
-            try {
-                return context.read(expression);
-            } catch (Exception e) {
-                // ignore
-                if (log.isDebugEnabled()) {
-                    log.debug(e.getMessage(), e);
-                }
-                return null;
-            }
-        }).collect(Collectors.toList());
+  @Override
+  public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    if (requestBody == null || requestBody.length == 0) {
+      return Collections.emptyList();
     }
+
+    ReadContext context = JsonPath.parse(new ByteArrayInputStream(requestBody));
+    return Stream.of(expressions).map(expression -> {
+      try {
+        return context.read(expression);
+      } catch (Exception e) {
+        // ignore
+        if (log.isDebugEnabled()) {
+          log.debug(e.getMessage(), e);
+        }
+        return null;
+      }
+    }).collect(Collectors.toList());
+  }
 }

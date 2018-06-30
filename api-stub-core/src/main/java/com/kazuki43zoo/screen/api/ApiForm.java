@@ -26,25 +26,25 @@ import java.util.List;
 
 @Data
 class ApiForm implements Serializable {
-    private static final long serialVersionUID = 1L;
-    @NotEmpty
-    @Size(max = 256)
-    private String path;
-    @NotEmpty
-    @HttpMethod
-    private String method;
-    private String keyExtractor;
-    private KeyGeneratingStrategy keyGeneratingStrategy;
-    private List<String> expressions;
-    private String description;
-    private Proxy proxy = new Proxy();
+  private static final long serialVersionUID = 1L;
+  @NotEmpty
+  @Size(max = 256)
+  private String path;
+  @NotEmpty
+  @HttpMethod
+  private String method;
+  private String keyExtractor;
+  private KeyGeneratingStrategy keyGeneratingStrategy;
+  private List<String> expressions;
+  private String description;
+  private Proxy proxy = new Proxy();
 
-    @Data
-    public static class Proxy implements Serializable{
-        private static final long serialVersionUID = 1L;
-        private Boolean enabled;
-        private String url;
-        private Boolean capturing;
-    }
+  @Data
+  public static class Proxy implements Serializable {
+    private static final long serialVersionUID = 1L;
+    private Boolean enabled;
+    private String url;
+    private Boolean capturing;
+  }
 
 }

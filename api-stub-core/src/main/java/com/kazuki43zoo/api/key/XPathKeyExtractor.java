@@ -38,29 +38,29 @@ import java.util.stream.Stream;
 @Order(2)
 public class XPathKeyExtractor implements KeyExtractor {
 
-    @Override
-    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        if (requestBody == null || requestBody.length == 0) {
-            return Collections.emptyList();
-        }
-
-        Document document;
-        try {
-            document = DocumentBuilderFactory.newInstance()
-                    .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody));
-        } catch (SAXException | IOException | ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-        }
-        XPath xpath = XPathFactory.newInstance().newXPath();
-
-        return Stream.of(expressions).map(expression -> {
-            try {
-                XPathExpression xPathExpression = xpath.compile(expression);
-                return (String) xPathExpression.evaluate(document, XPathConstants.STRING);
-            } catch (Exception e) {
-                throw new IllegalStateException(e);
-            }
-        }).collect(Collectors.toList());
+  @Override
+  public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    if (requestBody == null || requestBody.length == 0) {
+      return Collections.emptyList();
     }
+
+    Document document;
+    try {
+      document = DocumentBuilderFactory.newInstance()
+          .newDocumentBuilder().parse(new ByteArrayInputStream(requestBody));
+    } catch (SAXException | IOException | ParserConfigurationException e) {
+      throw new IllegalStateException(e);
+    }
+    XPath xpath = XPathFactory.newInstance().newXPath();
+
+    return Stream.of(expressions).map(expression -> {
+      try {
+        XPathExpression xPathExpression = xpath.compile(expression);
+        return (String) xPathExpression.evaluate(document, XPathConstants.STRING);
+      } catch (Exception e) {
+        throw new IllegalStateException(e);
+      }
+    }).collect(Collectors.toList());
+  }
 
 }

@@ -15,10 +15,6 @@
  */
 package com.kazuki43zoo.api.key;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
@@ -27,83 +23,87 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JsonPathKeyExtractorTests {
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-	private static final JsonPathKeyExtractor extractor = new JsonPathKeyExtractor();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
+  private static final JsonPathKeyExtractor extractor = new JsonPathKeyExtractor();
 
-	@Test
-	public void testBodyIsNull() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testBodyIsNull() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null, "$.key");
-		assertThat(keys).isEmpty();
-	}
+    List<Object> keys = extractor.extract(request, null, "$.key");
+    assertThat(keys).isEmpty();
+  }
 
-	@Test
-	public void testBodyIsEmpty() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testBodyIsEmpty() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, new byte[0], "$.key");
-		assertThat(keys).isEmpty();
-	}
+    List<Object> keys = extractor.extract(request, new byte[0], "$.key");
+    assertThat(keys).isEmpty();
+  }
 
-	@Test
-	public void testExpressionIsMatch() throws JsonProcessingException {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsMatch() throws JsonProcessingException {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		Map<String, Object> jsonSource = new HashMap<>();
-		jsonSource.put("key", "value");
+    Map<String, Object> jsonSource = new HashMap<>();
+    jsonSource.put("key", "value");
 
-		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key");
-		assertThat(keys).hasSize(1);
-		assertThat(keys).containsSequence("value");
-	}
+    List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key");
+    assertThat(keys).hasSize(1);
+    assertThat(keys).containsSequence("value");
+  }
 
-	@Test
-	public void testExpressionIsMatchByMultiple() throws JsonProcessingException {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsMatchByMultiple() throws JsonProcessingException {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		Map<String, Object> jsonSource = new HashMap<>();
-		jsonSource.put("key1", "value1");
-		jsonSource.put("key2", "value2");
-		jsonSource.put("key3", "value3");
+    Map<String, Object> jsonSource = new HashMap<>();
+    jsonSource.put("key1", "value1");
+    jsonSource.put("key2", "value2");
+    jsonSource.put("key3", "value3");
 
-		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key1", "$.key2",
-				"$.key4");
-		assertThat(keys).hasSize(3);
-		assertThat(keys).containsSequence("value1", "value2", null);
-	}
+    List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key1", "$.key2",
+        "$.key4");
+    assertThat(keys).hasSize(3);
+    assertThat(keys).containsSequence("value1", "value2", null);
+  }
 
-	@Test
-	public void testExpressionIsNoMatch() throws JsonProcessingException {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsNoMatch() throws JsonProcessingException {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		Map<String, Object> jsonSource = new HashMap<>();
-		jsonSource.put("key", "value");
+    Map<String, Object> jsonSource = new HashMap<>();
+    jsonSource.put("key", "value");
 
-		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key2");
-		assertThat(keys).hasSize(1);
-		assertThat(keys).containsSequence((String) null);
-	}
+    List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource), "$.key2");
+    assertThat(keys).hasSize(1);
+    assertThat(keys).containsSequence((String) null);
+  }
 
-	@Test
-	public void testExpressionIsEmpty() throws JsonProcessingException {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsEmpty() throws JsonProcessingException {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		Map<String, Object> jsonSource = new HashMap<>();
-		jsonSource.put("key", "value");
+    Map<String, Object> jsonSource = new HashMap<>();
+    jsonSource.put("key", "value");
 
-		List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource));
-		assertThat(keys).isEmpty();
-	}
+    List<Object> keys = extractor.extract(request, objectMapper.writeValueAsBytes(jsonSource));
+    assertThat(keys).isEmpty();
+  }
 
 }

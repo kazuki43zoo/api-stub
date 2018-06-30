@@ -31,13 +31,13 @@ import java.util.stream.Stream;
 @Order(4)
 public class PathVariableKeyExtractor implements KeyExtractor {
 
-    private final PathVariableSupport pathVariableSupport;
+  private final PathVariableSupport pathVariableSupport;
 
-    @Override
-    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        Map<String, String> pathVariable = pathVariableSupport.getPathVariables(request);
-        return Stream.of(expressions).map(pathVariable::get)
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    Map<String, String> pathVariable = pathVariableSupport.getPathVariables(request);
+    return Stream.of(expressions).map(pathVariable::get)
+        .collect(Collectors.toList());
+  }
 
 }

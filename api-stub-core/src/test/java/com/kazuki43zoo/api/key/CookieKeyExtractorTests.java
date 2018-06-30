@@ -28,55 +28,55 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CookieKeyExtractorTests {
 
-	private static final CookieKeyExtractor extractor = new CookieKeyExtractor();
+  private static final CookieKeyExtractor extractor = new CookieKeyExtractor();
 
-	@Test
-	public void testCookieIsEmpty() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testCookieIsEmpty() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null, "key");
-		assertThat(keys).isEmpty();
-	}
+    List<Object> keys = extractor.extract(request, null, "key");
+    assertThat(keys).isEmpty();
+  }
 
-	@Test
-	public void testExpressionIsMatch() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsMatch() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null, "key");
-		assertThat(keys).hasSize(1);
-		assertThat(keys).containsSequence("value");
-	}
+    List<Object> keys = extractor.extract(request, null, "key");
+    assertThat(keys).hasSize(1);
+    assertThat(keys).containsSequence("value");
+  }
 
-	@Test
-	public void testExpressionIsMatchByMultiple() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.cookie(new Cookie("key1", "value1")).cookie(new Cookie("key2", "value2")).cookie(new Cookie("key3", "value3"))
-				.buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsMatchByMultiple() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .cookie(new Cookie("key1", "value1")).cookie(new Cookie("key2", "value2")).cookie(new Cookie("key3", "value3"))
+        .buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null, "key1", "key2", "key4");
-		assertThat(keys).hasSize(3);
-		assertThat(keys).containsSequence("value1", "value2", null);
-	}
+    List<Object> keys = extractor.extract(request, null, "key1", "key2", "key4");
+    assertThat(keys).hasSize(3);
+    assertThat(keys).containsSequence("value1", "value2", null);
+  }
 
-	@Test
-	public void testExpressionIsNoMatch() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsNoMatch() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null, "key2");
-		assertThat(keys).hasSize(1);
-		assertThat(keys).containsSequence((String) null);
-	}
+    List<Object> keys = extractor.extract(request, null, "key2");
+    assertThat(keys).hasSize(1);
+    assertThat(keys).containsSequence((String) null);
+  }
 
-	@Test
-	public void testExpressionIsEmpty() {
-		MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
-				.cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
+  @Test
+  public void testExpressionIsEmpty() {
+    MockHttpServletRequest request = MockMvcRequestBuilders.request(HttpMethod.GET, "/test")
+        .cookie(new Cookie("key", "value")).buildRequest(new MockServletContext());
 
-		List<Object> keys = extractor.extract(request, null);
-		assertThat(keys).isEmpty();
-	}
+    List<Object> keys = extractor.extract(request, null);
+    assertThat(keys).isEmpty();
+  }
 
 }

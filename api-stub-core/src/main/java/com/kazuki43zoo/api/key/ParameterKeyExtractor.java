@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 @Component
 @Order(5)
 public class ParameterKeyExtractor implements KeyExtractor {
-    @Override
-    public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
-        return Stream.of(expressions).map(request::getParameter)
-                .collect(Collectors.toList());
-    }
+  @Override
+  public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
+    return Stream.of(expressions).map(request::getParameter)
+        .collect(Collectors.toList());
+  }
 }

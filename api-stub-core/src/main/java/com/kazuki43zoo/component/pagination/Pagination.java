@@ -25,39 +25,39 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Getter
 public class Pagination {
 
-    public static final String ATTR_NAME_SIZE_IN_PAGE = "pageSize";
-    public static final String PARAM_NAME_SIZE_IN_PAGE = "size";
-    private static final String PARAM_NAME_PAGE_POSITION = "page";
+  public static final String ATTR_NAME_SIZE_IN_PAGE = "pageSize";
+  public static final String PARAM_NAME_SIZE_IN_PAGE = "size";
+  private static final String PARAM_NAME_PAGE_POSITION = "page";
 
-    private final Page<?> page;
-    private final String query;
+  private final Page<?> page;
+  private final String query;
 
-    public Pagination(Page<?> page, MultiValueMap<String, String> params) {
-        this.page = page;
-        String query = null;
-        if (params != null) {
-            params.remove(PARAM_NAME_PAGE_POSITION);
-            query = UriComponentsBuilder.fromPath("").queryParams(params).build().encode().getQuery();
-        }
-        this.query = (query != null) ? ("?" + query) : "";
+  public Pagination(Page<?> page, MultiValueMap<String, String> params) {
+    this.page = page;
+    String query = null;
+    if (params != null) {
+      params.remove(PARAM_NAME_PAGE_POSITION);
+      query = UriComponentsBuilder.fromPath("").queryParams(params).build().encode().getQuery();
     }
+    this.query = (query != null) ? ("?" + query) : "";
+  }
 
-    public Range getRange(int maxSize) {
-        int begin = Math.max(0, page.getNumber() - maxSize / 2);
-        int end = begin + (maxSize - 1);
-        if (end > page.getTotalPages() - 1) {
-            end = page.getTotalPages() - 1;
-            begin = Math.max(0, end - (maxSize - 1));
-        }
-        return new Range(begin, end);
+  public Range getRange(int maxSize) {
+    int begin = Math.max(0, page.getNumber() - maxSize / 2);
+    int end = begin + (maxSize - 1);
+    if (end > page.getTotalPages() - 1) {
+      end = page.getTotalPages() - 1;
+      begin = Math.max(0, end - (maxSize - 1));
     }
+    return new Range(begin, end);
+  }
 
-    @RequiredArgsConstructor
-    @Getter
-    @Setter
-    public static class Range {
-        private final int begin;
-        private final int end;
-    }
+  @RequiredArgsConstructor
+  @Getter
+  @Setter
+  public static class Range {
+    private final int begin;
+    private final int end;
+  }
 
 }
