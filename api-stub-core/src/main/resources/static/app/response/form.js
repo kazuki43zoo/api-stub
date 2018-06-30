@@ -16,6 +16,7 @@
 function setBodyEditorMode(bodyEditor, bodyEditorMode) {
     bodyEditor.getSession().setMode("ace/mode/" + bodyEditorMode.val());
 }
+
 $(function () {
 
     var bodyEditor = ace.edit("bodyEditor");
