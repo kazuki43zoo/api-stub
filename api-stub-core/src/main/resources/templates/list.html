@@ -16,8 +16,8 @@
 
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head>
 </head>
 <body>
@@ -36,7 +36,8 @@
             <a th:href="${page.hasPrevious()} ? @{${pageUrl}(page=${page.number - 1})} : 'javascript:void(0)'">&lt;</a>
         </li>
         <!-- links for moving to specified page -->
-        <li th:each="pageIndex : ${#numbers.sequence(pageRange.begin, pageRange.end)}" th:class="${pageIndex == page.number} ? 'active' : ''">
+        <li th:each="pageIndex : ${#numbers.sequence(pageRange.begin, pageRange.end)}"
+            th:class="${pageIndex == page.number} ? 'active' : ''">
             <a th:href="${pageIndex == page.number} ? 'javascript:void(0)' : @{${pageUrl}(page=${pageIndex})}">
                 <span th:text="${pageIndex + 1}">1</span>
             </a>

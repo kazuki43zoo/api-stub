@@ -16,8 +16,8 @@
 
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title th:text="#{title.responseList}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
@@ -38,11 +38,13 @@
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
             <div class="col-sm-5" th:classappend="${#fields.hasErrors('path') ? 'has-error' : ''}">
-                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:title="#{requestPath}" th:field="*{path}"/>
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}"
+                       th:title="#{requestPath}" th:field="*{path}"/>
                 <span class="error" th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2" th:classappend="${#fields.hasErrors('method') ? 'has-error' : ''}">
-                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:title="#{httpMethod}"
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
+                       th:title="#{httpMethod}"
                        th:field="*{method}"/>
                 <span class="error" th:errors="*{method}"></span>
             </div>
@@ -63,7 +65,8 @@
                 </button>
             </div>
             <div class="col-sm-1">
-                <input type="text" class="form-control" id="size" name="size" th:placeholder="#{pageSize}" th:title="#{pageSize}"
+                <input type="text" class="form-control" id="size" name="size" th:placeholder="#{pageSize}"
+                       th:title="#{pageSize}"
                        th:value="${pageSize}"/>
             </div>
         </div>

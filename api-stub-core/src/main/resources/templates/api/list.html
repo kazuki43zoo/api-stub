@@ -16,8 +16,8 @@
 
 -->
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title th:text="#{title.apiList}"></title>
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
@@ -38,11 +38,13 @@
         <div class="form-group">
             <label for="path" class="col-sm-2 control-label" th:text="#{api}"></label>
             <div class="col-sm-5">
-                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}" th:title="#{requestPath}" th:field="*{path}"/>
+                <input type="text" class="form-control" id="path" th:placeholder="#{requestPath}"
+                       th:title="#{requestPath}" th:field="*{path}"/>
                 <span th:errors="*{path}"></span>
             </div>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}" th:title="#{httpMethod}"
+                <input type="text" class="form-control" id="method" th:placeholder="#{httpMethod}"
+                       th:title="#{httpMethod}"
                        th:field="*{method}"/>
                 <span th:errors="*{method}"></span>
             </div>
@@ -63,7 +65,8 @@
                 </button>
             </div>
             <div class="col-sm-1">
-                <input type="text" class="form-control" id="size" name="size" th:placeholder="#{pageSize}" th:title="#{pageSize}"
+                <input type="text" class="form-control" id="size" name="size" th:placeholder="#{pageSize}"
+                       th:title="#{pageSize}"
                        th:value="${pageSize}"/>
             </div>
         </div>
@@ -120,7 +123,8 @@
                 <td th:text="*{method}"></td>
                 <td th:text="*{description}"></td>
                 <td>
-                    <a class="btn btn-default" th:href="@{/manager/responses/create?loadingApi=&amp;path={path}&amp;method={method}(path=${api.path},method=${api.method})}">
+                    <a class="btn btn-default"
+                       th:href="@{/manager/responses/create?loadingApi=&amp;path={path}&amp;method={method}(path=${api.path},method=${api.method})}">
                         <span class="glyphicon glyphicon-plus"></span>
                         <span th:utext="|#{data}#{wordSeparator}#{action.add}|"></span>
                     </a>
