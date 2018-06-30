@@ -17,7 +17,7 @@ package com.kazuki43zoo.api.handler;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
-import com.kazuki43zoo.api.evidence.ApiEvidence;
+import com.kazuki43zoo.api.ApiEvidence;
 import com.kazuki43zoo.component.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
@@ -60,7 +60,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
