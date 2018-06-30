@@ -86,7 +86,7 @@ public class ProxyHandler {
     final HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.putAll(proxyResponseEntity.getHeaders());
 
-    final Resource body = new InputStreamResource(new ByteArrayInputStream(proxyResponseEntity.getBody()));
+    final Resource responseBody = new InputStreamResource(new ByteArrayInputStream(proxyResponseEntity.getBody()));
     if (responseHeaders.containsKey(HttpHeaders.TRANSFER_ENCODING)) {
       responseHeaders.remove(HttpHeaders.TRANSFER_ENCODING);
     }
@@ -102,7 +102,7 @@ public class ProxyHandler {
 
     return ResponseEntity.status(proxyResponseEntity.getStatusCodeValue())
         .headers(responseHeaders)
-        .body(body);
+        .body(responseBody);
   }
 
   private void doCapture(String path, String method, String dataKey, ResponseEntity<byte[]> proxyResponseEntity, HttpHeaders responseHeaders, ApiEvidence evidence) throws UnsupportedEncodingException {

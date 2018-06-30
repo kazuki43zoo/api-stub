@@ -31,12 +31,14 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,6 +52,12 @@ public class ApiStubRequestHandler {
   private final ProxyHandler proxyHandler;
   private final DataKeySupport dataKeySupport;
   private final PathVariableSupport pathVariableSupport;
+  private Pattern rootPathPattern;
+
+  @PostConstruct
+  public void setupRootPathPattern() {
+    this.rootPathPattern = Pattern.compile(properties.getRootPath());
+  }
 
   public ResponseEntity<Resource> handleApiRequest(HttpServletRequest request, HttpServletResponse response, RequestEntity<byte[]> requestEntity)
       throws IOException, ServletException {
@@ -60,7 +68,7 @@ public class ApiStubRequestHandler {
           .orElse(UUID.randomUUID().toString());
       MDC.put(properties.getCorrelationIdKey(), correlationId);
 
-      final String path = request.getServletPath().replace(properties.getRootPath(), "");
+      final String path = rootPathPattern.matcher(request.getServletPath()).replaceAll("");
       final String method = request.getMethod();
 
       final Api api = apiService.findOne(path, method);
@@ -86,10 +94,8 @@ public class ApiStubRequestHandler {
       final ResponseEntity<Resource> responseEntity;
       if (enabledProxy) {
         responseEntity = proxyHandler.perform(request, requestEntity, path, method, dataKey, api, evidence);
-
       } else {
         responseEntity = mockResponseHandler.perform(path, method, dataKey, requestEntity, request, response, api, evidence);
-
       }
 
       evidence.response(responseEntity);
@@ -98,6 +104,7 @@ public class ApiStubRequestHandler {
 
     } finally {
       Optional.ofNullable(evidence).ifPresent(ApiEvidence::end);
+      MDC.clear();
     }
 
   }

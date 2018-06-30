@@ -107,7 +107,7 @@ public class MockResponseHandler {
       HttpServletRequest request,
       HttpServletResponse response,
       Api api,
-      ApiEvidence evidence) throws UnsupportedEncodingException {
+      ApiEvidence evidence) {
 
     final ApiResponse apiResponse = apiResponseService.findOne(
         path, Optional.ofNullable(api).map(Api::getPath).orElse(null), method, dataKey);
