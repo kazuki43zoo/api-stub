@@ -95,7 +95,9 @@ public class ApiEvidence {
     }
 
     public void request(HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException, ServletException {
-        final EvidenceRequest evidenceRequest = new EvidenceRequest(request.getParameterMap(), requestEntity.getHeaders());
+        final EvidenceRequest evidenceRequest =
+            new EvidenceRequest(request.getRequestURI(), request.getMethod(), request.getQueryString(),
+                request.getParameterMap(), requestEntity.getHeaders());
         info("Request      : {}", objectMapperForLog.writeValueAsString(evidenceRequest));
         if (!properties.getEvidence().isDisabledRequest()) {
             try (OutputStream out = new BufferedOutputStream
@@ -180,13 +182,16 @@ public class ApiEvidence {
             this.saveFileName = saveFileName;
             this.size = part.getSize();
             HttpHeaders headers = new HttpHeaders();
-            part.getHeaderNames().forEach(e -> headers.put(e, new ArrayList<>(part.getHeaders(e))));
+            part.getHeaderNames().forEach(name -> headers.put(name, new ArrayList<>(part.getHeaders(name))));
             this.headers = HttpHeaders.readOnlyHttpHeaders(headers);
         }
     }
 
     @Data
     private static class EvidenceRequest {
+        private final String uri;
+        private final String method;
+        private final String query;
         private final Map<String, String[]> parameters;
         private final HttpHeaders headers;
     }
