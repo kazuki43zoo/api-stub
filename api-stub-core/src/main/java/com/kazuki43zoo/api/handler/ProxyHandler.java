@@ -24,6 +24,7 @@ import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -61,7 +62,7 @@ public class ProxyHandler {
         this.properties = properties;
     }
 
-    public ResponseEntity<Object> perform(HttpServletRequest request, RequestEntity<byte[]> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
+    public ResponseEntity<Resource> perform(HttpServletRequest request, RequestEntity<byte[]> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
 
         final String baseUrl = Optional.ofNullable(api)
                 .map(Api::getProxy)
@@ -86,12 +87,9 @@ public class ProxyHandler {
         final HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.putAll(proxyResponseEntity.getHeaders());
 
-        final Object body;
+        final Resource body = new InputStreamResource(new ByteArrayInputStream(proxyResponseEntity.getBody()));
         if (responseHeaders.containsKey(HttpHeaders.TRANSFER_ENCODING)) {
             responseHeaders.remove(HttpHeaders.TRANSFER_ENCODING);
-            body = new InputStreamResource(new ByteArrayInputStream(proxyResponseEntity.getBody()));
-        } else {
-            body = proxyResponseEntity.getBody();
         }
 
         boolean enabledCapturing = Optional.ofNullable(api)

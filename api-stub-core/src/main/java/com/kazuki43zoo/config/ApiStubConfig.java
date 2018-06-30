@@ -15,56 +15,66 @@
  */
 package com.kazuki43zoo.config;
 
+import com.kazuki43zoo.api.ApiStubFilter;
 import org.h2.server.web.DbStarter;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
-import java.io.IOException;
 import java.util.Locale;
 
 @Configuration
 public class ApiStubConfig implements WebMvcConfigurer {
 
-	@Bean
-	DbStarter dbStarter() {
-		return new DbStarter();
-	}
+  @Bean
+  DbStarter dbStarter() {
+    return new DbStarter();
+  }
 
-	@Override
-	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addRedirectViewController("/", "/manager/responses");
-	}
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addRedirectViewController("/", "/manager/responses");
+  }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new LocaleChangeInterceptor()).addPathPatterns("/**");
-	}
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new LocaleChangeInterceptor()).addPathPatterns("/**");
+  }
 
-	@Bean
-	CookieLocaleResolver localeResolver() {
-		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-		localeResolver.setDefaultLocale(Locale.ENGLISH);
-		localeResolver.setCookieName("locale");
-		return localeResolver;
-	}
+  @Bean
+  CookieLocaleResolver localeResolver() {
+    CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+    localeResolver.setDefaultLocale(Locale.ENGLISH);
+    localeResolver.setCookieName("locale");
+    return localeResolver;
+  }
 
-	@Bean
-	RestTemplateCustomizer restTemplateCustomizer() {
-		return restTemplate -> restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
-			@Override
-			public void handleError(ClientHttpResponse response) {
-				// NOP
-			}
-		});
-	}
+  @Bean
+  RestTemplateCustomizer restTemplateCustomizer() {
+    return restTemplate -> restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+      @Override
+      public void handleError(ClientHttpResponse response) {
+        // NOP
+      }
+    });
+  }
+
+  @Bean
+  FilterRegistrationBean<ApiStubFilter> apiStubFilterRegistrationBean(ApiStubFilter apiStubFilter, ApiStubProperties properties) {
+    FilterRegistrationBean<ApiStubFilter> filterRegistrationBean = new FilterRegistrationBean<>();
+    filterRegistrationBean.setFilter(apiStubFilter);
+    filterRegistrationBean.addUrlPatterns(properties.getRootPath() + "/*");
+    filterRegistrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+    return filterRegistrationBean;
+  }
 
 }

@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -95,7 +96,7 @@ public class MockResponseHandler {
         this.templateEngine = templateEngine;
     }
 
-    public ResponseEntity<Object> perform(
+    public ResponseEntity<Resource> perform(
             String path,
             String method,
             String dataKey,
@@ -103,7 +104,7 @@ public class MockResponseHandler {
             HttpServletRequest request,
             HttpServletResponse response,
             Api api,
-            ApiEvidence evidence) throws UnsupportedEncodingException, InterruptedException {
+            ApiEvidence evidence) throws UnsupportedEncodingException {
 
         final ApiResponse apiResponse = apiResponseService.findOne(
             path, Optional.ofNullable(api).map(Api::getPath).orElse(null), method, dataKey);
@@ -154,7 +155,11 @@ public class MockResponseHandler {
         // Wait processing
         if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
             evidence.info("Waiting {} msec.", apiResponse.getWaitingMsec());
-            TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
+            try {
+                TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         return ResponseEntity.status(statusCode)
