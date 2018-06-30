@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.api;
+package com.kazuki43zoo.api.evidence;
 
 import com.kazuki43zoo.api.key.DataKeySupport;
 import com.kazuki43zoo.config.ApiStubProperties;

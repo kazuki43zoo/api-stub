@@ -4,7 +4,7 @@
 **/.settings
 **/.project
 **/.classpath
-**/evidence
+/evidence
 **/.factorypath
 **/.apt_generated
 **/.DS_Store

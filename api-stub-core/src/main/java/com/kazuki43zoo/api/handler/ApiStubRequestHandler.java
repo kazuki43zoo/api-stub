@@ -15,8 +15,8 @@
  */
 package com.kazuki43zoo.api.handler;
 
-import com.kazuki43zoo.api.ApiEvidence;
-import com.kazuki43zoo.api.ApiEvidenceFactory;
+import com.kazuki43zoo.api.evidence.ApiEvidence;
+import com.kazuki43zoo.api.evidence.ApiEvidenceFactory;
 import com.kazuki43zoo.api.key.DataKeySupport;
 import com.kazuki43zoo.api.PathVariableSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
