@@ -17,13 +17,16 @@ package com.kazuki43zoo.config;
 
 import com.kazuki43zoo.api.ApiStubFilter;
 import org.h2.server.web.DbStarter;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.Ordered;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -66,6 +69,12 @@ public class ApiStubConfig implements WebMvcConfigurer {
         // NOP
       }
     });
+  }
+
+  @Bean
+  @Primary
+  RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
+    return restTemplateBuilder.build();
   }
 
   @Bean

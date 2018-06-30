@@ -22,7 +22,6 @@ import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiProxy;
 import com.kazuki43zoo.domain.model.ApiResponse;
 import com.kazuki43zoo.domain.service.ApiResponseService;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -52,11 +51,11 @@ public class ProxyHandler {
   private final DownloadSupport downloadSupport;
   private final ApiStubProperties properties;
 
-  public ProxyHandler(RestTemplateBuilder restTemplateBuilder,
+  public ProxyHandler(RestOperations restOperations,
                       ApiResponseService apiResponseService,
                       DownloadSupport downloadSupport,
                       ApiStubProperties properties) {
-    this.restOperations = restTemplateBuilder.build();
+    this.restOperations = restOperations;
     this.apiResponseService = apiResponseService;
     this.downloadSupport = downloadSupport;
     this.properties = properties;
