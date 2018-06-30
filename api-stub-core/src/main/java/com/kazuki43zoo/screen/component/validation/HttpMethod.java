@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.component.validation;
+package com.kazuki43zoo.screen.component.validation;
 
 
 import javax.validation.Constraint;
@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @ReportAsSingleViolation
 public @interface HttpMethod {
 
-  String message() default "{com.kazuki43zoo.component.validation.HttpMethod.message}";
+  String message() default "{com.kazuki43zoo.screen.component.validation.HttpMethod.message}";
 
   Class<?>[] groups() default {};
 

@@ -15,7 +15,7 @@
  */
 package com.kazuki43zoo.screen.response;
 
-import com.kazuki43zoo.component.validation.HttpMethod;
+import com.kazuki43zoo.screen.component.validation.HttpMethod;
 import lombok.Data;
 
 import java.io.Serializable;

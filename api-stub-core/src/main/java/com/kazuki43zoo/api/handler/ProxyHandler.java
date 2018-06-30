@@ -15,8 +15,8 @@
  */
 package com.kazuki43zoo.api.handler;
 
-import com.kazuki43zoo.api.ApiEvidence;
-import com.kazuki43zoo.component.download.DownloadSupport;
+import com.kazuki43zoo.api.evidence.ApiEvidence;
+import com.kazuki43zoo.component.DownloadSupport;
 import com.kazuki43zoo.config.ApiStubProperties;
 import com.kazuki43zoo.domain.model.Api;
 import com.kazuki43zoo.domain.model.ApiProxy;

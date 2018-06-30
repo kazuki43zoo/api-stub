@@ -15,7 +15,7 @@
  */
 package com.kazuki43zoo.api.key;
 
-import com.kazuki43zoo.component.url.PathVariableSupport;
+import com.kazuki43zoo.api.PathVariableSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;

@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.component.download;
+package com.kazuki43zoo.component;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;

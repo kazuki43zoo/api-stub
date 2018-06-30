@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.component.url;
+package com.kazuki43zoo.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

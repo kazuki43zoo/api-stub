@@ -15,7 +15,7 @@
  */
 package com.kazuki43zoo.screen;
 
-import com.kazuki43zoo.component.pagination.Pagination;
+import com.kazuki43zoo.screen.component.pagination.Pagination;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;

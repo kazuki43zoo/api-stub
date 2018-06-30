@@ -13,16 +13,18 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.component.message;
+package com.kazuki43zoo.screen.component.message;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Getter
-@Builder
-public class InfoMessage {
-  @Builder.Default
-  private MessageCode code = MessageCode.UNDEFINED;
-  @Builder.Default
-  private MessageArgs args = MessageArgs.EMPTY;
+public class MessageArgs {
+  static final MessageArgs EMPTY = create();
+  private final Object[] values;
+
+  public static MessageArgs create(Object... values) {
+    return new MessageArgs(values);
+  }
 }
