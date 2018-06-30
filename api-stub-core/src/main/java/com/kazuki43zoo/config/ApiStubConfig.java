@@ -20,6 +20,7 @@ import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -33,44 +34,37 @@ import java.util.Locale;
 @Configuration
 public class ApiStubConfig implements WebMvcConfigurer {
 
-    @Bean
-    DbStarter dbStarter() {
-        return new DbStarter();
-    }
+	@Bean
+	DbStarter dbStarter() {
+		return new DbStarter();
+	}
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/manager/responses");
-    }
+	@Override
+	public void addViewControllers(ViewControllerRegistry registry) {
+		registry.addRedirectViewController("/", "/manager/responses");
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LocaleChangeInterceptor()).addPathPatterns("/**");
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new LocaleChangeInterceptor()).addPathPatterns("/**");
+	}
 
-    @Bean
-    CookieLocaleResolver localeResolver() {
-        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-        localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setCookieName("locale");
-        return localeResolver;
-    }
+	@Bean
+	CookieLocaleResolver localeResolver() {
+		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+		localeResolver.setDefaultLocale(Locale.ENGLISH);
+		localeResolver.setCookieName("locale");
+		return localeResolver;
+	}
 
-    @Bean
-    RestTemplateCustomizer restTemplateCustomizer() {
-        return restTemplate -> {
-            restTemplate.setErrorHandler(new ResponseErrorHandler() {
-                @Override
-                public boolean hasError(ClientHttpResponse response) throws IOException {
-                    return false;
-                }
-
-                @Override
-                public void handleError(ClientHttpResponse response) throws IOException {
-                    // NOP
-                }
-            });
-        };
-    }
+	@Bean
+	RestTemplateCustomizer restTemplateCustomizer() {
+		return restTemplate -> restTemplate.setErrorHandler(new DefaultResponseErrorHandler() {
+			@Override
+			public void handleError(ClientHttpResponse response) {
+				// NOP
+			}
+		});
+	}
 
 }
