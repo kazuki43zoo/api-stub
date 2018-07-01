@@ -17,14 +17,12 @@ package com.kazuki43zoo.apistub.ui.api;
 
 import com.kazuki43zoo.apistub.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.apistub.ui.component.validation.HttpMethod;
-import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
-@Data
 class ApiForm implements Serializable {
   private static final long serialVersionUID = 1L;
   @NotEmpty
@@ -39,12 +37,91 @@ class ApiForm implements Serializable {
   private String description;
   private Proxy proxy = new Proxy();
 
-  @Data
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public String getKeyExtractor() {
+    return keyExtractor;
+  }
+
+  public void setKeyExtractor(String keyExtractor) {
+    this.keyExtractor = keyExtractor;
+  }
+
+  public KeyGeneratingStrategy getKeyGeneratingStrategy() {
+    return keyGeneratingStrategy;
+  }
+
+  public void setKeyGeneratingStrategy(KeyGeneratingStrategy keyGeneratingStrategy) {
+    this.keyGeneratingStrategy = keyGeneratingStrategy;
+  }
+
+  public List<String> getExpressions() {
+    return expressions;
+  }
+
+  public void setExpressions(List<String> expressions) {
+    this.expressions = expressions;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Proxy getProxy() {
+    return proxy;
+  }
+
+  public void setProxy(Proxy proxy) {
+    this.proxy = proxy;
+  }
+
   public static class Proxy implements Serializable {
     private static final long serialVersionUID = 1L;
     private Boolean enabled;
     private String url;
     private Boolean capturing;
+
+    public Boolean getEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public String getUrl() {
+      return url;
+    }
+
+    public void setUrl(String url) {
+      this.url = url;
+    }
+
+    public Boolean getCapturing() {
+      return capturing;
+    }
+
+    public void setCapturing(Boolean capturing) {
+      this.capturing = capturing;
+    }
   }
 
 }

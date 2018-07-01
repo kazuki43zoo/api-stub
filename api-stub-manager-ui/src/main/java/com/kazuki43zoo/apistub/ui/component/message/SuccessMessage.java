@@ -15,14 +15,8 @@
  */
 package com.kazuki43zoo.apistub.ui.component.message;
 
-import lombok.Builder;
-import lombok.Getter;
-
-@Getter
-@Builder
-public class SuccessMessage {
-  @Builder.Default
-  private MessageCode code = MessageCode.UNDEFINED;
-  @Builder.Default
-  private MessageArgs args = MessageArgs.EMPTY;
+public class SuccessMessage extends AbstractMessage {
+  public static AbstractMessage.MessageBuilder<SuccessMessage> builder() {
+    return new AbstractMessage.MessageBuilder<>(new SuccessMessage());
+  }
 }

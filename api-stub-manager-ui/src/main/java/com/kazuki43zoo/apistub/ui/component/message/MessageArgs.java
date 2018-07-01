@@ -15,14 +15,17 @@
  */
 package com.kazuki43zoo.apistub.ui.component.message;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-@Getter
 public class MessageArgs {
   static final MessageArgs EMPTY = create();
   private final Object[] values;
+
+  public MessageArgs(Object[] values) {
+    this.values = values;
+  }
+
+  public Object[] getValues() {
+    return values;
+  }
 
   public static MessageArgs create(Object... values) {
     return new MessageArgs(values);

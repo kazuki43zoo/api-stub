@@ -18,7 +18,6 @@ package com.kazuki43zoo.apistub.domain.service;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
 import com.kazuki43zoo.apistub.domain.model.KeyGeneratingStrategy;
 import com.kazuki43zoo.apistub.domain.repository.ApiResponseRepository;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -36,7 +35,6 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-@RequiredArgsConstructor
 public class ApiResponseService {
 
   private static final Pattern PATH_VARIABLE_PATTERN = Pattern.compile("\\{.+}");
@@ -45,6 +43,10 @@ public class ApiResponseService {
 
   @Value("${api.root-path:/api}")
   private String rootPath;
+
+  public ApiResponseService(ApiResponseRepository repository) {
+    this.repository = repository;
+  }
 
   public ApiResponse findOne(String path, String apiPath, String method, String dataKey) {
     ApiResponse mockResponse = Optional.ofNullable(repository.findOneByUk(path, method, dataKey))

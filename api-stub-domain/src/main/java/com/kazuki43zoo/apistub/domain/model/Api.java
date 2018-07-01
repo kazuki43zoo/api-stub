@@ -16,11 +16,9 @@
 package com.kazuki43zoo.apistub.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 
 import java.io.Serializable;
 
-@Data
 public class Api implements Serializable {
   private static final long serialVersionUID = 1L;
   private int id;
@@ -33,4 +31,76 @@ public class Api implements Serializable {
   private ApiProxy proxy = new ApiProxy();
   @JsonIgnore
   private int keyedResponseNumber;
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public String getKeyExtractor() {
+    return keyExtractor;
+  }
+
+  public void setKeyExtractor(String keyExtractor) {
+    this.keyExtractor = keyExtractor;
+  }
+
+  public KeyGeneratingStrategy getKeyGeneratingStrategy() {
+    return keyGeneratingStrategy;
+  }
+
+  public void setKeyGeneratingStrategy(KeyGeneratingStrategy keyGeneratingStrategy) {
+    this.keyGeneratingStrategy = keyGeneratingStrategy;
+  }
+
+  public String getExpressions() {
+    return expressions;
+  }
+
+  public void setExpressions(String expressions) {
+    this.expressions = expressions;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public ApiProxy getProxy() {
+    return proxy;
+  }
+
+  public void setProxy(ApiProxy proxy) {
+    this.proxy = proxy;
+  }
+
+  public int getKeyedResponseNumber() {
+    return keyedResponseNumber;
+  }
+
+  public void setKeyedResponseNumber(int keyedResponseNumber) {
+    this.keyedResponseNumber = keyedResponseNumber;
+  }
 }

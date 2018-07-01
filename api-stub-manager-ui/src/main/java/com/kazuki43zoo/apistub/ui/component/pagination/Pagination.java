@@ -15,14 +15,10 @@
  */
 package com.kazuki43zoo.apistub.ui.component.pagination;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
-@Getter
 public class Pagination {
 
   public static final String ATTR_NAME_SIZE_IN_PAGE = "pageSize";
@@ -42,6 +38,14 @@ public class Pagination {
     this.query = (query != null) ? ("?" + query) : "";
   }
 
+  public Page<?> getPage() {
+    return page;
+  }
+
+  public String getQuery() {
+    return query;
+  }
+
   public Range getRange(int maxSize) {
     int begin = Math.max(0, page.getNumber() - maxSize / 2);
     int end = begin + (maxSize - 1);
@@ -52,12 +56,22 @@ public class Pagination {
     return new Range(begin, end);
   }
 
-  @RequiredArgsConstructor
-  @Getter
-  @Setter
   public static class Range {
     private final int begin;
     private final int end;
+
+    public Range(int begin, int end) {
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public int getBegin() {
+      return begin;
+    }
+
+    public int getEnd() {
+      return end;
+    }
   }
 
 }

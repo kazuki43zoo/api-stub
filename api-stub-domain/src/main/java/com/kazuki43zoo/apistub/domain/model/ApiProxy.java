@@ -15,14 +15,35 @@
  */
 package com.kazuki43zoo.apistub.domain.model;
 
-import lombok.Data;
-
 import java.io.Serializable;
 
-@Data
 public class ApiProxy implements Serializable {
   private static final long serialVersionUID = 1L;
   private Boolean enabled;
   private String url;
   private Boolean capturing;
+
+  public Boolean getEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(Boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public Boolean getCapturing() {
+    return capturing;
+  }
+
+  public void setCapturing(Boolean capturing) {
+    this.capturing = capturing;
+  }
 }

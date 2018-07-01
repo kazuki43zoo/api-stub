@@ -30,8 +30,8 @@ import com.kazuki43zoo.apistub.ui.component.message.InfoMessage;
 import com.kazuki43zoo.apistub.ui.component.message.MessageCode;
 import com.kazuki43zoo.apistub.ui.component.message.SuccessMessage;
 import com.kazuki43zoo.apistub.ui.component.pagination.Pagination;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -66,12 +66,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 @RequestMapping("/manager/apis")
 @Controller
 @SessionAttributes(types = ApiSearchForm.class)
-@RequiredArgsConstructor
 public class ApiController {
+  private static final Logger log = LoggerFactory.getLogger(ApiController.class);
   private static final String COOKIE_NAME_PAGE_SIZE = "api.pageSize";
   private static final CookieGenerator pageSizeCookieGenerator;
   private static final List<String> keyExtractors = Collections.unmodifiableList(Stream.of(
@@ -96,6 +95,14 @@ public class ApiController {
   private final PaginationSupport paginationSupport;
   private final DownloadSupport downloadSupport;
   private final JsonSupport jsonSupport;
+
+  public ApiController(ApiService service, ImportSupport importSupport, PaginationSupport paginationSupport, DownloadSupport downloadSupport, JsonSupport jsonSupport) {
+    this.service = service;
+    this.importSupport = importSupport;
+    this.paginationSupport = paginationSupport;
+    this.downloadSupport = downloadSupport;
+    this.jsonSupport = jsonSupport;
+  }
 
   @ModelAttribute("apiSearchForm")
   public ApiSearchForm setUpSearchForm() {

@@ -15,7 +15,6 @@
  */
 package com.kazuki43zoo.apistub.api.key;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
@@ -36,7 +35,6 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 @Component
 @Order(3)
 public class FixedLengthKeyExtractor implements KeyExtractor {

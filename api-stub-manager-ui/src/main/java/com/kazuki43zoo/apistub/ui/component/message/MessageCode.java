@@ -15,11 +15,6 @@
  */
 package com.kazuki43zoo.apistub.ui.component.message;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public enum MessageCode {
   /** */
   UNDEFINED("msg.undefined"),
@@ -53,5 +48,13 @@ public enum MessageCode {
   , INVALID_JSON("msg.invalidJson");
 
   private final String value;
+
+  MessageCode(String value) {
+    this.value = value;
+  }
+
+  public String getValue() {
+    return value;
+  }
 
 }

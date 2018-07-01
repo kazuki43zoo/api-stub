@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
-import lombok.Data;
-import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -70,8 +68,6 @@ public class ApiEvidence {
   private final String contentExtension;
   private final ApiStubProperties properties;
   private final String dataKey;
-
-  @Getter
   private final String correlationId;
 
   ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
@@ -194,7 +190,10 @@ public class ApiEvidence {
     }
   }
 
-  @Data
+  public String getCorrelationId() {
+    return correlationId;
+  }
+
   private static class UploadFile implements Serializable {
     private static final long serialVersionUID = 1L;
     private final String saveFileName;
@@ -208,21 +207,82 @@ public class ApiEvidence {
       part.getHeaderNames().forEach(name -> headers.put(name, new ArrayList<>(part.getHeaders(name))));
       this.headers = HttpHeaders.readOnlyHttpHeaders(headers);
     }
+
+    @SuppressWarnings("unused")
+    public String getSaveFileName() {
+      return saveFileName;
+    }
+
+    @SuppressWarnings("unused")
+    public long getSize() {
+      return size;
+    }
+
+    @SuppressWarnings("unused")
+    public HttpHeaders getHeaders() {
+      return headers;
+    }
   }
 
-  @Data
   private static class EvidenceRequest {
     private final String uri;
     private final String method;
     private final String query;
     private final Map<String, String[]> parameters;
     private final HttpHeaders headers;
+
+    EvidenceRequest(String uri, String method, String query, Map<String, String[]> parameters, HttpHeaders headers) {
+      this.uri = uri;
+      this.method = method;
+      this.query = query;
+      this.parameters = parameters;
+      this.headers = headers;
+    }
+
+    @SuppressWarnings("unused")
+    public String getUri() {
+      return uri;
+    }
+
+    @SuppressWarnings("unused")
+    public String getMethod() {
+      return method;
+    }
+
+    @SuppressWarnings("unused")
+    public String getQuery() {
+      return query;
+    }
+
+    @SuppressWarnings("unused")
+    public Map<String, String[]> getParameters() {
+      return parameters;
+    }
+
+    @SuppressWarnings("unused")
+    public HttpHeaders getHeaders() {
+      return headers;
+    }
   }
 
-  @Data
   private static class EvidenceResponse {
     private final HttpStatus httpStatus;
     private final HttpHeaders headers;
+
+    EvidenceResponse(HttpStatus httpStatus, HttpHeaders headers) {
+      this.httpStatus = httpStatus;
+      this.headers = headers;
+    }
+
+    @SuppressWarnings("unused")
+    public HttpStatus getHttpStatus() {
+      return httpStatus;
+    }
+
+    @SuppressWarnings("unused")
+    public HttpHeaders getHeaders() {
+      return headers;
+    }
   }
 
 }

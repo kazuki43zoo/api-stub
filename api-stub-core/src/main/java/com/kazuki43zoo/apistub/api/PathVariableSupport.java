@@ -15,7 +15,6 @@
  */
 package com.kazuki43zoo.apistub.api;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PathMatcher;
 
@@ -24,13 +23,16 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Component
 public class PathVariableSupport {
 
   private static final String ATTRIBUTE_KEY = PathVariableSupport.class.getName() + ".pathVariables";
 
   private final PathMatcher pathMatcher;
+
+  public PathVariableSupport(PathMatcher pathMatcher) {
+    this.pathMatcher = pathMatcher;
+  }
 
   public void storePathVariables(String pathPattern, String path, HttpServletRequest request) {
     Map<String, String> pathVariables = pathMatcher.extractUriTemplateVariables(pathPattern, path);

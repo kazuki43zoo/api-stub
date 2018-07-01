@@ -16,7 +16,6 @@
 package com.kazuki43zoo.apistub.api.key;
 
 import com.kazuki43zoo.apistub.api.PathVariableSupport;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -26,12 +25,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@RequiredArgsConstructor
 @Component
 @Order(4)
 public class PathVariableKeyExtractor implements KeyExtractor {
 
   private final PathVariableSupport pathVariableSupport;
+
+  public PathVariableKeyExtractor(PathVariableSupport pathVariableSupport) {
+    this.pathVariableSupport = pathVariableSupport;
+  }
 
   @Override
   public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {

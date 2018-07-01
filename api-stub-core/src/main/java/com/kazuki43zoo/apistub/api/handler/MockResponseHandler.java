@@ -23,7 +23,6 @@ import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
 import com.kazuki43zoo.apistub.domain.service.ApiResponseService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.InputStreamResource;
@@ -69,7 +68,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Component
-@RequiredArgsConstructor
 public class MockResponseHandler {
 
   private static final String HEADER_SEPARATOR = "\r\n";
@@ -82,6 +80,13 @@ public class MockResponseHandler {
   private final Set<IDialect> dialects;
   private ITemplateEngine templateEngine;
 
+  public MockResponseHandler(ApplicationContext applicationContext, ApiResponseService apiResponseService, DownloadSupport downloadSupport, ApiStubProperties properties, Set<IDialect> dialects) {
+    this.applicationContext = applicationContext;
+    this.apiResponseService = apiResponseService;
+    this.downloadSupport = downloadSupport;
+    this.properties = properties;
+    this.dialects = dialects;
+  }
 
   @PostConstruct
   public void setupTemplateEngine() {

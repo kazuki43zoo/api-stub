@@ -17,8 +17,8 @@ package com.kazuki43zoo.apistub.api.key;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.apistub.domain.model.Api;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,13 +29,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class DataKeySupport {
+
+  private static final Logger log = LoggerFactory.getLogger(DataKeySupport.class);
 
   private final Map<String, KeyExtractor> keyExtractorMap;
   private final ObjectMapper jsonObjectMapper;
+
+
+  public DataKeySupport(Map<String, KeyExtractor> keyExtractorMap, ObjectMapper jsonObjectMapper) {
+    this.keyExtractorMap = keyExtractorMap;
+    this.jsonObjectMapper = jsonObjectMapper;
+  }
 
   public String extractDataKey(Api api, HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException {
     if (api == null) {

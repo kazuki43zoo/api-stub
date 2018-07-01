@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import lombok.Data;
 import org.springframework.util.StreamUtils;
 
 import java.io.ByteArrayInputStream;
@@ -34,7 +33,6 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
-@Data
 public class ApiResponse implements Serializable {
   private static final long serialVersionUID = 1L;
   private int id;
@@ -58,6 +56,126 @@ public class ApiResponse implements Serializable {
   private LocalDateTime createdAt;
   @JsonIgnore
   private int historyNumber;
+
+  public int getId() {
+    return id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public int getSubId() {
+    return subId;
+  }
+
+  public void setSubId(int subId) {
+    this.subId = subId;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public String getDataKey() {
+    return dataKey;
+  }
+
+  public void setDataKey(String dataKey) {
+    this.dataKey = dataKey;
+  }
+
+  public Integer getStatusCode() {
+    return statusCode;
+  }
+
+  public void setStatusCode(Integer statusCode) {
+    this.statusCode = statusCode;
+  }
+
+  public String getHeader() {
+    return header;
+  }
+
+  public void setHeader(String header) {
+    this.header = header;
+  }
+
+  public InputStream getBody() {
+    return body;
+  }
+
+  public void setBody(InputStream body) {
+    this.body = body;
+  }
+
+  public String getBodyEditorMode() {
+    return bodyEditorMode;
+  }
+
+  public void setBodyEditorMode(String bodyEditorMode) {
+    this.bodyEditorMode = bodyEditorMode;
+  }
+
+  public InputStream getAttachmentFile() {
+    return attachmentFile;
+  }
+
+  public void setAttachmentFile(InputStream attachmentFile) {
+    this.attachmentFile = attachmentFile;
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
+  public Long getWaitingMsec() {
+    return waitingMsec;
+  }
+
+  public void setWaitingMsec(Long waitingMsec) {
+    this.waitingMsec = waitingMsec;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public int getHistoryNumber() {
+    return historyNumber;
+  }
+
+  public void setHistoryNumber(int historyNumber) {
+    this.historyNumber = historyNumber;
+  }
 
   private static class Base64JsonSerializer extends JsonSerializer<InputStream> {
     @Override

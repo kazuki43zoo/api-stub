@@ -23,8 +23,8 @@ import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiProxy;
 import com.kazuki43zoo.apistub.domain.service.ApiService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.core.io.Resource;
 import org.springframework.http.RequestEntity;
@@ -40,10 +40,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-@Slf4j
-@RequiredArgsConstructor
 @Component
 public class ApiStubRequestHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(ApiStubRequestHandler.class);
 
   private final ApiService apiService;
   private final ApiStubProperties properties;
@@ -53,6 +53,16 @@ public class ApiStubRequestHandler {
   private final DataKeySupport dataKeySupport;
   private final PathVariableSupport pathVariableSupport;
   private Pattern rootPathPattern;
+
+  public ApiStubRequestHandler(ApiService apiService, ApiStubProperties properties, ApiEvidenceFactory apiEvidenceFactory, MockResponseHandler mockResponseHandler, ProxyHandler proxyHandler, DataKeySupport dataKeySupport, PathVariableSupport pathVariableSupport) {
+    this.apiService = apiService;
+    this.properties = properties;
+    this.apiEvidenceFactory = apiEvidenceFactory;
+    this.mockResponseHandler = mockResponseHandler;
+    this.proxyHandler = proxyHandler;
+    this.dataKeySupport = dataKeySupport;
+    this.pathVariableSupport = pathVariableSupport;
+  }
 
   @PostConstruct
   public void setupRootPathPattern() {

@@ -16,7 +16,6 @@
 package com.kazuki43zoo.apistub.api;
 
 import com.kazuki43zoo.apistub.api.handler.ApiStubRequestHandler;
-import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -36,10 +35,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class ApiStubFilter extends GenericFilterBean {
 
   private final ApiStubRequestHandler requestHandler;
+
+  public ApiStubFilter(ApiStubRequestHandler requestHandler) {
+    this.requestHandler = requestHandler;
+  }
 
   @Override
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

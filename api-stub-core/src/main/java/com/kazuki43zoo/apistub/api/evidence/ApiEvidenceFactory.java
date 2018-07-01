@@ -18,8 +18,6 @@ package com.kazuki43zoo.apistub.api.evidence;
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.accept.ContentNegotiationManager;
@@ -28,14 +26,18 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Optional;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class ApiEvidenceFactory {
 
   private final ApiStubProperties properties;
   private final ContentNegotiationManager contentNegotiationManager;
   private final DataKeySupport dataKeySupport;
+
+  public ApiEvidenceFactory(ApiStubProperties properties, ContentNegotiationManager contentNegotiationManager, DataKeySupport dataKeySupport) {
+    this.properties = properties;
+    this.contentNegotiationManager = contentNegotiationManager;
+    this.dataKeySupport = dataKeySupport;
+  }
 
   public ApiEvidence create(HttpServletRequest request, String method, String path, String dataKey, String correlationId, Api api) {
 

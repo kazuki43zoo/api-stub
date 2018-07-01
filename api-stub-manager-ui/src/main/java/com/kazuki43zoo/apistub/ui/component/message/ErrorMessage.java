@@ -15,14 +15,8 @@
  */
 package com.kazuki43zoo.apistub.ui.component.message;
 
-import lombok.Builder;
-import lombok.Getter;
-
-@Getter
-@Builder
-public class ErrorMessage {
-  @Builder.Default
-  private MessageCode code = MessageCode.UNDEFINED;
-  @Builder.Default
-  private MessageArgs args = MessageArgs.EMPTY;
+public class ErrorMessage extends AbstractMessage {
+  public static MessageBuilder<ErrorMessage> builder() {
+    return new MessageBuilder<>(new ErrorMessage());
+  }
 }

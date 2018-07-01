@@ -17,7 +17,6 @@ package com.kazuki43zoo.apistub.domain.service;
 
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.repository.ApiRepository;
-import lombok.RequiredArgsConstructor;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-@RequiredArgsConstructor
 public class ApiService {
   private static final Pageable pageableForExport = PageRequest.of(0, Integer.MAX_VALUE);
   private final ApiRepository repository;
@@ -42,6 +40,11 @@ public class ApiService {
 
   @Value("${api.root-path:/api}")
   private String rootPath;
+
+  public ApiService(ApiRepository repository, PathMatcher pathMatcher) {
+    this.repository = repository;
+    this.pathMatcher = pathMatcher;
+  }
 
   public Api findOne(String path, String method) {
     Api api = repository.findOneByUk(path, method);

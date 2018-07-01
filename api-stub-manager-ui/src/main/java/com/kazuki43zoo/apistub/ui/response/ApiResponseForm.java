@@ -16,7 +16,6 @@
 package com.kazuki43zoo.apistub.ui.response;
 
 import com.kazuki43zoo.apistub.ui.component.validation.HttpMethod;
-import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
@@ -24,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 class ApiResponseForm implements Serializable {
   private static final long serialVersionUID = 1L;
   @NotEmpty
@@ -46,4 +44,100 @@ class ApiResponseForm implements Serializable {
   private Long waitingMsec;
   private String description;
   private boolean saveHistory;
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public List<String> getDataKeys() {
+    return dataKeys;
+  }
+
+  public void setDataKeys(List<String> dataKeys) {
+    this.dataKeys = dataKeys;
+  }
+
+  public Integer getStatusCode() {
+    return statusCode;
+  }
+
+  public void setStatusCode(Integer statusCode) {
+    this.statusCode = statusCode;
+  }
+
+  public String getHeader() {
+    return header;
+  }
+
+  public void setHeader(String header) {
+    this.header = header;
+  }
+
+  public String getBody() {
+    return body;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public String getBodyEditorMode() {
+    return bodyEditorMode;
+  }
+
+  public void setBodyEditorMode(String bodyEditorMode) {
+    this.bodyEditorMode = bodyEditorMode;
+  }
+
+  public MultipartFile getFile() {
+    return file;
+  }
+
+  public void setFile(MultipartFile file) {
+    this.file = file;
+  }
+
+  public boolean isDeleteFile() {
+    return deleteFile;
+  }
+
+  public void setDeleteFile(boolean deleteFile) {
+    this.deleteFile = deleteFile;
+  }
+
+  public Long getWaitingMsec() {
+    return waitingMsec;
+  }
+
+  public void setWaitingMsec(Long waitingMsec) {
+    this.waitingMsec = waitingMsec;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public boolean isSaveHistory() {
+    return saveHistory;
+  }
+
+  public void setSaveHistory(boolean saveHistory) {
+    this.saveHistory = saveHistory;
+  }
 }

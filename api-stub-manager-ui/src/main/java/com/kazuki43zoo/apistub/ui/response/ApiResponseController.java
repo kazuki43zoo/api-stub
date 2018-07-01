@@ -25,13 +25,14 @@ import com.kazuki43zoo.apistub.ui.DownloadSupport;
 import com.kazuki43zoo.apistub.ui.ImportSupport;
 import com.kazuki43zoo.apistub.ui.JsonSupport;
 import com.kazuki43zoo.apistub.ui.PaginationSupport;
+import com.kazuki43zoo.apistub.ui.api.ApiController;
 import com.kazuki43zoo.apistub.ui.component.message.ErrorMessage;
 import com.kazuki43zoo.apistub.ui.component.message.InfoMessage;
 import com.kazuki43zoo.apistub.ui.component.message.MessageCode;
 import com.kazuki43zoo.apistub.ui.component.message.SuccessMessage;
 import com.kazuki43zoo.apistub.ui.component.pagination.Pagination;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -75,12 +76,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Slf4j
 @RequestMapping("/manager/responses")
 @Controller
 @SessionAttributes(types = ApiResponseSearchForm.class)
-@RequiredArgsConstructor
 class ApiResponseController {
+  private static final Logger log = LoggerFactory.getLogger(ApiController.class);
   private static final String COOKIE_NAME_PAGE_SIZE = "apiResponse.pageSize";
   private static final Pageable pageableForExistingCheck = PageRequest.of(0, 1);
   private static final CookieGenerator pageSizeCookieGenerator;
@@ -96,6 +96,15 @@ class ApiResponseController {
   private final ImportSupport importHelper;
   private final DownloadSupport downloadSupport;
   private final JsonSupport jsonSupport;
+
+  public ApiResponseController(ApiResponseService apiResponseService, ApiService apiService, PaginationSupport paginationSupport, ImportSupport importHelper, DownloadSupport downloadSupport, JsonSupport jsonSupport) {
+    this.apiResponseService = apiResponseService;
+    this.apiService = apiService;
+    this.paginationSupport = paginationSupport;
+    this.importHelper = importHelper;
+    this.downloadSupport = downloadSupport;
+    this.jsonSupport = jsonSupport;
+  }
 
   @ModelAttribute("apiResponseSearchForm")
   public ApiResponseSearchForm setUpSearchForm() {

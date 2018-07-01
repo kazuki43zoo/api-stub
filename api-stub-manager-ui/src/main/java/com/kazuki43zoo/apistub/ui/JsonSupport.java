@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -28,11 +27,14 @@ import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Component
 public class JsonSupport {
 
   private final ObjectMapper objectMapper;
+
+  public JsonSupport(ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+  }
 
   @SuppressWarnings("unchecked")
   public <T> List<T> toList(String json) {

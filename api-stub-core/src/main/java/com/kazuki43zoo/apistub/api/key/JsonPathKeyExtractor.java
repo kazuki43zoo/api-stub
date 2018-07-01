@@ -17,7 +17,8 @@ package com.kazuki43zoo.apistub.api.key;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +29,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Slf4j
 @Component
 @Order(1)
 public class JsonPathKeyExtractor implements KeyExtractor {
+
+  private static final Logger log = LoggerFactory.getLogger(JsonPathKeyExtractor.class);
+
   @Override
   public List<Object> extract(HttpServletRequest request, byte[] requestBody, String... expressions) {
     if (requestBody == null || requestBody.length == 0) {
