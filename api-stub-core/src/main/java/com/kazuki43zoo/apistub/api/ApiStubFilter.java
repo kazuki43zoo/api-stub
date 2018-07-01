@@ -46,6 +46,7 @@ public class ApiStubFilter extends GenericFilterBean {
     if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
       throw new ServletException("ApiStubFilter just supports HTTP requests");
     }
+
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -54,7 +55,8 @@ public class ApiStubFilter extends GenericFilterBean {
     if (serverRequest.getMethod() == HttpMethod.GET || serverRequest.getMethod() == HttpMethod.HEAD) {
       requestEntity = new RequestEntity<>(serverRequest.getHeaders(), serverRequest.getMethod(), serverRequest.getURI());
     } else {
-      requestEntity = new RequestEntity<>(StreamUtils.copyToByteArray(serverRequest.getBody()), serverRequest.getHeaders(), serverRequest.getMethod(), serverRequest.getURI());
+      requestEntity = new RequestEntity<>(StreamUtils.copyToByteArray(serverRequest.getBody()),
+          serverRequest.getHeaders(), serverRequest.getMethod(), serverRequest.getURI());
     }
 
     ResponseEntity<Resource> responseEntity = requestHandler.handleApiRequest(httpRequest, httpResponse, requestEntity);

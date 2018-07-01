@@ -18,7 +18,7 @@ package com.kazuki43zoo.apistub.api.evidence;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
-import com.kazuki43zoo.apistub.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import lombok.Data;
 import lombok.Getter;
@@ -74,7 +74,7 @@ public class ApiEvidence {
   @Getter
   private final String correlationId;
 
-  public ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
+  ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
     Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
     this.dataKey = nullableDataKey.orElse("-");
     this.dir = Paths.get(properties.getEvidence().getDir(), path,

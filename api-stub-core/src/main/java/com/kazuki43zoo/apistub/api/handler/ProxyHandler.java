@@ -16,8 +16,8 @@
 package com.kazuki43zoo.apistub.api.handler;
 
 import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
-import com.kazuki43zoo.apistub.component.DownloadSupport;
-import com.kazuki43zoo.apistub.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.DownloadSupport;
+import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiProxy;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
@@ -34,7 +34,6 @@ import org.springframework.web.client.RestOperations;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Optional;
@@ -61,7 +60,7 @@ public class ProxyHandler {
     this.properties = properties;
   }
 
-  public ResponseEntity<Resource> perform(HttpServletRequest request, RequestEntity<byte[]> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) throws UnsupportedEncodingException {
+  ResponseEntity<Resource> perform(HttpServletRequest request, RequestEntity<byte[]> requestEntity, String path, String method, String dataKey, Api api, ApiEvidence evidence) {
 
     final String baseUrl = Optional.ofNullable(api)
         .map(Api::getProxy)
@@ -87,9 +86,7 @@ public class ProxyHandler {
     responseHeaders.putAll(proxyResponseEntity.getHeaders());
 
     final Resource responseBody = new InputStreamResource(new ByteArrayInputStream(proxyResponseEntity.getBody()));
-    if (responseHeaders.containsKey(HttpHeaders.TRANSFER_ENCODING)) {
-      responseHeaders.remove(HttpHeaders.TRANSFER_ENCODING);
-    }
+    responseHeaders.remove(HttpHeaders.TRANSFER_ENCODING);
 
     boolean enabledCapturing = Optional.ofNullable(api)
         .map(Api::getProxy)
@@ -105,7 +102,7 @@ public class ProxyHandler {
         .body(responseBody);
   }
 
-  private void doCapture(String path, String method, String dataKey, ResponseEntity<byte[]> proxyResponseEntity, HttpHeaders responseHeaders, ApiEvidence evidence) throws UnsupportedEncodingException {
+  private void doCapture(String path, String method, String dataKey, ResponseEntity<byte[]> proxyResponseEntity, HttpHeaders responseHeaders, ApiEvidence evidence) {
     final ApiResponse apiResponse = new ApiResponse();
     apiResponse.setPath(path);
     apiResponse.setMethod(method);

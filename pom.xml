@@ -140,7 +140,9 @@
 
   <modules>
     <module>api-stub-app</module>
+    <module>api-stub-domain</module>
     <module>api-stub-core</module>
+    <module>api-stub-manager-ui</module>
   </modules>
 
 </project>

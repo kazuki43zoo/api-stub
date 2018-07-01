@@ -18,8 +18,8 @@ package com.kazuki43zoo.apistub.api.handler;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
-import com.kazuki43zoo.apistub.component.DownloadSupport;
-import com.kazuki43zoo.apistub.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.DownloadSupport;
+import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
 import com.kazuki43zoo.apistub.domain.service.ApiResponseService;
@@ -98,7 +98,7 @@ public class MockResponseHandler {
     this.templateEngine = templateEngine;
   }
 
-  public ResponseEntity<Resource> perform(
+  ResponseEntity<Resource> perform(
       String path,
       String method,
       String dataKey,
@@ -238,6 +238,7 @@ public class MockResponseHandler {
       };
     }
 
+    @SuppressWarnings("unused") // Templateから利用するため
     public Object read(String expression) {
       return readContextSupplier.get().read(expression);
     }
@@ -263,6 +264,7 @@ public class MockResponseHandler {
       };
     }
 
+    @SuppressWarnings("unused") // Templateから利用するため
     public Object read(String expression) throws XPathExpressionException {
       XPathExpression xPathExpression = xpath.compile(expression);
       return xPathExpression.evaluate(documentSupplier.get());
