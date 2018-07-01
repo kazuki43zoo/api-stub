@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import static com.kazuki43zoo.apistub.api.evidence.ApiEvidence.array;
+
 @Component
 public class ProxyHandler {
 
@@ -77,7 +79,7 @@ public class ProxyHandler {
     Collections.list(request.getHeaderNames())
         .forEach(name -> requestBodyBuilder.header(name, Collections.list(request.getHeaders(name)).toArray(new String[0])));
 
-    evidence.info("Proxy to {}", () -> evidence.toArray(url));
+    evidence.info("Proxy to {}", () -> array(url));
 
     final ResponseEntity<byte[]> proxyResponseEntity =
         restOperations.exchange(requestBodyBuilder.body(requestEntity.getBody()), byte[].class);
@@ -119,7 +121,7 @@ public class ProxyHandler {
     }
     apiResponseService.createProxyResponse(apiResponse);
 
-    evidence.info("Saved a proxy response into api_proxy_response. id = {}", () -> evidence.toArray(apiResponse.getId()));
+    evidence.info("Saved a proxy response into api_proxy_response. id = {}", () -> array(apiResponse.getId()));
 
   }
 

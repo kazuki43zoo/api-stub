@@ -17,9 +17,9 @@ package com.kazuki43zoo.apistub.api.handler;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
-import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
-import com.kazuki43zoo.apistub.api.DownloadSupport;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.DownloadSupport;
+import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
 import com.kazuki43zoo.apistub.domain.service.ApiResponseService;
@@ -66,6 +66,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static com.kazuki43zoo.apistub.api.evidence.ApiEvidence.array;
 
 @Component
 public class MockResponseHandler {
@@ -122,7 +124,7 @@ public class MockResponseHandler {
       statusCode = Optional.ofNullable(properties.getResponse().getHttpStatusForMockNotFound())
           .orElse(HttpStatus.OK).value();
     } else {
-      evidence.info("Mock Response is {}.", () -> evidence.toArray(apiResponse.getId()));
+      evidence.info("Mock Response is {}.", () -> array(apiResponse.getId()));
       statusCode = Optional.ofNullable(apiResponse.getStatusCode()).orElse(HttpStatus.OK.value());
     }
 
@@ -160,7 +162,7 @@ public class MockResponseHandler {
 
     // Wait processing
     if (Optional.ofNullable(apiResponse.getWaitingMsec()).filter(value -> value > 0).isPresent()) {
-      evidence.info("Waiting {} msec.", () -> evidence.toArray(apiResponse.getWaitingMsec()));
+      evidence.info("Waiting {} msec.", () -> array(apiResponse.getWaitingMsec()));
       try {
         TimeUnit.MILLISECONDS.sleep(apiResponse.getWaitingMsec());
       } catch (InterruptedException e) {
@@ -231,49 +233,59 @@ public class MockResponseHandler {
 
 
   public static class RequestJson {
-    private final Supplier<ReadContext> readContextSupplier;
-    private ReadContext readContext;
+    private final Lazy<ReadContext> readContext;
 
-    RequestJson(byte[] body) {
-      this.readContextSupplier = () -> {
-        if (readContext == null) {
-          this.readContext = JsonPath.parse(new ByteArrayInputStream(body));
-        }
-        return readContext;
-      };
+    private RequestJson(byte[] body) {
+      this.readContext = Lazy.of(() -> JsonPath.parse(new ByteArrayInputStream(body)));
     }
 
-    @SuppressWarnings("unused") // Templateから利用するため
+    @SuppressWarnings("unused") // Because use from template
     public Object read(String expression) {
-      return readContextSupplier.get().read(expression);
+      return readContext.get().read(expression);
     }
   }
 
   public static class RequestXml {
-    private final Supplier<Document> documentSupplier;
-    private XPath xpath;
-    private Document document;
+    private final Lazy<XPath> xpath = Lazy.of(() -> XPathFactory.newInstance().newXPath());
+    private final Lazy<Document> document;
 
-    RequestXml(byte[] body) {
-      this.documentSupplier = () -> {
-        if (document == null) {
-          this.xpath = XPathFactory.newInstance().newXPath();
-          try {
-            this.document = DocumentBuilderFactory.newInstance()
-                .newDocumentBuilder().parse(new ByteArrayInputStream(body));
-          } catch (SAXException | IOException | ParserConfigurationException e) {
-            throw new IllegalStateException(e);
-          }
+    private RequestXml(byte[] body) {
+      this.document = Lazy.of(() -> {
+        try {
+          return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(body));
+        } catch (SAXException | IOException | ParserConfigurationException e) {
+          throw new IllegalStateException(e);
         }
-        return document;
-      };
+      });
     }
 
-    @SuppressWarnings("unused") // Templateから利用するため
+    @SuppressWarnings("unused") // Because use from template
     public Object read(String expression) throws XPathExpressionException {
-      XPathExpression xPathExpression = xpath.compile(expression);
-      return xPathExpression.evaluate(documentSupplier.get());
+      XPathExpression xPathExpression = xpath.get().compile(expression);
+      return xPathExpression.evaluate(document.get());
     }
+  }
+
+  private static class Lazy<T> {
+
+    private final Supplier<T> supplier;
+    private T object;
+
+    private static <T> Lazy<T> of(Supplier<T> supplier) {
+      return new Lazy<>(supplier);
+    }
+
+    private Lazy(Supplier<T> supplier) {
+      this.supplier = supplier;
+    }
+
+    private T get() {
+      if (object == null) {
+        object = supplier.get();
+      }
+      return object;
+    }
+
   }
 
 }

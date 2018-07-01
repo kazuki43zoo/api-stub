@@ -17,6 +17,7 @@ package com.kazuki43zoo.apistub.api.evidence;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
@@ -47,6 +48,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
@@ -58,11 +60,14 @@ public class ApiEvidence {
 
   private static final DateTimeFormatter DIR_NAME_DATE_TIME_FORMAT =
       DateTimeFormatter.ofPattern("uuuuMMddHHmmssSSS");
-  private static ObjectMapper objectMapperForLog =
-      Jackson2ObjectMapperBuilder.json().indentOutput(false).build();
-  private static ObjectMapper objectMapperForFile =
-      Jackson2ObjectMapperBuilder.json().indentOutput(true).build();
 
+  private static ObjectMapper objectMapperForLog =
+      Jackson2ObjectMapperBuilder.json().dateFormat(StdDateFormat.instance).indentOutput(false).build();
+
+  private static ObjectMapper objectMapperForFile =
+      Jackson2ObjectMapperBuilder.json().dateFormat(StdDateFormat.instance).indentOutput(true).build();
+
+  private final OffsetDateTime dateTime;
   private final Path dir;
   private final Logger logger;
   private final String contentExtension;
@@ -73,9 +78,10 @@ public class ApiEvidence {
   ApiEvidence(ApiStubProperties properties, DataKeySupport dataKeySupport, String method, String path, String dataKey, String correlationId, String contentExtension, Api api) {
     Optional<String> nullableDataKey = Optional.ofNullable(dataKey);
     this.dataKey = nullableDataKey.orElse("-");
+    this.dateTime = OffsetDateTime.now();
     this.dir = Paths.get(properties.getEvidence().getDir(), path,
         dataKeySupport.isPathVariableDataKey(api) ? "" : nullableDataKey.orElse(""), method,
-        LocalDateTime.now().format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
+        dateTime.format(DIR_NAME_DATE_TIME_FORMAT) + "_" + correlationId);
     String loggerName = (api != null) ? (api.getMethod() + " " + api.getPath()) : (method + " " + path);
     this.logger = LoggerFactory.getLogger(loggerName);
     this.contentExtension = contentExtension;
@@ -84,21 +90,21 @@ public class ApiEvidence {
   }
 
   public void start() {
-    info("Start. key={}", () -> toArray(dataKey));
+    info("Start. key={}", () -> array(dataKey));
     if (properties.getEvidence().isDisabledRequest() && properties.getEvidence().isDisabledUpload()) {
       return;
     }
     if (!dir.toFile().exists() && !this.dir.toFile().mkdirs()) {
       error("Evidence Directory cannot create. dir = {}", dir.toAbsolutePath().toString());
     }
-    info("Evidence Dir : {}", () -> toArray(dir.toAbsolutePath().toString()));
+    info("Evidence Dir : {}", () -> array(dir.toAbsolutePath().toString()));
   }
 
   public void request(HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException, ServletException {
     final EvidenceRequest evidenceRequest =
-        new EvidenceRequest(request.getRequestURI(), request.getMethod(), request.getQueryString(),
+        new EvidenceRequest(dateTime, request.getRequestURI(), request.getMethod(), request.getQueryString(),
             request.getParameterMap(), requestEntity.getHeaders());
-    info("Request      : {}", () -> toArray(toJson(evidenceRequest)));
+    info("Request      : {}", () -> array(toJson(evidenceRequest)));
     if (!properties.getEvidence().isDisabledRequest()) {
       try (OutputStream out = new BufferedOutputStream
           (new FileOutputStream(new File(dir.toFile(), "request.json")))) {
@@ -111,7 +117,7 @@ public class ApiEvidence {
           .map(MediaType::getCharset)
           .orElse(StandardCharsets.UTF_8);
       final String body = new String(requestEntity.getBody(), charset);
-      info("Request body : {}", () -> toArray(body));
+      info("Request body : {}", () -> array(body));
       if (!properties.getEvidence().isDisabledRequest()) {
         try (OutputStream out = new BufferedOutputStream(
             new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
@@ -129,7 +135,7 @@ public class ApiEvidence {
         String saveFileName = String.format("uploadFile_%02d_%s", index, fileName);
         File saveFile = new File(dir.toFile(), saveFileName);
         UploadFile uploadFile = new UploadFile(part, saveFileName);
-        info("Upload file  : {}", () -> toArray(toJson(uploadFile)));
+        info("Upload file  : {}", () -> array(toJson(uploadFile)));
         if (!properties.getEvidence().isDisabledUpload()) {
           try (InputStream in = part.getInputStream();
                OutputStream out = new BufferedOutputStream(new FileOutputStream(saveFile))) {
@@ -143,7 +149,7 @@ public class ApiEvidence {
 
   public void response(ResponseEntity<?> responseEntity) {
     EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
-    info("Response     : {}", () -> toArray(toJson(evidenceResponse)));
+    info("Response     : {}", () -> array(toJson(evidenceResponse)));
   }
 
   private String toJson(Object object) {
@@ -154,12 +160,12 @@ public class ApiEvidence {
     }
   }
 
-  public Object[] toArray(Object... args) {
+  public static Object[] array(Object... args) {
     return args;
   }
 
   public void end() {
-    info("End. key={}", () -> toArray(dataKey));
+    info("End. key={}", () -> array(dataKey));
   }
 
   public void error(String format, Object... args) {
@@ -225,14 +231,16 @@ public class ApiEvidence {
   }
 
   private static class EvidenceRequest {
-    private final String uri;
+    private final OffsetDateTime dateTime;
+    private final String path;
     private final String method;
     private final String query;
     private final Map<String, String[]> parameters;
     private final HttpHeaders headers;
 
-    EvidenceRequest(String uri, String method, String query, Map<String, String[]> parameters, HttpHeaders headers) {
-      this.uri = uri;
+    private EvidenceRequest(OffsetDateTime dateTime, String path, String method, String query, Map<String, String[]> parameters, HttpHeaders headers) {
+      this.dateTime = dateTime;
+      this.path = path;
       this.method = method;
       this.query = query;
       this.parameters = parameters;
@@ -240,8 +248,13 @@ public class ApiEvidence {
     }
 
     @SuppressWarnings("unused")
-    public String getUri() {
-      return uri;
+    public OffsetDateTime getDateTime() {
+      return dateTime;
+    }
+
+    @SuppressWarnings("unused")
+    public String getPath() {
+      return path;
     }
 
     @SuppressWarnings("unused")
@@ -269,7 +282,7 @@ public class ApiEvidence {
     private final HttpStatus httpStatus;
     private final HttpHeaders headers;
 
-    EvidenceResponse(HttpStatus httpStatus, HttpHeaders headers) {
+    private EvidenceResponse(HttpStatus httpStatus, HttpHeaders headers) {
       this.httpStatus = httpStatus;
       this.headers = headers;
     }
