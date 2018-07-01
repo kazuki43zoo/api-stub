@@ -140,7 +140,7 @@ class ApiResponseController {
   }
 
   @RequestMapping(path = "create", method = {RequestMethod.GET, RequestMethod.POST}, params = "loadingApi")
-  public String createForm(@Validated ApiResponseForm form, BindingResult result, RedirectAttributes redirectAttributes) {
+  public String createForm(@Validated(ApiResponseForm.ApiLoading.class) ApiResponseForm form, BindingResult result, RedirectAttributes redirectAttributes) {
     if (result.hasErrors()) {
       return "response/form";
     }

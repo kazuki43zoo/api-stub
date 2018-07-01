@@ -19,17 +19,18 @@ import com.kazuki43zoo.apistub.ui.component.validation.HttpMethod;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
+import javax.validation.groups.Default;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 class ApiResponseForm implements Serializable {
   private static final long serialVersionUID = 1L;
-  @NotEmpty
-  @Size(max = 256)
+  @NotEmpty(groups = {Default.class, ApiLoading.class})
+  @Size(max = 256, groups = {Default.class, ApiLoading.class})
   private String path;
-  @NotEmpty
-  @HttpMethod
+  @NotEmpty(groups = {Default.class, ApiLoading.class})
+  @HttpMethod(groups = {Default.class, ApiLoading.class})
   private String method;
   private List<@NotEmpty @Size(max = 350) String> dataKeys = new ArrayList<>();
   @NotNull
@@ -140,4 +141,6 @@ class ApiResponseForm implements Serializable {
   public void setSaveHistory(boolean saveHistory) {
     this.saveHistory = saveHistory;
   }
+
+  public interface ApiLoading {}
 }
