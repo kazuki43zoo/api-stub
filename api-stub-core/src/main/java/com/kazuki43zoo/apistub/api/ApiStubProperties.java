@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.apistub.api.config;
+package com.kazuki43zoo.apistub.api;
 
 import lombok.Getter;
 import lombok.Setter;

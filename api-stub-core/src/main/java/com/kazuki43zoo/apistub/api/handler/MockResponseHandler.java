@@ -19,7 +19,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
 import com.kazuki43zoo.apistub.api.DownloadSupport;
-import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
 import com.kazuki43zoo.apistub.domain.service.ApiResponseService;

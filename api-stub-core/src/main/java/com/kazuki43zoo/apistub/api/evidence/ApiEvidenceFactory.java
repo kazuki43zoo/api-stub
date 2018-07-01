@@ -16,7 +16,7 @@
 package com.kazuki43zoo.apistub.api.evidence;
 
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
-import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

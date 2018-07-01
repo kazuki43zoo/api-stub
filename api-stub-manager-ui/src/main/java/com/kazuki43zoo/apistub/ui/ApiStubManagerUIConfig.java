@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package com.kazuki43zoo.apistub.ui.config;
+package com.kazuki43zoo.apistub.ui;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

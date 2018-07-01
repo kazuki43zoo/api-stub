@@ -18,7 +18,7 @@ package com.kazuki43zoo.apistub.api.evidence;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kazuki43zoo.apistub.api.key.DataKeySupport;
-import com.kazuki43zoo.apistub.api.config.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import lombok.Data;
 import lombok.Getter;
