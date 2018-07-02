@@ -19,6 +19,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
 import com.kazuki43zoo.apistub.api.DownloadSupport;
+import com.kazuki43zoo.apistub.api.util.Lazy;
 import com.kazuki43zoo.apistub.api.evidence.ApiEvidence;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import com.kazuki43zoo.apistub.domain.model.ApiResponse;
@@ -233,7 +234,7 @@ public class MockResponseHandler {
 
 
   public static class RequestJson {
-    private final Lazy<ReadContext> readContext;
+    private final Supplier<ReadContext> readContext;
 
     private RequestJson(byte[] body) {
       this.readContext = Lazy.of(() -> JsonPath.parse(new ByteArrayInputStream(body)));
@@ -246,7 +247,7 @@ public class MockResponseHandler {
   }
 
   public static class RequestXml {
-    private final Lazy<XPath> xpath = Lazy.of(() -> XPathFactory.newInstance().newXPath());
+    private final Supplier<XPath> xpath = Lazy.of(() -> XPathFactory.newInstance().newXPath());
     private final Lazy<Document> document;
 
     private RequestXml(byte[] body) {
@@ -264,28 +265,6 @@ public class MockResponseHandler {
       XPathExpression xPathExpression = xpath.get().compile(expression);
       return xPathExpression.evaluate(document.get());
     }
-  }
-
-  private static class Lazy<T> {
-
-    private final Supplier<T> supplier;
-    private T object;
-
-    private static <T> Lazy<T> of(Supplier<T> supplier) {
-      return new Lazy<>(supplier);
-    }
-
-    private Lazy(Supplier<T> supplier) {
-      this.supplier = supplier;
-    }
-
-    private T get() {
-      if (object == null) {
-        object = supplier.get();
-      }
-      return object;
-    }
-
   }
 
 }

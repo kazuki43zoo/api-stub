@@ -18,8 +18,9 @@ package com.kazuki43zoo.apistub.api.evidence;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
-import com.kazuki43zoo.apistub.api.key.DataKeySupport;
 import com.kazuki43zoo.apistub.api.ApiStubProperties;
+import com.kazuki43zoo.apistub.api.util.Lazy;
+import com.kazuki43zoo.apistub.api.key.DataKeySupport;
 import com.kazuki43zoo.apistub.domain.model.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +48,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 
 public class ApiEvidence {
 
@@ -101,23 +100,19 @@ public class ApiEvidence {
   }
 
   public void request(HttpServletRequest request, RequestEntity<byte[]> requestEntity) throws IOException, ServletException {
-    final EvidenceRequest evidenceRequest =
-        new EvidenceRequest(dateTime, request.getRequestURI(), request.getMethod(), request.getQueryString(),
-            request.getParameterMap(), requestEntity.getHeaders());
-    info("Request      : {}", () -> array(toJson(evidenceRequest)));
+    final Supplier<EvidenceRequest> evidenceRequest = Lazy.of(
+        () -> new EvidenceRequest(dateTime, request.getRequestURI(), request.getMethod(), request.getQueryString(),
+            request.getParameterMap(), requestEntity.getHeaders()));
+    info("Request      : {}", () -> array(toJson(evidenceRequest.get())));
     if (!properties.getEvidence().isDisabledRequest()) {
       try (OutputStream out = new BufferedOutputStream
           (new FileOutputStream(new File(dir.toFile(), "request.json")))) {
-        objectMapperForFile.writeValue(out, evidenceRequest);
+        objectMapperForFile.writeValue(out, evidenceRequest.get());
       }
     }
 
     if (requestEntity.getBody() != null) {
-      Charset charset = Optional.ofNullable(requestEntity.getHeaders().getContentType())
-          .map(MediaType::getCharset)
-          .orElse(StandardCharsets.UTF_8);
-      final String body = new String(requestEntity.getBody(), charset);
-      info("Request body : {}", () -> array(body));
+      info("Request body : {}", () -> array(new String(requestEntity.getBody(), getRequestCharset(requestEntity))));
       if (!properties.getEvidence().isDisabledRequest()) {
         try (OutputStream out = new BufferedOutputStream(
             new FileOutputStream(new File(dir.toFile(), "body." + contentExtension)))) {
@@ -148,16 +143,7 @@ public class ApiEvidence {
   }
 
   public void response(ResponseEntity<?> responseEntity) {
-    EvidenceResponse evidenceResponse = new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders());
-    info("Response     : {}", () -> array(toJson(evidenceResponse)));
-  }
-
-  private String toJson(Object object) {
-    try {
-      return objectMapperForLog.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException(e);
-    }
+    info("Response     : {}", () -> array(toJson(new EvidenceResponse(responseEntity.getStatusCode(), responseEntity.getHeaders()))));
   }
 
   public static Object[] array(Object... args) {
@@ -198,6 +184,20 @@ public class ApiEvidence {
 
   public String getCorrelationId() {
     return correlationId;
+  }
+
+  private Charset getRequestCharset(RequestEntity<byte[]> requestEntity) {
+    return Optional.ofNullable(requestEntity.getHeaders().getContentType())
+        .map(MediaType::getCharset)
+        .orElse(StandardCharsets.UTF_8);
+  }
+
+  private String toJson(Object object) {
+    try {
+      return objectMapperForLog.writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   private static class UploadFile implements Serializable {
