@@ -13,7 +13,7 @@ Stub for API
 
 ## Getting started !!
 
-* Download the [api-stub.jar](../../releases/download/1.1.3.RELEASE/api-stub.jar) and save to any directory
+* Download the [api-stub.jar](../../releases/download/1.1.4.RELEASE/api-stub.jar) and save to any directory
 
 * Run the application
   
