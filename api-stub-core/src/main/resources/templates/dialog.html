@@ -22,7 +22,7 @@
 </head>
 <body>
 
-<div th:fragment="deleteModal" class="modal fade" tabindex="-1" role="dialog">
+<div th:fragment="deleteModal" th:id="deleteModal"  class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-body">
@@ -35,7 +35,7 @@
         </div>
     </div>
 </div>
-<div th:fragment="restoreModal" class="modal fade" tabindex="-1" role="dialog">
+<div th:fragment="restoreModal" th:id="restoreModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-body">
@@ -49,7 +49,7 @@
     </div>
 </div>
 
-<div th:fragment="importModal" class="modal fade" tabindex="-1" role="dialog">
+<div th:fragment="importModal" th:id="importModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-body">
