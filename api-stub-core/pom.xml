@@ -37,7 +37,7 @@
         <!-- for dependencies -->
         <mybatis-spring-boot.version>1.3.2</mybatis-spring-boot.version>
         <bootstrap.version>3.3.7-1</bootstrap.version>
-        <ace-builds.version>1.2.8</ace-builds.version>
+        <ace-builds.version>1.3.3</ace-builds.version>
         <!-- for build plugin -->
         <groovy-eclipse-compiler.version>2.9.2-01</groovy-eclipse-compiler.version>
         <groovy-eclipse-batch.version>2.4.3-01</groovy-eclipse-batch.version>
